@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="DagligVareLevering/DagligVareLevering.csproj" />
+  <Project Path="DagligVareLeveringTest/DagligVareLeveringTest.csproj" Id="db57f10f-db3e-437f-826d-10836931804c" />
 </Solution>
