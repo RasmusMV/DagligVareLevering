@@ -1,63 +1,70 @@
+using DagligVareLevering.EFDbContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Security.Cryptography.X509Certificates;
-using System.Collections.Generic;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Models
 {
     public class CartModel : PageModel
     {
-        private static List<CartItem> _cartItems = new List<CartItem>
-        {
-            new CartItem
-            {
-                Product = new Product { Id = 1, Name = "Milk", Price = 11.0 },
-                Quantity = 2
-            },
-            new CartItem
-            {
-                Product = new Product { Id = 2, Name = "Bread", Price = 15.0 },
-                Quantity = 1
-            }
-        };
+        private readonly AppDbContext _context;
 
-        public List<CartItem> CartItems { get; set; }
+        public CartModel(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
 
         public void OnGet()
         {
-            CartItems = _cartItems;
+            int userId = 1; // midlertidigt indtil login er lavet
+
+            BasketItems = _context.BasketItems
+                .Include(b => b.Product)
+                .Where(b => b.UserId == userId)
+                .ToList();
         }
 
         public IActionResult OnPostRemove(int productId)
         {
-            CartItem itemToRemove = _cartItems.FirstOrDefault(item => item.Product.Id == productId);
+            int userId = 1;
+
+            BasketItem? itemToRemove = _context.BasketItems
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             if (itemToRemove != null)
             {
-                _cartItems.Remove(itemToRemove);
+                _context.BasketItems.Remove(itemToRemove);
+                _context.SaveChanges();
             }
 
-            CartItems = _cartItems;
-            return Page();
+            return RedirectToPage();
         }
 
         public IActionResult OnPostIncrease(int productId)
         {
-            CartItem itemToIncrease = _cartItems.FirstOrDefault(item => item.Product.Id == productId);
+            int userId = 1;
+
+            BasketItem? itemToIncrease = _context.BasketItems
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             if (itemToIncrease != null)
             {
                 itemToIncrease.Quantity++;
+                _context.SaveChanges();
             }
 
-            CartItems = _cartItems;
-            return Page();
+            return RedirectToPage();
         }
 
         public IActionResult OnPostDecrease(int productId)
         {
-            CartItem itemToDecrease = _cartItems.FirstOrDefault(item => item.Product.Id == productId);
+            int userId = 1;
+
+            BasketItem? itemToDecrease = _context.BasketItems
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             if (itemToDecrease != null)
             {
@@ -65,12 +72,14 @@ namespace DagligVareLevering.Pages
 
                 if (itemToDecrease.Quantity <= 0)
                 {
-                    _cartItems.Remove(itemToDecrease);
+                    _context.BasketItems.Remove(itemToDecrease);
                 }
+
+                _context.SaveChanges();
             }
 
-            CartItems = _cartItems;
-            return Page();
+            return RedirectToPage();
         }
     }
 }
+
