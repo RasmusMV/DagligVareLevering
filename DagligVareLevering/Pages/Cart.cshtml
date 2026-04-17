@@ -1,9 +1,9 @@
 ﻿@page
-@model DagligVareLevering.Pages.CartModel
+@model DagligVareLevering.Models.CartModel
 
-<h2>My cart</h2>
+<h2>My Cart</h2>
 
-@if (Model.CartItems.Count == 0)
+@if (Model.BasketItems.Count == 0)
 {
     <div class="empty-cart">
         <p>Your cart is empty.</p>
@@ -11,7 +11,6 @@
 }
 else
 {
-    <!--Table to show  products in the cart-->
     <table class="cart-table">
         <thead>
             <tr>
@@ -19,43 +18,37 @@ else
                 <th>Quantity</th>
                 <th>Price Each</th>
                 <th>Total Price</th>
-                <th>Actions</th> 
-
+                <th>Actions</th>
             </tr>
         </thead>
-
         <tbody>
-            @foreach (CartItem item in Model.CartItems)
+            @foreach (var item in Model.BasketItems)
             {
                 <tr>
                     <td>@item.Product.Name</td>
 
-                    <!-- Quantity + knapper -->
                     <td>
                         <div class="quantity-box">
-
                             <form method="post" asp-page-handler="Decrease">
-                                <input type="hidden" name="productId" value="@item.Product.Id" />
+                                <input type="hidden" name="productId" value="@item.ProductId" />
                                 <button type="submit" class="btn-small">-</button>
                             </form>
 
                             <span class="quantity">@item.Quantity</span>
 
                             <form method="post" asp-page-handler="Increase">
-                                <input type="hidden" name="productId" value="@item.Product.Id" />
+                                <input type="hidden" name="productId" value="@item.ProductId" />
                                 <button type="submit" class="btn-small">+</button>
                             </form>
-
                         </div>
                     </td>
 
                     <td>@item.Product.Price.ToString("C")</td>
                     <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
 
-                    <!-- Remove -->
                     <td>
                         <form method="post" asp-page-handler="Remove">
-                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <input type="hidden" name="productId" value="@item.ProductId" />
                             <button type="submit" class="btn-remove">Remove</button>
                         </form>
                     </td>
@@ -64,21 +57,18 @@ else
         </tbody>
     </table>
 }
-<!-- Show total price for the whole cart -->
+
 <p class="cart-total">
     <strong>Total for whole cart:</strong>
-    @Model.CartItems.Sum(item => item.Product.Price * item.Quantity).ToString("C")
+    @Model.BasketItems.Sum(item => item.Product.Price * item.Quantity).ToString("C")
 </p>
 
-<!-- Styles for the cart page -->
 <style>
-    /*Title style*/
     h2 {
         margin-bottom: 20px;
         color: #333;
     }
-    
-    /* Styles for the cart table */
+
     .cart-table {
         width: 100%;
         border-collapse: collapse;
@@ -98,6 +88,7 @@ else
         .cart-table td {
             padding: 12px;
             border-top: 1px solid #ddd;
+            vertical-align: middle;
         }
 
         .cart-table tr:hover {
@@ -111,21 +102,51 @@ else
         color: #666;
     }
 
-.cart-total {
-    margin-top: 20px;
-    font-size: 18px;
-    text-align: right;
-}
-button {
-        padding: 8px 12px;
+    .cart-total {
+        margin-top: 20px;
+        font-size: 18px;
+        text-align: right;
+    }
+
+    .quantity-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .quantity {
+        font-weight: bold;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .btn-small {
+        padding: 4px 10px;
+        border-radius: 4px;
+        background-color: #6c757d;
+        color: white;
         border: none;
+        cursor: pointer;
+    }
+
+        .btn-small:hover {
+            opacity: 0.85;
+        }
+
+    .btn-remove {
+        padding: 6px 12px;
         border-radius: 6px;
         background-color: #d9534f;
         color: white;
+        border: none;
         cursor: pointer;
-}
+    }
 
-button:hover {
-            opacity: 0.9;
-}
+        .btn-remove:hover {
+            opacity: 0.85;
+        }
+
+    form {
+        display: inline;
+    }
 </style>
