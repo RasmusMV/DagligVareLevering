@@ -1,0 +1,131 @@
+﻿@page
+@model DagligVareLevering.Pages.CartModel
+
+<h2>My cart</h2>
+
+@if (Model.CartItems.Count == 0)
+{
+    <div class="empty-cart">
+        <p>Your cart is empty.</p>
+    </div>
+}
+else
+{
+    <!--Table to show  products in the cart-->
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price Each</th>
+                <th>Total Price</th>
+                <th>Actions</th> 
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (CartItem item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+
+                    <!-- Quantity + knapper -->
+                    <td>
+                        <div class="quantity-box">
+
+                            <form method="post" asp-page-handler="Decrease">
+                                <input type="hidden" name="productId" value="@item.Product.Id" />
+                                <button type="submit" class="btn-small">-</button>
+                            </form>
+
+                            <span class="quantity">@item.Quantity</span>
+
+                            <form method="post" asp-page-handler="Increase">
+                                <input type="hidden" name="productId" value="@item.Product.Id" />
+                                <button type="submit" class="btn-small">+</button>
+                            </form>
+
+                        </div>
+                    </td>
+
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+
+                    <!-- Remove -->
+                    <td>
+                        <form method="post" asp-page-handler="Remove">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <button type="submit" class="btn-remove">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<!-- Show total price for the whole cart -->
+<p class="cart-total">
+    <strong>Total for whole cart:</strong>
+    @Model.CartItems.Sum(item => item.Product.Price * item.Quantity).ToString("C")
+</p>
+
+<!-- Styles for the cart page -->
+<style>
+    /*Title style*/
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    /* Styles for the cart table */
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .cart-table th {
+            background-color: #f4f4f4;
+            text-align: left;
+            padding: 12px;
+        }
+
+        .cart-table td {
+            padding: 12px;
+            border-top: 1px solid #ddd;
+        }
+
+        .cart-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+    .empty-cart {
+        padding: 20px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        color: #666;
+    }
+
+.cart-total {
+    margin-top: 20px;
+    font-size: 18px;
+    text-align: right;
+}
+button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        background-color: #d9534f;
+        color: white;
+        cursor: pointer;
+}
+
+button:hover {
+            opacity: 0.9;
+}
+</style>
