@@ -2,58 +2,30 @@
 @model DagligVareLevering.Pages.GroceriesModel
 @{
 }
+
 <div class="container">
-    <div class="row">
-        <div class="column">
+    <div class="product-grid">
+        
+            @foreach (var group in Model.GroupedProducts)
+        {
             <div class="card">
-                <img src="" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Mælk</b></h4>
-                    <p>Pris: 10 DKK</p>
-                    <button>Se produkt</button>
-                    <button> Tilføj til kurv</button>
+                <h3>@group.Key</h3> <!-- Product name -->
+                @foreach (var item in group)
+                {
+                    <div>
+                        <p>@item.Store - @item.Price kr</p>
 
-                </div>
+                        <a asp-page="/Groceries" asp-route-id="@item.ProductId">
+                            See product
+                        </a>
+                    </div>
+                }
             </div>
-        </div>
-        <div class="column">
-            <div class="card">
-                <img src="" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Smør</b></h4>
-                    <p>Pris: 15 DKK</p>
-                    <button>Se produkt</button>
-                    <button>Tilføj til kurv</button>
-
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="card">
-                <img src="" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Æg</b></h4>
-                    <p>Pris: 24 DKK</p>
-                    <button>Se produkt</button>
-                    <button>Tilføj til kurv</button>
-
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="card">
-                <img src="" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>gær</b></h4>
-                    <p>Pris: 5 DKK</p>
-                    <button>Se produkt</button>
-                    <button>Tilføj til kurv</button>
-
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
+
+ 
 <style>
     .card {
         /* Add shadows to create the "card" effect */
@@ -85,4 +57,9 @@
         clear: both;
     }
 
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+        gap: 20px;
+    }
 </style>
