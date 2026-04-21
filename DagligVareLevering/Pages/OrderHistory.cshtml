@@ -1,0 +1,43 @@
+﻿@page
+@model DagligVareLevering.Pages.OrderHistoryModel
+@{
+
+    <h2>Købshistorik</h2>
+
+    @foreach (var order in Model.AllOrders)
+    {
+        <h4>Ordre</h4>
+
+        <ul>
+            @foreach (var line in order.OrderLines)
+            {
+                <li>
+                    @line.Product.Name - Antal: @line.Quantity - Pris: @line.GetLineTotal() kr.
+                    
+                </li>
+            }
+        </ul>
+
+        <p><strong>Total: @order.GetTotalPrice() kr.</strong></p>
+    }
+}
+@* public decimal GetLineTotal()
+{
+return Product.Price * Quantity;
+} i OrderLine for at GetLineTotal() virker????
+
+
+______
+public decimal GetTotalPrice()
+{
+    decimal total = 0;
+
+    foreach (var line in OrderLines)
+    {
+        total += line.GetLineTotal();
+    }
+
+    return total;
+}
+Skal ligges i Order for at GetTotalPrice() virker???
+*@
