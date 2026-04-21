@@ -1,0 +1,80 @@
+﻿@page
+@model DagligVareLevering.Models.DeliveryTimeModel
+@{
+}
+
+<h2>Vælg leveringstidspunkt</h2>
+
+<form mmethod =""post" class="delivery-form">
+    <label for="SelectedTimeSlot"> Vælg et tidsinterval: </label>
+        <select aps-for="SelectedTimeSlot" class="delivery-select"> 
+            <option value="">- Vælg et tidsinterval --</option>
+            @foreach (string timeSlot in Model.TimeSlots)
+            {
+                <option value="@timeSlot">@timeSlot</option>
+            }
+        </select>
+    <button type="submit" class="save-btn">Gem leveringstidspunkt </button>
+
+</form>
+
+@if (!string.IsNullOrEmpty(Model.SelectedTimeSlot))
+{
+    <p class="selected-time">
+        <strong>Selected delivery time:</strong> @Model.SelectedTimeSlot
+    </p>
+}
+
+<div asp-validation-summary="All" class="validation-message"></div>
+
+<style>
+    h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .delivery-form {
+        max-width: 400px;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+        .delivery-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+    .delivery-select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    .save-btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        background-color: #4f46e5;
+        color: white;
+        cursor: pointer;
+    }
+
+        .save-btn:hover {
+            opacity: 0.9;
+        }
+
+    .selected-time {
+        margin-top: 20px;
+        font-size: 16px;
+    }
+
+    .validation-message {
+        margin-top: 15px;
+        color: red;
+    }
+</style>
