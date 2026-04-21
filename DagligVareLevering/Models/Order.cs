@@ -11,6 +11,19 @@ namespace DagligVareLevering.Models
             TimeOfOrder = DateTime.Now;
         }
 
+        public decimal GetTotalPrice()
+        {
+            decimal total = 0;
+
+            foreach (var line in OrderLines)
+            {
+                total += line.GetLineTotal();
+            }
+
+            return total;
+        }
+
+
         public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
         {
             OrderLines = orderLines;
