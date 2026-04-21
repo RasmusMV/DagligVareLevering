@@ -46,6 +46,7 @@ namespace DagligVareLevering.Models
         public DateTime TimeOfOrder { get; set; }
 
         public DateTime ExpectedDeliveryTime { get; set; }
+
         public DateTime ExpectedDeliveryDate { get; set; }
 
         [Required, MaxLength(100)]
