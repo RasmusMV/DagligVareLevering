@@ -6,18 +6,22 @@
 
     @foreach (var order in Model.AllOrders)
     {
-        <h4>Ordre</h4>
+        <div>
+            <h4>Ordre</h4>
 
-        <ul>
-            @foreach (var line in order.OrderLines)
-            {
-                <li>
-                    @line.Product.Name - Antal: @line.Quantity - Pris: @line.GetLineTotal() kr.
-                    
-                </li>
-            }
-        </ul>
+            <ul>
+                @foreach (var line in order.OrderLines)
+                {
+                    <li>
+                        @line.Product.Name - Antal: @line.Quantity - Pris: @line.GetLineTotal() kr.
+                    </li>
+                }
+            </ul>
 
-        <p><strong>Total: @order.GetTotalPrice() kr.</strong></p>
+            <p><strong>Pris for denne ordre: @order.GetTotalPrice() kr.</strong></p>
+            <hr />
+        </div>
     }
+
+    <h3>Samlet total for alle ordrer: @Model.GrandTotal kr.</h3>
 }
