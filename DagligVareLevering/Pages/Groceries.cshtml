@@ -16,8 +16,13 @@
                         <p>@item.Store - @item.Price kr</p>
 
                         <a asp-page="/Groceries" asp-route-id="@item.ProductId">
-                            See product
+                            Se produkt
                         </a>
+
+                        <form method="post" asp-page-handler="Increase">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn-small">Tilføj Produkt</button>
+                        </form>
                     </div>
                 }
             </div>
