@@ -5,7 +5,7 @@ namespace DagligVareLevering.Models
 {
     public class BasketItem
     {
-        public BasketItem() { }
+        public BasketItem() { } 
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -6,6 +6,10 @@ namespace DagligVareLevering.Models
     public class OrderLine
     {
         public OrderLine() { }
+        public decimal GetLineTotal()
+        {
+            return Product.Price * Quantity;
+        }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
