@@ -2,26 +2,45 @@
 @model DagligVareLevering.Pages.OrderHistoryModel
 @{
 
-    <h2>Købshistorik</h2>
+    <h2 class="mb-4">Købshistorik</h2>
 
-    @foreach (var order in Model.AllOrders)
-    {
-        <div>
-            <h4>Ordre</h4>
+    <div class="row">
+        @foreach (var order in Model.AllOrders)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        
+                        <h5 class="card-title">Ordre #@order.OrderId</h5>
+                        <p><strong>Dato:</strong> @order.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
+                        <p><strong>Antal varer:</strong> @order.OrderLines.Sum(line => line.Quantity)</p>
 
-            <ul>
-                @foreach (var line in order.OrderLines)
-                {
-                    <li>
-                        @line.Product.Name - Antal: @line.Quantity - Pris: @line.GetLineTotal() kr.
-                    </li>
-                }
-            </ul>
+                        <ul class="list-unstyled">
+                            @foreach (var line in order.OrderLines)
+                            {
+                                <li>
+                                    <strong>@line.Product.Name</strong><br />
+                                    Antal: @line.Quantity <br />
+                                    pris: @line.GetLineTotal() kr.
+                                </li>
+                                <hr />
+                            }
+                        </ul>
 
-            <p><strong>Pris for denne ordre: @order.GetTotalPrice() kr.</strong></p>
-            <hr />
-        </div>
-    }
+                         <p class="mt-3">
+                            <strong>Pris for denne ordre:</strong><br />
+                            @order.GetTotalPrice() kr.
+                        </p>
+                            
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+        
+    <div class="mt-4">
+        <h4>Samlet total for alle ordrer: @Model.GrandTotal kr.</h4>
+        <p><strong>Samlet antal købte varer:</strong> @Model.TotalItems</p>
+    </div>
 
-    <h3>Samlet total for alle ordrer: @Model.GrandTotal kr.</h3>
 }

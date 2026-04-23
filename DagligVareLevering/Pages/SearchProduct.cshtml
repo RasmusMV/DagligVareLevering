@@ -1,0 +1,31 @@
+﻿@page
+@model DagligVareLevering.Pages.SearchProductModel
+@{
+
+    
+<h2 class="mb-4">Søg efter produkter</h2>
+
+<form method="post" class="mb-4">
+    <div class="mb-3">
+        <label asp-for="SearchText" class="form-label">Søg på produktnavn</label>
+        <input asp-for="SearchText" class="form-control" placeholder="Skriv fx mælk..." />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Søg</button>
+</form>
+
+<div class="row">
+    @foreach (var product in Model.FilteredProducts)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Information</p>
+                    <p><strong>Pris:</strong> @product.Price.ToString("0.00") kr.</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+}
