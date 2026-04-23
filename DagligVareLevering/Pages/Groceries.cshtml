@@ -1,0 +1,70 @@
+﻿@page
+@model DagligVareLevering.Pages.GroceriesModel
+@{
+}
+
+<div class="container">
+    <div class="product-grid">
+        
+            @foreach (var group in Model.GroupedProducts)
+        {
+            <div class="card">
+                <h3>@group.Key</h3> <!-- Product name -->
+                @foreach (var item in group)
+                {
+                    <div>
+                        <p>@item.Store - @item.Price kr</p>
+
+                        <a asp-page="/Groceries" asp-route-id="@item.ProductId">
+                            Se produkt
+                        </a>
+
+                        <form method="post" asp-page-handler="Increase">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button type="submit" class="btn-small">Tilføj Produkt</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+ 
+<style>
+    .card {
+        /* Add shadows to create the "card" effect */
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+    }
+
+        /* On mouse-over, add a deeper shadow */
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+
+    /* Add some padding inside the card container, and proper placement */
+    .container {
+        padding: 2px 16px;
+        display: grid;
+        justify-content: space-evenly;
+    }
+
+    .column {
+        float: left;
+        width: 33%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+        gap: 20px;
+    }
+</style>

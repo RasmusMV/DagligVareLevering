@@ -4,28 +4,58 @@
 }
 
 <h2>Vælg leveringstidspunkt</h2>
+<div class="week-navigation">
+    <a asp-page="DeliveryTime" asp-route-weekOffset="@(Model.WeekOffset-1)" class="nav-btn">← Forrige uge</a>
+    <span class=" week title">
+        Uge @System.Globalization.ISOWeek.GetWeekOfYear(Model.WeekDays.First())
+    </span> 
+    <a asp-page="/DeliveryTime" aps-route-weekOffset="@(Model.WeekOffset + 1)"class=nav-btn">Næste uge → </a> 
+</div>
 
-<form mmethod =""post" class="delivery-form">
-    <label for="SelectedTimeSlot"> Vælg et tidsinterval: </label>
-        <select aps-for="SelectedTimeSlot" class="delivery-select"> 
-            <option value="">- Vælg et tidsinterval --</option>
-            @foreach (string timeSlot in Model.TimeSlots)
-            {
-                <option value="@timeSlot">@timeSlot</option>
-            }
-        </select>
-    <button type="submit" class="save-btn">Gem leveringstidspunkt </button>
 
-</form>
-
-@if (!string.IsNullOrEmpty(Model.SelectedTimeSlot))
+@if (Model.CurrentOrder != null && Model.CurrentOrder.ExpectedDeliveryTime != DateTime.MinValue)
 {
     <p class="selected-time">
-        <strong>Selected delivery time:</strong> @Model.SelectedTimeSlot
+        <strong>Valgt levering:</strong>
+        @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+        kl.
+        @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
     </p>
 }
 
 <div asp-validation-summary="All" class="validation-message"></div>
+
+<table class="delivery-table">
+    <thead>
+        <tr>
+            <th>Tidsinterval</th>
+            @foreach (DateTime day in Model.WeekDays)
+            {
+                <th>@day.ToString("ddd dd/MM")</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (string timeSlot in Model.TimeSlots)
+        {
+            <tr>
+                <td class="time-cell">@timeSlot</td>
+
+                @foreach (DateTime day in Model.WeekDays)
+                {
+                    <td>
+                        <form method="post" asp-page-handler="SelectTime">
+                            <input type="hidden" name="weekOffset" value="@Model.WeekOffset" />
+                            <input type="hidden" name="SelectedDate" value="@day.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="SelectedTimeSlot" value="@timeSlot" />
+                            <button type="submit" class="slot-btn">Vælg</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 
 <style>
     h2 {
@@ -33,48 +63,77 @@
         color: #333;
     }
 
-    .delivery-form {
-        max-width: 400px;
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .week-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
     }
 
-        .delivery-form label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-    .delivery-select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-    }
-
-    .save-btn {
-        padding: 10px 16px;
-        border: none;
-        border-radius: 6px;
+    .nav-btn {
+        text-decoration: none;
         background-color: #4f46e5;
         color: white;
-        cursor: pointer;
+        padding: 8px 14px;
+        border-radius: 6px;
     }
 
-        .save-btn:hover {
+        .nav-btn:hover {
             opacity: 0.9;
         }
 
-    .selected-time {
-        margin-top: 20px;
-        font-size: 16px;
+    .week-title {
+        font-weight: bold;
+        font-size: 18px;
     }
 
+    .selected-time {
+        margin-bottom: 20px;
+        padding: 12px;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+    }
+
+    .delivery-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .delivery-table th,
+        .delivery-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .delivery-table th {
+            background-color: #f4f4f4;
+        }
+
+    .time-cell {
+        font-weight: bold;
+        background-color: #fafafa;
+    }
+
+    .slot-btn {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
+        background-color: #e5e7eb;
+        cursor: pointer;
+    }
+
+        .slot-btn:hover {
+            background-color: #c7d2fe;
+        }
+
     .validation-message {
-        margin-top: 15px;
         color: red;
+        margin-bottom: 15px;
     }
 </style>

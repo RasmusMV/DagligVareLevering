@@ -84,13 +84,9 @@ namespace DagligVareLevering.Models
             TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
             TimeSpan endTime = TimeSpan.Parse(splitTime[1]);
 
-            // Kombinerer den valgte dato med start- og sluttidspunkt
-            DateTime deliveryStart = SelectedDate.Date.Add(startTime);
-            DateTime deliveryEnd = SelectedDate.Date.Add(endTime);
-
             // Gemmer intervallet på ordren
-            CurrentOrder.ExpectedDeliveryDate = deliveryStart;
-            CurrentOrder.ExpectedDeliveryTime = deliveryEnd;
+            CurrentOrder.ExpectedDeliveryDate = SelectedDate.Date;
+            CurrentOrder.ExpectedDeliveryTime = SelectedDate.Date.Add(startTime);
 
             // Gem ændringer i databasen
             _context.SaveChanges();
