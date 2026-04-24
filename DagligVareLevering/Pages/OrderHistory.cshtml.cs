@@ -1,3 +1,4 @@
+using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,8 +8,15 @@ namespace DagligVareLevering.Pages
 {
     public class OrderHistoryModel : PageModel
     {
+        private readonly AppDbContext _context;
+
+        public OrderHistoryModel(AppDbContext context)
+        {
+            _context = context;
+        }
         public List<Order> AllOrders { get; set; }
         public decimal GrandTotal { get; set; }
+        public int TotalItems { get; set; }
 
         public void OnGet()
         {
@@ -46,11 +54,14 @@ namespace DagligVareLevering.Pages
 
             AllOrders.Add(order1);
             AllOrders.Add(order2);
-
+                      
             GrandTotal = 0;
+            TotalItems = 0;
+
             foreach (var order in AllOrders)
             {
                 GrandTotal += order.GetTotalPrice();
+                TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
             }
         }
 
