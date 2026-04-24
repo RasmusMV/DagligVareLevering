@@ -37,9 +37,9 @@ namespace DagligVareLevering.Models
         [Required(ErrorMessage = "User must have a email"), MaxLength(100)]
         public string Email { get; set; }
 
-        public virtual ICollection<BasketItem> Basket { get; set; }
+        public virtual ICollection<BasketItem>? Basket { get; set; }
 
-        public virtual ICollection<Order> OrderHistory { get; set; }
+        public virtual ICollection<Order>? OrderHistory { get; set; }
 
 
 

@@ -1,0 +1,55 @@
+﻿@page
+@model DagligVareLevering.Pages.Store.GetAllStoresModel
+@{
+}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				<div><h5>Id</h5></div>
+			</th>
+			<th>
+				Name
+			</th>
+			<th>
+				Adress
+			</th>
+			<th>
+				Actions
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if(Model.Stores != null)
+		{
+			@foreach (Models.Store store in Model.Stores)
+			{
+				<tr>
+					<th>
+						@store.StoreId
+					</th>
+					<th>
+						@store.Name
+					</th>
+					<th>
+						@store.Adress
+					</th>
+					<td>
+						<a class="btn btn-primary btn-sm" type="button" title="Edit" asp-page="EditStore" asp-route-id="@store.StoreId">Edit</a>
+
+						<form method="post" asp-page-handler="Delete" asp-route-id="@store.StoreId"
+						onsubmit="return confirm('Are you sure you want to delete this store?');"
+						class="d-inline m-0">
+						<button type="submit" class="btn btn-primary btn-sm">Delete</button>
+					    </form>
+
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+<p>
+	<a class=" btn btn-primary" asp-page="CreateStore">Create a new store</a>
+</p>
