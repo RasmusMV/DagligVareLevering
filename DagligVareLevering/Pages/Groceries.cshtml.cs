@@ -6,29 +6,30 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
+using DagligVareLevering.Service;
 
 namespace DagligVareLevering.Pages
 {
     public class GroceriesModel : PageModel
     {
 
-        private readonly AppDbContext _context;
+        private IService<Product> _dbService;
+        private IService<BasketItem> _basketService;
 
-        public GroceriesModel(AppDbContext context)
+        public GroceriesModel(IService<Product> context, IService<BasketItem> basketService)
         {
-            _context = context;
+            _dbService = context;
+            _basketService = basketService;
         }
         public Product? SelectedProduct { get; set; }
         public Product? ProductStore { get; set; }
 
+
         public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
 
-        public void OnGet(int? id, string? storeName)
+        public async Task OnGetAsync(int? id, string? storeName)
         {
-            var products = _context.Products
-                .OrderBy(p => p.Name)
-                .ThenBy(p => p.Price).ThenBy(p => p.Store.Name)
-                .ToList();
+            var products = await _dbService.GetObjectsAsync();
 
             GroupedProducts = products.GroupBy(p => p.Name).ToList();
 
@@ -43,23 +44,36 @@ namespace DagligVareLevering.Pages
                 ProductStore = products
                     .FirstOrDefault(p => p.Store != null && p.Store.Name == storeName);
             }
+            
 
         }
-
-        public IActionResult OnPostIncrease(int productId)
+        
+        public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
         {
             int userId = 1;
+            BasketItem newBasketItem = new BasketItem();
+            newBasketItem.ProductId = productId;
+            newBasketItem.UserId = userId;
+            newBasketItem.Quantity = 1;
+            await _basketService.AddObjectAsync(newBasketItem);
+            return RedirectToPage();
+        }
 
-            BasketItem? itemToIncrease = _context.BasketItems
+        /*
+        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
+        public async Task<IActionResult> OnPostIncreaseAsync(int productId, int userId)
+        {
+            BasketItem? itemToIncrease = (await _basketService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             if (itemToIncrease != null)
             {
                 itemToIncrease.Quantity++;
-                _context.SaveChanges();
+                await _basketService.UpdateObjectAsync(itemToIncrease);
             }
 
             return RedirectToPage();
         }
+        */
     }
 }
