@@ -1,4 +1,5 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,88 +9,104 @@ namespace DagligVareLevering.Models
 {
     public class CartModel : PageModel
     {
-        private readonly AppDbContext _context;
+        //Service til at håndtere databaseoperationer for produkter og indkøbskurv
+        private IService<Product> _productService;
+        private IService<BasketItem> _dbService;
         public decimal DeliveryPrice { get; set; }
         public decimal ItemsTotalPrice { get; set; }
         public decimal TotalWithDelivery { get; set; }
 
-        public CartModel(AppDbContext context)
+        public CartModel(IService<BasketItem> dbService, IService<Product> productService)
         {
-            _context = context;
+            _dbService = dbService;
+            _productService=productService;
         }
 
+        // Liste over varer i indkøbskurven, som skal vises på siden
         public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
 
-        public void OnGet()
+        // OnGet -metoden henter data for indkøbskurven, herunder hvilke varer der er i kurven, og beregner priserne
+        public async Task OnGet()
         {
-            LoadCartData();
+            int userId = 1; // indtil lennos virker 
+
+            // Hent varer i kurven for den aktuelle bruger og beregn priser
+            await LoadCartData(userId);
         }
 
-        public IActionResult OnPostRemove(int productId)
+        // OnPostRemoveAsync -metoden håndterer fjernelse af en vare fra indkøbskurven
+        public async Task<IActionResult> OnPostRemoveAsync(int productId)
         {
-            int userId = 1;
+            // Find det indkøbselement, der skal fjernes, baseret på produktId
+            BasketItem? itemToRemove = await _dbService.GetObjectByIdAsync(productId);
 
-            BasketItem? itemToRemove = _context.BasketItems
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
-
+            // Hvis elementet findes, slet det fra databasen
             if (itemToRemove != null)
             {
-                _context.BasketItems.Remove(itemToRemove);
-                _context.SaveChanges();
+                await _dbService.DeleteObjectAsync(itemToRemove);
             }
 
             return RedirectToPage();
         }
 
-        public IActionResult OnPostIncrease(int productId)
+        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
+        public async Task<IActionResult> OnPostIncreaseAsync(int productId, int userId)
         {
-            int userId = 1;
-
-            BasketItem? itemToIncrease = _context.BasketItems
+            // Find det indkøbselement, der skal forøges, baseret på produktId og userId
+            BasketItem? itemToIncrease = (await _dbService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
+            // Hvis elementet findes, forøg mængden og opdater det i databasen
             if (itemToIncrease != null)
             {
                 itemToIncrease.Quantity++;
-                _context.SaveChanges();
+                await _dbService.UpdateObjectAsync(itemToIncrease);
             }
 
             return RedirectToPage();
         }
 
-        public IActionResult OnPostDecrease(int productId)
+        // OnPostDecreaseAsync -metoden håndterer formindskelse af mængden af en vare i indkøbskurven
+        public async Task<IActionResult> OnPostDecrease(int productId, int userId)
         {
-            int userId = 1;
-
-            BasketItem? itemToDecrease = _context.BasketItems
+            // Find det indkøbselement, der skal formindskes, baseret på produktId og userId
+            BasketItem? itemToDecrease = (await _dbService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
+            // Hvis elementet findes, formindsk mængden og opdater det i databasen. Hvis mængden når 0, slet elementet
             if (itemToDecrease != null)
             {
                 itemToDecrease.Quantity--;
 
                 if (itemToDecrease.Quantity <= 0)
                 {
-                    _context.BasketItems.Remove(itemToDecrease);
+                    await _dbService.DeleteObjectAsync(itemToDecrease);
                 }
-
-                _context.SaveChanges();
+               
+               await _dbService.UpdateObjectAsync(itemToDecrease);
             }
 
             return RedirectToPage();
         }
 
-        private void LoadCartData()
+        // LoadCartData -metoden henter indkøbskurvens data for en given bruger, herunder hvilke varer der er i kurven, og beregner priserne
+        private async Task LoadCartData(int userId)
         {
-            int userId = 1; // midlertidigt indtil login er lavet
-
-            BasketItems = _context.BasketItems
-                .Include(b => b.Product)
+            BasketItems = (await _dbService.GetObjectsAsync())
                 .Where(b => b.UserId == userId)
                 .ToList();
-            DeliveryPrice =29m;
 
-            ItemsTotalPrice = BasketItems.Sum(item => (decimal)(item.Product.Price * item.Quantity));
+            foreach (var item in BasketItems)
+            {
+                item.Product = await _productService.GetObjectByIdAsync(item.ProductId);
+            }
+
+            DeliveryPrice = 29m;
+
+            ItemsTotalPrice = BasketItems
+                .Where(item => item.Product != null)
+                .Sum(item => item.Product.Price * item.Quantity);
+
             TotalWithDelivery = ItemsTotalPrice + DeliveryPrice;
         }
     }
