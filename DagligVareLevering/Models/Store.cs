@@ -24,7 +24,7 @@ namespace DagligVareLevering.Models
         [Required(ErrorMessage = "Store must have a adress"), MaxLength(100)]
         public string Adress { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
 
     }
 }

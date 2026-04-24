@@ -1,0 +1,23 @@
+﻿@page
+@model DagligVareLevering.Pages.Store.EditStoreModel
+@{
+}
+<form method="post">
+	<input type="hidden" asp-for="Store.StoreId" />
+	<div class="form-group">
+		<label asp-for="Store.Name" class="control-lable"></label>
+		<input asp-for="Store.Name" class="form-control" />
+		<span asp-validation-for="Store.Name" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="Store.Adress" class="control-lable"></label>
+		<input asp-for="Store.Adress" class="form-control" />
+		<span asp-validation-for="Store.Adress" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<input type="submit" value="update" class="text-danger" />
+	</div>
+</form>
+<div>
+	<a asp-page="GetAllStores">Back to list</a>
+</div>
