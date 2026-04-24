@@ -9,6 +9,9 @@ namespace DagligVareLevering.Models
     public class CartModel : PageModel
     {
         private readonly AppDbContext _context;
+        public decimal DeliveryPrice { get; set; }
+        public decimal ItemsTotalPrice { get; set; }
+        public decimal TotalWithDelivery { get; set; }
 
         public CartModel(AppDbContext context)
         {
@@ -19,12 +22,7 @@ namespace DagligVareLevering.Models
 
         public void OnGet()
         {
-            int userId = 1; // midlertidigt indtil login er lavet
-
-            BasketItems = _context.BasketItems
-                .Include(b => b.Product)
-                .Where(b => b.UserId == userId)
-                .ToList();
+            LoadCartData();
         }
 
         public IActionResult OnPostRemove(int productId)
@@ -79,6 +77,20 @@ namespace DagligVareLevering.Models
             }
 
             return RedirectToPage();
+        }
+
+        private void LoadCartData()
+        {
+            int userId = 1; // midlertidigt indtil login er lavet
+
+            BasketItems = _context.BasketItems
+                .Include(b => b.Product)
+                .Where(b => b.UserId == userId)
+                .ToList();
+            DeliveryPrice =29m;
+
+            ItemsTotalPrice = BasketItems.Sum(item => (decimal)(item.Product.Price * item.Quantity));
+            TotalWithDelivery = ItemsTotalPrice + DeliveryPrice;
         }
     }
 }
