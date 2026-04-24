@@ -29,7 +29,7 @@ namespace DagligVareLevering.Models
         public int UserId { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
-
+        
         public DateTime TimeOfOrder { get; set; }
 
         public DateTime ExpectedDeliveryTime { get; set; }

@@ -45,7 +45,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BasketItems");
+                    b.ToTable("BasketItems", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.Order", b =>
@@ -74,7 +74,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.OrderLine", b =>
@@ -100,7 +100,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderLines");
+                    b.ToTable("OrderLines", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.Product", b =>
@@ -132,7 +132,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasIndex("StoreId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.Store", b =>
@@ -155,7 +155,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasKey("StoreId");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.User", b =>
@@ -192,7 +192,7 @@ namespace DagligVareLevering.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.BasketItem", b =>
