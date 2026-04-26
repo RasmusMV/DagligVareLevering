@@ -11,19 +11,19 @@ namespace DagligVareLevering.Service
             _dbService = dbService;
         }
 
-        public Task<IEnumerable<Order>> SortById()
+        public async Task<IEnumerable<Order>> SortById()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.OrderId);
         }
 
-        public Task<IEnumerable<Order>> SortByIdDescending()
+        public async Task<IEnumerable<Order>> SortByIdDescending()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderByDescending(x => x.OrderId);
         }
 
-        public Task<IEnumerable<Order>> SortByTotalPrice()
+        public async Task<IEnumerable<Order>> SortByTotalPrice()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.GetTotalPrice());
         }
     }
 }
