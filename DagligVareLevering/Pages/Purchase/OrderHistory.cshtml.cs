@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Numerics;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Order
 {
     public class OrderHistoryModel : PageModel
     {

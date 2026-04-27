@@ -28,7 +28,8 @@ namespace DagligVareLevering.Models
         // OnGet -metoden henter data for indkøbskurven, herunder hvilke varer der er i kurven, og beregner priserne
         public async Task OnGet()
         {
-            int userId = 1; // indtil lennos virker 
+            int userId = 1; // indtil lenn
+                            // os virker 
 
             // Hent varer i kurven for den aktuelle bruger og beregn priser
             await LoadCartData(userId);
