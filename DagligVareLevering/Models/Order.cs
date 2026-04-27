@@ -22,7 +22,7 @@ namespace DagligVareLevering.Models
 
             return total;
         }
-
+      
 
         public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
         {
