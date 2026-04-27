@@ -29,10 +29,14 @@ namespace DagligVareLevering.Pages.Purchase
         {
             int userId = 1;
             // Hent den seneste ordre for den givne bruger
-            CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefault();
+            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
+             .Include(o => o.User)
+             .Include(o => o.OrderLines)
+             .ThenInclude(ol => ol.Product)
+             .Where(o => o.UserId == userId)
+             .OrderByDescending(o => o.TimeOfOrder)
+             .FirstOrDefaultAsync();
+
 
             if (CurrentOrder == null)
                 return;
