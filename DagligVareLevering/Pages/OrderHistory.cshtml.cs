@@ -1,60 +1,29 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 
 namespace DagligVareLevering.Pages
 {
     public class OrderHistoryModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly IService<Order> _dbService;
 
-        public OrderHistoryModel(AppDbContext context)
+        public OrderHistoryModel(IService<Order> context)
         {
-            _context = context;
+            _dbService = context;
         }
         public List<Order> AllOrders { get; set; }
         public decimal GrandTotal { get; set; }
         public int TotalItems { get; set; }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            AllOrders = new List<Order>();
-
-            var order1 = new Order();
-            order1.OrderLines = new List<OrderLine>();
-
-            order1.OrderLines.Add(new OrderLine
-            {
-                Product = new Product("Mælk", 12m, "Letmælk", null),
-                Quantity = 2
-            });
-
-            order1.OrderLines.Add(new OrderLine
-            {
-                Product = new Product("Brød", 20m, "Rugbrød", null),
-                Quantity = 1
-            });
-
-            var order2 = new Order();
-            order2.OrderLines = new List<OrderLine>();
-
-            order2.OrderLines.Add(new OrderLine
-            {
-                Product = new Product("Smør", 18m, "Lurpak", null),
-                Quantity = 1
-            });
-
-            order2.OrderLines.Add(new OrderLine
-            {
-                Product = new Product("Ost", 25m, "Skiveost", null),
-                Quantity = 2
-            });
-
-            AllOrders.Add(order1);
-            AllOrders.Add(order2);
-                      
+            AllOrders = await _dbService.GetAllObjectInfoAsync()
+                .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
             GrandTotal = 0;
             TotalItems = 0;
 

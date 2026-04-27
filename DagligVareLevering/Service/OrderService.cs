@@ -1,4 +1,5 @@
 ﻿using DagligVareLevering.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DagligVareLevering.Service
 {
@@ -25,5 +26,6 @@ namespace DagligVareLevering.Service
         {
             return (await _dbService.GetObjectsAsync()).OrderBy(x => x.GetTotalPrice());
         }
+
     }
 }
