@@ -1,0 +1,87 @@
+﻿@page
+@model DagligVareLevering.Pages.OrderConfirmationModel
+@{
+}
+<h2>Kvittering</h2>
+
+@if (Model.CurrentOrder == null)
+{
+    <div class="empty-message">
+        <p>Ingen ordre fundet.</p>
+    </div>
+}
+else
+{
+    <div class="confirmation-box">
+        <p><strong>Ordre nummer:</strong> @Model.CurrentOrder.OrderId</p>
+        <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
+        <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
+        <p><strong>Adresse:</strong> @Model.CurrentOrder.User.Adress</p>
+        <p><strong>Bestilt:</strong> @Model.CurrentOrder.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
+        <p>
+            <strong>Forventet levering:</strong> 
+            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy") 
+            kl. 
+            @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+        </p>
+    </div>
+
+    <h3>Ordre oversigt</h3>
+
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Produkt</th>
+                <th>Antal</th>
+                <th>Pris</th>
+                <th>Total Pris</th>
+            </tr>
+        </thead>
+        <tbody>
+              @foreach (var orderLine in Model.CurrentOrder.OrderLines)
+            {
+                <tr>
+                    <td>@orderLine.Product.Name</td>
+                    <td>@orderLine.Quantity</td>
+                    <td>@orderLine.Product.Price.ToString("C")</td>
+                    <td>@orderLine.GetLineTotal().ToString("C"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        <p><strong>Samlet pris:</strong> @Model.TotalPrice.ToString("C")</p>
+    </div>
+
+}
+
+<style>
+        h2, h3 {
+        color: #333;
+    }
+    .confirmation-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .order-table th, .order-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    .order-table th {
+        background-color: #f2f2f2;
+    }
+    .total-box {
+        text-align: right;
+        font-size: 1.2em;
+    }
+</style>

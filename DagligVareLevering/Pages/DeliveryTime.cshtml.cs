@@ -1,4 +1,5 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,10 @@ namespace DagligVareLevering.Models
 {
     public class DeliveryTimeModel : PageModel
     {
-        private readonly AppDbContext _context;
-
-        public DeliveryTimeModel(AppDbContext context)
+        private IService<Order> _orderService;
+        public DeliveryTimeModel(IService<Order> orderService)
         {
-            _context = context;
+            _orderService = orderService;
         }
 
         // Liste med ugens 7 dage, som skal vises i tabellen
@@ -35,7 +35,7 @@ namespace DagligVareLevering.Models
         [BindProperty]
         public string SelectedTimeSlot { get; set; }
 
-        public void OnGet(int weekOffset = 0)
+        public async Task OnGet(int weekOffset = 0)
         {
             WeekOffset = weekOffset;
 
@@ -46,11 +46,11 @@ namespace DagligVareLevering.Models
             int userId = 1; // midlertidigt indtil login er lavet
 
             // Hent den aktuelle ordre for brugeren
-            CurrentOrder = _context.Orders
+            CurrentOrder = (await _orderService.GetObjectsAsync())
                 .FirstOrDefault(o => o.UserId == userId);
         }
 
-        public IActionResult OnPostSelectTime(int weekOffset)
+        public async Task<IActionResult> OnPostSelectTime(int weekOffset)
         {
             // Genopbyg data så siden stadig kan vises korrekt efter post
             WeekOffset = weekOffset;
@@ -60,7 +60,7 @@ namespace DagligVareLevering.Models
             int userId = 1; // midlertidigt indtil login er lavet
 
             // Hent den aktuelle ordre
-            CurrentOrder = _context.Orders
+            CurrentOrder = (await _orderService.GetObjectsAsync())
                 .FirstOrDefault(o => o.UserId == userId);
 
             // Hvis der ikke findes en ordre, vis siden igen
@@ -88,11 +88,18 @@ namespace DagligVareLevering.Models
             CurrentOrder.ExpectedDeliveryDate = SelectedDate.Date;
             CurrentOrder.ExpectedDeliveryTime = SelectedDate.Date.Add(startTime);
 
-            // Gem ændringer i databasen
-            _context.SaveChanges();
+            // Opdaterer ordren i databasen
+            await _orderService.UpdateObjectAsync(CurrentOrder);
 
             // Reload siden med samme uge
             return RedirectToPage(new { weekOffset = weekOffset });
+        }
+
+        // Hjælpemetode, så vi ikke gentager de samme linjer i OnGet og OnPost
+        private void LoadCalendarData(int weekOffset)
+        {
+            TimeSlots = GetTimeSlots();
+            WeekDays = GetWeekDays(weekOffset);
         }
 
         private List<DateTime> GetWeekDays(int weekOffset)
@@ -124,6 +131,7 @@ namespace DagligVareLevering.Models
         {
             return new List<string>
             {
+                "08:00-10:00",
                 "10:00-12:00",
                 "12:00-14:00",
                 "14:00-16:00",

@@ -4,12 +4,15 @@
 }
 
 <h2>Vælg leveringstidspunkt</h2>
+
 <div class="week-navigation">
-    <a asp-page="DeliveryTime" asp-route-weekOffset="@(Model.WeekOffset-1)" class="nav-btn">← Forrige uge</a>
-    <span class=" week title">
+    <a href="?weekOffset=@(Model.WeekOffset - 1)" class="nav-btn">← Forrige uge</a>
+
+    <span class="week-title">
         Uge @System.Globalization.ISOWeek.GetWeekOfYear(Model.WeekDays.First())
-    </span> 
-    <a asp-page="/DeliveryTime" aps-route-weekOffset="@(Model.WeekOffset + 1)"class=nav-btn">Næste uge → </a> 
+    </span>
+
+    <a href="?weekOffset=@(Model.WeekOffset + 1)" class="nav-btn">Næste uge →</a>
 </div>
 
 
