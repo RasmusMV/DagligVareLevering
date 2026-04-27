@@ -10,11 +10,12 @@ namespace DagligVareLevering.Pages
 {
     public class OrderHistoryModel : PageModel
     {
-        private readonly IService<Order> _dbService;
-
-        public OrderHistoryModel(IService<Order> context)
+        private IService<Order> _orderService;
+        private IService<OrderLine> _orderLineService;
+        public OrderHistoryModel(IService<Order> orderService, IService<OrderLine> orderLineService)
         {
-            _dbService = context;
+            _orderService = orderService;
+            _orderLineService = orderLineService;
         }
         public List<Order> AllOrders { get; set; }
         public decimal GrandTotal { get; set; }
