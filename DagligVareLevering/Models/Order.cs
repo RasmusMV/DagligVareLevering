@@ -10,6 +10,7 @@ namespace DagligVareLevering.Models
         public Order()
         {
             TimeOfOrder = DateTime.Now;
+            OrderLines = new List<OrderLine>();
         }
 
         public decimal GetTotalPrice()
@@ -23,7 +24,7 @@ namespace DagligVareLevering.Models
 
             return total;
         }
-
+      
 
         public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
         {
@@ -32,6 +33,7 @@ namespace DagligVareLevering.Models
             TimeOfOrder = DateTime.Now;
             ExpectedDeliveryTime = expectedDeliveryTime;
             Adress = adress;
+            OrderLines = new List<OrderLine>();
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
