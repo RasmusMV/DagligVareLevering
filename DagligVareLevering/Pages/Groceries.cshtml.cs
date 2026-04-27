@@ -15,15 +15,16 @@ namespace DagligVareLevering.Pages
 
         private IService<Product> _dbService;
         private IService<BasketItem> _basketService;
-
-        public GroceriesModel(IService<Product> context, IService<BasketItem> basketService)
+        private IService<Models.Store> _storeService;
+        public GroceriesModel(IService<Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
         {
             _dbService = context;
             _basketService = basketService;
+            _storeService = storeService;
         }
         public Product? SelectedProduct { get; set; }
         public Product? ProductStore { get; set; }
-
+        public List<Models.Store> Stores { get; private set; }
 
         public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
 
@@ -32,6 +33,7 @@ namespace DagligVareLevering.Pages
             var products = await _dbService.GetObjectsAsync();
 
             GroupedProducts = products.GroupBy(p => p.Name).ToList();
+            Stores = (await _storeService.GetObjectsAsync()).ToList();
 
             if (id != null)
             {

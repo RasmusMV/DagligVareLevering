@@ -13,7 +13,9 @@
                 @foreach (var item in group)
                 {
                     <div>
-                        <p>@item.Store - @item.Price kr</p>
+                        <p>@item.Information <br />
+                           @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
+                           @item.Price kr</p>
 
 
                         <a asp-page="/Groceries" asp-route-id="@item.ProductId">
