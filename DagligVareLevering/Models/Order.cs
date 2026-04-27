@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DagligVareLevering.Pages;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DagligVareLevering.Models
@@ -53,5 +54,9 @@ namespace DagligVareLevering.Models
 
         [Required, MaxLength(100)]
         public string Adress { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string Status { get; set; } = OrderStatus.Processing;
     }
 }
