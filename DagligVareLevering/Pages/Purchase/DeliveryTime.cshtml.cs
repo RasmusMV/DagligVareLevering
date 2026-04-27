@@ -1,11 +1,12 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace DagligVareLevering.Models
+namespace DagligVareLevering.Pages.Purchase
 {
     public class DeliveryTimeModel : PageModel
     {
