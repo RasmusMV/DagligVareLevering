@@ -17,6 +17,8 @@ namespace DagligVareLevering.Pages.Purchase
 
         public Order? CurrentOrder { get; set; }
         public decimal TotalPrice { get; set; }
+        [BindProperty]
+        public string PaymentMethod { get; set; }
 
         public async Task OnGet()
         {
@@ -54,6 +56,7 @@ namespace DagligVareLevering.Pages.Purchase
                 return RedirectToPage("/Purchase/DeliveryTime");
             }
 
+            CurrentOrder.PaymentMethod = PaymentMethod;
             CurrentOrder.Status = OrderStatus.Processing;
 
             await _orderService.UpdateObjectAsync(CurrentOrder);

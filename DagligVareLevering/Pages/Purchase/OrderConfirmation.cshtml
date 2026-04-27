@@ -17,17 +17,19 @@ else
     <div class="confirmation-box">
         <p><strong>Ordre nummer:</strong> @Model.CurrentOrder.OrderId</p>
         <p><strong>Status:</strong> @Model.CurrentOrder.Status</p>
+        <p><strong>Betaling:</strong> @Model.CurrentOrder.PaymentMethod</p>
         <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
         <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
         <p><strong>Adresse:</strong> @Model.CurrentOrder.User.Adress</p>
         <p><strong>Bestilt:</strong> @Model.CurrentOrder.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
         <p>
-            <strong>Forventet levering:</strong> 
-            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy") 
-            kl. 
+            <strong>Forventet levering:</strong>
+            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+            kl.
             @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
         </p>
     </div>
+
 
     <h3>Ordre oversigt</h3>
 
