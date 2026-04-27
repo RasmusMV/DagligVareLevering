@@ -21,13 +21,14 @@ namespace DagligVareLevering.Pages.Purchase
         public async Task OnGet()
         {
             int userId = 1; // indtil lennos virker
-            // Hent den aktuelle ordre for brugeren, inklusive relaterede data
+                            // Hent den aktuelle ordre for brugeren, inklusive relaterede data
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines)
-                    .ThenInclude(ol => ol.Product)
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefaultAsync();
+            .Include(o => o.OrderLines)
+            .ThenInclude(ol => ol.Product)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.TimeOfOrder)
+            .FirstOrDefaultAsync();
+
 
             if (CurrentOrder != null)
             {
@@ -40,9 +41,12 @@ namespace DagligVareLevering.Pages.Purchase
             int userId = 1; // indtil lennos virker
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                         .Where(o => o.UserId == userId)
-                         .OrderByDescending(o => o.TimeOfOrder)
-                         .FirstOrDefaultAsync();                
+            .Include(o => o.OrderLines)
+            .ThenInclude(ol => ol.Product)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.TimeOfOrder)
+            .FirstOrDefaultAsync();
+
 
 
             if (CurrentOrder == null)

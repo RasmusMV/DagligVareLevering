@@ -52,7 +52,7 @@ namespace DagligVareLevering.Pages.Purchase
                 line.Product = await _productService.GetObjectByIdAsync(line.ProductId);
             }
 
-            TotalPrice = CurrentOrder.OrderLines.Sum(line => line.GetLineTotal());
+            TotalPrice = CurrentOrder.GetTotalPrice();
         }
     }
 }
