@@ -1,0 +1,129 @@
+﻿@page
+@model DagligVareLevering.Pages.Purchase.OrderSummaryModel
+@{
+}
+
+<h2>Gennemse din ordre</h2>
+
+
+@if (Model.CurrentOrder == null)
+{
+    <div class="empty-message">
+        <p>Ingen ordre fundet.</p>
+    </div>
+}
+else
+{
+    <div class="summary-box">
+        <h3>Levering </h3>
+        <p>
+            <strong>Valgt levering:</strong>
+            @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+        </p>
+
+        <a asp-page="/Purchase/DeliveryTime" class="change-link">Ændr leveringstid</a>
+    </div>
+
+    <h3>Varer</h3>
+    <table class="summary-table">
+        <thead>
+                        <tr>
+                <th>Produkt</th>
+                <th>Antal</th>
+                <th>Pris </th>
+                <th>Total Pris</th>
+            </tr
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CurrentOrder.OrderLines)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.GetLineTotal().ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="total-box">
+        <p><strong>Leveringspris:</strong> @Model.CurrentOrder.DeliveryPrice.ToString("C")</p>
+        <p><strong>Samlet pris:</strong> @Model.CurrentOrder.GetTotalPrice().ToString("C")</p>
+    </div>
+
+
+    <form method="post">
+        <button type="submit" class="confirm-btn">Bekræft ordre</button>
+    </form>
+}
+
+<style>
+    h2, h3 {
+        color: #333;
+    }
+
+    .summary-box {
+        background-color: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+    }
+
+    .change-link {
+        display: inline-block;
+        margin-top: 8px;
+        color: #4f46e5;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .change-link:hover {
+            text-decoration: underline;
+        }
+
+    .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .summary-table th {
+            background-color: #f4f4f4;
+        }
+
+    .total-box {
+        text-align: right;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .confirm-btn {
+        float: right;
+        padding: 12px 22px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+        .confirm-btn:hover {
+            background-color: #4338ca;
+        }
+</style>
