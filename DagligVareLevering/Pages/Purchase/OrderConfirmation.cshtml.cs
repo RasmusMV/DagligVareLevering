@@ -5,23 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Purchase
 {
     public class OrderConfirmationModel : PageModel
     {
         // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
-        private IService<Order> _orderService;
+        private IService<Models.Order> _orderService;
         private IService<Product> _productService;
         private IService<OrderLine> _orderLineService;
 
-        public OrderConfirmationModel(IService<Order> ordreService, IService<OrderLine> orderLineService, IService<Product> productService)
+        public OrderConfirmationModel(IService<Models.Order> ordreService, IService<OrderLine> orderLineService, IService<Product> productService)
         {
             _orderService = ordreService;
             _orderLineService = orderLineService;
             _productService = productService;
         }
 
-        public Order? CurrentOrder { get; set; }
+        public Models.Order? CurrentOrder { get; set; }
         public decimal TotalPrice { get; set; }
 
         // OnGet -metoden henter data for den aktuelle ordre, herunder ordrelinjer og tilhørende produkter, og beregner den samlede pris
@@ -29,10 +29,14 @@ namespace DagligVareLevering.Pages
         {
             int userId = 1;
             // Hent den seneste ordre for den givne bruger
-            CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefault();
+            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
+             .Include(o => o.User)
+             .Include(o => o.OrderLines)
+             .ThenInclude(ol => ol.Product)
+             .Where(o => o.UserId == userId)
+             .OrderByDescending(o => o.TimeOfOrder)
+             .FirstOrDefaultAsync();
+
 
             if (CurrentOrder == null)
                 return;
