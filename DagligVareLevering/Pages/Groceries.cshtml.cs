@@ -28,17 +28,30 @@ namespace DagligVareLevering.Pages
 
         public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
 
-        public async Task OnGetAsync(int? id, string? storeName)
+      
+        public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
         {
             var products = await _dbService.GetObjectsAsync();
 
+            // filtrer før gruppering
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
+            }
+
+            if (storeId.HasValue)
+            {
+                products = products.Where(p => p.StoreId == storeId.Value).ToList();
+            }
+
+            // Gruppér EFTER filtrering
             GroupedProducts = products.GroupBy(p => p.Name).ToList();
+
             Stores = (await _storeService.GetObjectsAsync()).ToList();
 
             if (id != null)
             {
-                SelectedProduct = products
-                    .FirstOrDefault(p => p.ProductId == id);
+                SelectedProduct = products.FirstOrDefault(p => p.ProductId == id);
             }
 
             if (!string.IsNullOrEmpty(storeName))
@@ -46,10 +59,7 @@ namespace DagligVareLevering.Pages
                 ProductStore = products
                     .FirstOrDefault(p => p.Store != null && p.Store.Name == storeName);
             }
-            
-
         }
-        
         public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
         {
             int userId = 1;
