@@ -18,6 +18,7 @@ else
         <h3>Levering </h3>
         <p>
             <strong>Valgt levering:</strong>
+            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy") kl.
             @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
         </p>
 
@@ -27,7 +28,7 @@ else
     <h3>Varer</h3>
     <table class="summary-table">
         <thead>
-                        <tr>
+            <tr>
                 <th>Produkt</th>
                 <th>Antal</th>
                 <th>Pris </th>
@@ -49,13 +50,28 @@ else
 
     <div class="total-box">
         <p><strong>Leveringspris:</strong> @Model.CurrentOrder.DeliveryPrice.ToString("C")</p>
-        <p><strong>Samlet pris:</strong> @Model.CurrentOrder.GetTotalPrice().ToString("C")</p>
+        <p class="grand-total"><strong>Samlet pris:</strong> @Model.CurrentOrder.GetTotalPrice().ToString("C")</p>
     </div>
 
 
-    <form method="post">
+    <form method="post" class="payment-form">
+        <div class="payment-box">
+            <h3>Betaling</h3>
+
+            <label class="payment-option">
+                <input type="radio" asp-for="PaymentMethod" value="MobilePay" checked />
+                <span>MobilePay</span>
+            </label>
+
+            <label class="payment-option">
+                <input type="radio" asp-for="PaymentMethod" value="Kort" />
+                <span>Kort</span>
+            </label>
+        </div>
+
         <button type="submit" class="confirm-btn">Bekræft ordre</button>
     </form>
+
 }
 
 <style>
@@ -126,4 +142,23 @@ else
         .confirm-btn:hover {
             background-color: #4338ca;
         }
+
+    .payment-box {
+        background-color: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .payment-option {
+        display: block;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+        .payment-option input {
+            margin-right: 8px;
+        }
+
 </style>

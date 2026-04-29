@@ -49,7 +49,10 @@ namespace DagligVareLevering.Pages.Purchase
 
             // Hent den aktuelle ordre for brugeren
             CurrentOrder = (await _orderService.GetObjectsAsync())
-                .FirstOrDefault(o => o.UserId == userId);
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.TimeOfOrder)
+            .FirstOrDefault();
+
         }
 
         public async Task<IActionResult> OnPostSelectTime(int weekOffset)
@@ -63,7 +66,10 @@ namespace DagligVareLevering.Pages.Purchase
 
             // Hent den aktuelle ordre
             CurrentOrder = (await _orderService.GetObjectsAsync())
-                .FirstOrDefault(o => o.UserId == userId);
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.TimeOfOrder)
+            .FirstOrDefault();
+
 
             // Hvis der ikke findes en ordre, vis siden igen
             if (CurrentOrder == null)
