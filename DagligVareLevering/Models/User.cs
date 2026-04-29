@@ -41,7 +41,7 @@ namespace DagligVareLevering.Models
 
         public virtual ICollection<Order>? OrderHistory { get; set; }
 
-
+        public bool WantsOfferEmails { get; set; }
 
     }
 }
