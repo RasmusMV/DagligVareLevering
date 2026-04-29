@@ -57,16 +57,18 @@ else
         <p class="grand-total"><strong>Samlet pris:</strong> @Model.CurrentOrder.GetTotalPrice().ToString("C")</p>
     </div>
 
-    <div class="summary-box">
-        <h3>Leveringsadresse</h3>
 
-        <label for="DeliveryAddress">Adresse</label>
-        <input asp-for="DeliveryAddress" class="address-input" />
-        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
-    </div>
-
-    <!-- Formularen sender den valgte betalingsform til OnPostAsync-->
+    <!-- Formularen sender leveringsadresse og betalingsform til OnPostAsync -->
     <form method="post" class="payment-form">
+
+        <div class="summary-box">
+            <h3>Leveringsadresse</h3>
+
+            <label for="DeliveryAddress">Leveringsadresse til denne ordre</label>
+            <input asp-for="DeliveryAddress" class="address-input" />
+            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        </div>
+
         <div class="payment-box">
             <h3>Betaling</h3>
 

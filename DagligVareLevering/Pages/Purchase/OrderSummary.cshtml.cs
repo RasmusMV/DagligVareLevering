@@ -20,9 +20,11 @@ namespace DagligVareLevering.Pages.Purchase
         public Order? CurrentOrder { get; set; }
         public decimal TotalPrice { get; set; }
         [BindProperty]
-        public string PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
+        // Gemmer leveringsadressen fra formularen, hvis brugeren ændrer den
         [BindProperty]
-        public string DeliveryAddress { get; set; }
+        public string DeliveryAddress { get; set; } = string.Empty;
+
 
 
         // Henter den nyeste ordre for brugeren og viser den som et resume
@@ -66,10 +68,16 @@ namespace DagligVareLevering.Pages.Purchase
                 return RedirectToPage("/Purchase/DeliveryTime");
             }
 
-            CurrentOrder.Adress = DeliveryAddress;
-            CurrentOrder.PaymentMethod = PaymentMethod;
-            CurrentOrder.Status = OrderStatus.Processing;
+            // Opdaterer kun leveringsadressen, hvis brugeren har skrevet en ny adresse
+            if (!string.IsNullOrWhiteSpace(DeliveryAddress))
+            {
+                CurrentOrder.Adress = DeliveryAddress;
+            }
 
+            CurrentOrder.PaymentMethod = PaymentMethod;
+            CurrentOrder.Status = OrderStatus.Received;
+
+            // Gemmer ændringerne i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
             return RedirectToPage("/Purchase/OrderConfirmation");
 
