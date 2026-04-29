@@ -1,0 +1,15 @@
+﻿@page
+@model LoginModel
+
+<form method="post">
+    <input asp-for="Email" placeholder="Email" />
+    <input asp-for="Password" type="password" placeholder="Password" />
+
+    <button type="submit">Login</button>
+
+
+    <p>@Model.ErrorMessage</p>
+</form>  
+<a asp-page="/Register">
+<button type="button">Opret Bruger</button>
+</a>
