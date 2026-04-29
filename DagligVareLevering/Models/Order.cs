@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DagligVareLevering.Pages;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DagligVareLevering.Models
@@ -14,16 +15,8 @@ namespace DagligVareLevering.Models
 
         public decimal GetTotalPrice()
         {
-            decimal total = 0;
-
-            foreach (var line in OrderLines)
-            {
-                total += line.GetLineTotal();
-            }
-
-            return total;
+            return OrderLines.Sum(line => line.GetLineTotal()) + DeliveryPrice;
         }
-      
 
         public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
         {
@@ -50,8 +43,15 @@ namespace DagligVareLevering.Models
         public DateTime ExpectedDeliveryTime { get; set; }
 
         public DateTime ExpectedDeliveryDate { get; set; }
+        
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal DeliveryPrice { get; set; }
 
         [Required, MaxLength(100)]
         public string Adress { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string Status { get; set; } = OrderStatus.Processing;
     }
 }

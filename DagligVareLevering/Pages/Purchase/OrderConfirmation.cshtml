@@ -1,5 +1,5 @@
 ﻿@page
-@model DagligVareLevering.Pages.OrderConfirmationModel
+@model DagligVareLevering.Pages.Purchase.OrderConfirmationModel
 @{
 }
 <h2>Kvittering</h2>
@@ -12,8 +12,11 @@
 }
 else
 {
+    var order = Model.CurrentOrder;
+
     <div class="confirmation-box">
         <p><strong>Ordre nummer:</strong> @Model.CurrentOrder.OrderId</p>
+        <p><strong>Status:</strong> @Model.CurrentOrder.Status</p>
         <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
         <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
         <p><strong>Adresse:</strong> @Model.CurrentOrder.User.Adress</p>
@@ -44,7 +47,7 @@ else
                     <td>@orderLine.Product.Name</td>
                     <td>@orderLine.Quantity</td>
                     <td>@orderLine.Product.Price.ToString("C")</td>
-                    <td>@orderLine.GetLineTotal().ToString("C"))</td>
+                    <td>@orderLine.GetLineTotal().ToString("C")</td>
                 </tr>
             }
         </tbody>

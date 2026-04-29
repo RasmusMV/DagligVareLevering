@@ -1,11 +1,13 @@
+
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace DagligVareLevering.Models
+namespace DagligVareLevering.Pages.Purchase
 {
     public class DeliveryTimeModel : PageModel
     {
@@ -82,7 +84,7 @@ namespace DagligVareLevering.Models
 
             // Laver start- og sluttid om til TimeSpan
             TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
-            TimeSpan endTime = TimeSpan.Parse(splitTime[1]);
+            //TimeSpan endTime = TimeSpan.Parse(splitTime[1]);
 
             // Gemmer intervallet på ordren
             CurrentOrder.ExpectedDeliveryDate = SelectedDate.Date;
@@ -92,7 +94,7 @@ namespace DagligVareLevering.Models
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
             // Reload siden med samme uge
-            return RedirectToPage(new { weekOffset = weekOffset });
+            return RedirectToPage("/Purchase/OrderSummary");
         }
 
         // Hjælpemetode, så vi ikke gentager de samme linjer i OnGet og OnPost
