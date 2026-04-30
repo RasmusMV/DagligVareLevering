@@ -18,10 +18,10 @@ namespace DagligVareLevering.Pages
         {
             _context = context;
         }
-        public Product? SelectedProduct { get; set; }
-        public Product? ProductStore { get; set; }
+        public Models.Product? SelectedProduct { get; set; }
+        public Models.Product? ProductStore { get; set; }
 
-        public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
+        public IList<IGrouping<string, Models.Product>> GroupedProducts { get; set; }
 
         public void OnGet(int? id, string? storeName)
         {

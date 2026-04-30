@@ -11,10 +11,10 @@ namespace DagligVareLevering.Pages.Purchase
     {
         // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
         private IService<Models.Order> _orderService;
-        private IService<Product> _productService;
+        private IService<Models.Product> _productService;
         private IService<OrderLine> _orderLineService;
 
-        public OrderConfirmationModel(IService<Models.Order> ordreService, IService<OrderLine> orderLineService, IService<Product> productService)
+        public OrderConfirmationModel(IService<Models.Order> ordreService, IService<OrderLine> orderLineService, IService<Models.Product> productService)
         {
             _orderService = ordreService;
             _orderLineService = orderLineService;
