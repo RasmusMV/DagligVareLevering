@@ -37,69 +37,79 @@ namespace DagligVareLevering.Pages.Purchase
         [BindProperty]
         public string SelectedTimeSlot { get; set; }
 
-        public async Task OnGet(int weekOffset = 0)
+        // Henter kalenderdata og den aktuelle ordre, når siden indlæses
+        public async Task<IActionResult> OnGet(int weekOffset = 0)
         {
             WeekOffset = weekOffset;
-
-            // Hent tider og dage til visning på siden
+            // Gør dage og tidsintervaller klar til at blive vist i kalenderen
             TimeSlots = GetTimeSlots();
             WeekDays = GetWeekDays(weekOffset);
 
-            int userId = 1; // midlertidigt indtil login er lavet
+            int userId = 1; // midlertidigt indtil login virker
 
-            // Hent den aktuelle ordre for brugeren
+            // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
             CurrentOrder = (await _orderService.GetObjectsAsync())
-            .Where(o => o.UserId == userId)
-            .OrderByDescending(o => o.TimeOfOrder)
-            .FirstOrDefault();
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.TimeOfOrder)
+                .FirstOrDefault();
 
-        }
-
-        public async Task<IActionResult> OnPostSelectTime(int weekOffset)
-        {
-            // Genopbyg data så siden stadig kan vises korrekt efter post
-            WeekOffset = weekOffset;
-            TimeSlots = GetTimeSlots();
-            WeekDays = GetWeekDays(weekOffset);
-
-            int userId = 1; // midlertidigt indtil login er lavet
-
-            // Hent den aktuelle ordre
-            CurrentOrder = (await _orderService.GetObjectsAsync())
-            .Where(o => o.UserId == userId)
-            .OrderByDescending(o => o.TimeOfOrder)
-            .FirstOrDefault();
-
-
-            // Hvis der ikke findes en ordre, vis siden igen
             if (CurrentOrder == null)
             {
-                ModelState.AddModelError(string.Empty, "No active order was found.");
-                return Page();
+                // Sender brugeren tilbage til kurven, hvis der ikke findes en aktiv ordre
+                TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
+                return RedirectToPage("/Purchase/Cart");
             }
 
-            // Tjek at det valgte interval findes i listen over gyldige intervaller
+            return Page();
+        }
+
+        // Kører når kunden vælger et leveringstidspunkt i tabellen
+        public async Task<IActionResult> OnPostSelectTime(int weekOffset)
+        {
+            WeekOffset = weekOffset;
+            // Genopbygger kalenderdata, så siden stadig kan vises korrekt ved fejl
+            TimeSlots = GetTimeSlots();
+            WeekDays = GetWeekDays(weekOffset);
+
+            int userId = 1; // midlertidigt indtil login virker
+
+            // Henteer den nyeste ordre for brugeren
+            CurrentOrder = (await _orderService.GetObjectsAsync())
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.TimeOfOrder)
+                .FirstOrDefault();
+
+            if (CurrentOrder == null)
+            {
+                // Sender brugeren tilbage til kurven, hvis orderen ikke fines
+                TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
+                return RedirectToPage("/Purchase/Cart");
+            }
+
             if (!TimeSlots.Contains(SelectedTimeSlot))
             {
-                ModelState.AddModelError(string.Empty, "Please select a valid delivery interval.");
+                // Sikrer at kunden kun kan vælge et tidsinterval fra listen
+                ModelState.AddModelError(string.Empty, "Vælg venligst et gyldigt leveringstidspunkt.");
                 return Page();
             }
 
-            // Splitter fx "10:00-12:00" op i to dele
+            if (IsSlotUnavailable(SelectedDate, SelectedTimeSlot))
+            {
+                // Forhindrer valg af datoer og tidspunkter, der allerede er passeret
+                ModelState.AddModelError(string.Empty, "Du kan ikke vælge et leveringstidspunkt, der allerede er passeret.");
+                return Page();
+            }
+
             string[] splitTime = SelectedTimeSlot.Split('-');
-
-            // Laver start- og sluttid om til TimeSpan
             TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
-            //TimeSpan endTime = TimeSpan.Parse(splitTime[1]);
 
-            // Gemmer intervallet på ordren
+            // Gemmer valgt dato og starttidspunkt på orderen
             CurrentOrder.ExpectedDeliveryDate = SelectedDate.Date;
             CurrentOrder.ExpectedDeliveryTime = SelectedDate.Date.Add(startTime);
 
-            // Opdaterer ordren i databasen
+            // Opdaterer orderen i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
-            // Reload siden med samme uge
             return RedirectToPage("/Purchase/OrderSummary");
         }
 
@@ -110,6 +120,41 @@ namespace DagligVareLevering.Pages.Purchase
             WeekDays = GetWeekDays(weekOffset);
         }
 
+        // Tjekker om et leveringstidspunkt skal deaktiveres i tabellen
+        public bool IsSlotUnavailable(DateTime date, string timeSlot)
+        {
+            if (date.Date < DateTime.Today)
+            {
+                return true;
+            }
+
+            string[] splitTime = timeSlot.Split('-');
+            TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
+
+            if (date.Date == DateTime.Today && startTime <= DateTime.Now.TimeOfDay)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Tjekker om et tidspunkt er det tidspunkt, brugeren allerede har valgt
+        public bool IsSelectedSlot(DateTime date, string timeSlot)
+        {
+            if (CurrentOrder == null)
+            {
+                return false;
+            }
+
+            string[] splitTime = timeSlot.Split('-');
+            TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
+
+            return CurrentOrder.ExpectedDeliveryDate.Date == date.Date
+                && CurrentOrder.ExpectedDeliveryTime.TimeOfDay == startTime;
+        }
+
+        // Finder mandag i den valgte uge og retunerer ugens 7 dage
         private List<DateTime> GetWeekDays(int weekOffset)
         {
             DateTime today = DateTime.Today;
@@ -135,6 +180,7 @@ namespace DagligVareLevering.Pages.Purchase
             return days;
         }
 
+        // Returnerer en liste med faste leveringstidspunkter, som skal vises i tabellen
         private List<string> GetTimeSlots()
         {
             return new List<string>
