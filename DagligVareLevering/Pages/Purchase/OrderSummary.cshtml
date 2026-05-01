@@ -14,6 +14,7 @@
 }
 else
 {
+    <!-- Viser det leveringstidspunkt brugeren har valgt på DeliveryTime-siden-->
     <div class="summary-box">
         <h3>Levering </h3>
         <p>
@@ -25,7 +26,9 @@ else
         <a asp-page="/Purchase/DeliveryTime" class="change-link">Ændr leveringstid</a>
     </div>
 
+
     <h3>Varer</h3>
+    <!-- Viser alle ordrelinjer med produkt, antal og pris-->
     <table class="summary-table">
         <thead>
             <tr>
@@ -33,7 +36,7 @@ else
                 <th>Antal</th>
                 <th>Pris </th>
                 <th>Total Pris</th>
-            </tr
+            </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.CurrentOrder.OrderLines)
@@ -48,13 +51,24 @@ else
         </tbody>
     </table>
 
+    <!-- Viser varenes pris, leveringspris og den samlede pris-->
     <div class="total-box">
         <p><strong>Leveringspris:</strong> @Model.CurrentOrder.DeliveryPrice.ToString("C")</p>
         <p class="grand-total"><strong>Samlet pris:</strong> @Model.CurrentOrder.GetTotalPrice().ToString("C")</p>
     </div>
 
 
+    <!-- Formularen sender leveringsadresse og betalingsform til OnPostAsync -->
     <form method="post" class="payment-form">
+
+        <div class="summary-box">
+            <h3>Leveringsadresse</h3>
+
+            <label for="DeliveryAddress">Leveringsadresse til denne ordre</label>
+            <input asp-for="DeliveryAddress" class="address-input" />
+            <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        </div>
+
         <div class="payment-box">
             <h3>Betaling</h3>
 
@@ -71,6 +85,7 @@ else
 
         <button type="submit" class="confirm-btn">Bekræft ordre</button>
     </form>
+
 
 }
 
@@ -160,5 +175,15 @@ else
         .payment-option input {
             margin-right: 8px;
         }
+
+    .address-input {
+        width: 100%;
+        max-width: 500px;
+        padding: 10px 12px;
+        margin-top: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+    }
 
 </style>

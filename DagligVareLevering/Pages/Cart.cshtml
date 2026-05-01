@@ -1,75 +1,80 @@
 ﻿@page
 @model DagligVareLevering.Models.CartModel
 
-<h2>My Cart</h2>
+<h2>Min Kurv</h2>
 
 @if (Model.BasketItems.Count == 0)
 {
     <div class="empty-cart">
-        <p>Your cart is empty.</p>
+        <p>Din kurv er tom.</p>
     </div>
 }
 else
 {
-    <table class="cart-table">
-        <thead>
-            <tr>
-                <th>Produkt</th>
-                <th>Antal</th>
-                <th>Pris </th>
-                <th>Total Pris</th>
-                <th>Handlinger</th>
-            </tr>
-        </thead>
-        <tbody>
+    <!-- Viser kurvens varer og ordreoversigt i et samlet layout -->
+    <div class="cart-layout">
+        <div class="cart-items">
             @foreach (var item in Model.BasketItems)
             {
-                <tr>
-                    <td>@item.Product.Name</td>
+                <!-- Viser en enkelt vare i kurven -->
+                <div class="cart-item">
+                    <div class="item-main">
+                        <h3>@item.Product.Name</h3>
+                        <p class="item-price">@item.Product.Price.ToString("C") pr. stk.</p>
+                    </div>
 
-                    <td>
+                    <div class="item-actions">
                         <div class="quantity-box">
                             <form method="post" asp-page-handler="Decrease">
                                 <input type="hidden" name="productId" value="@item.ProductId" />
-                                <button type="submit" class="btn-small">-</button>
+                                <button type="submit" class="quantity-btn">-</button>
                             </form>
 
                             <span class="quantity">@item.Quantity</span>
 
                             <form method="post" asp-page-handler="Increase">
                                 <input type="hidden" name="productId" value="@item.ProductId" />
-                                <button type="submit" class="btn-small">+</button>
+                                <button type="submit" class="quantity-btn">+</button>
                             </form>
                         </div>
-                    </td>
 
-                    <td>@item.Product.Price.ToString("C")</td>
-                    <td>@((item.Product.Price * item.Quantity).ToString("C"))</td>
+                        <p class="line-total">@((item.Product.Price * item.Quantity).ToString("C"))</p>
 
-                    <td>
                         <form method="post" asp-page-handler="Remove">
                             <input type="hidden" name="productId" value="@item.ProductId" />
-                            <button type="submit" class="btn-remove">Remove</button>
+                            <button type="submit" class="remove-btn">Fjern</button>
                         </form>
-                    </td>
-                </tr>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+
+        <!-- Viser samlet pris og knap til næste trin i checkout -->
+        <aside class="cart-summary">
+            <h3>Oversigt</h3>
+
+            <div class="summary-row">
+                <span>Varer</span>
+                <strong>@Model.ItemsTotalPrice.ToString("C")</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Levering</span>
+                <strong>@Model.DeliveryPrice.ToString("C")</strong>
+            </div>
+
+            <div class="summary-row summary-total">
+                <span>Total</span>
+                <strong>@Model.TotalWithDelivery.ToString("C")</strong>
+            </div>
+
+            <form method="post" asp-page-handler="Checkout" class="checkout-actions">
+                <button type="submit" class="checkout-btn">Fortsæt til levering →</button>
+            </form>
+        </aside>
+    </div>
 }
 
-<div class="cart-total">
-    <p><strong>Varenes samlet pris:</strong> @Model.ItemsTotalPrice.ToString("C")</p>
-    <p><strong>Leveringspris:</strong> @Model.DeliveryPrice.ToString("C")</p>
-    <p class="grand-total"><strong>Samlet pris:</strong> @Model.TotalWithDelivery.ToString("C")</p>
-</div>
-
-@if (Model.BasketItems.Count > 0)
-{
-    <form method="post" asp-page-handler="Checkout" class="checkout-actions">
-        <button type="submit" class="checkout-btn">Fortsæt til levering →</button>
-    </form>
-}
 
 
 <style>
@@ -78,32 +83,6 @@ else
         color: #333;
     }
 
-    .cart-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background-color: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-        .cart-table th {
-            background-color: #f4f4f4;
-            text-align: left;
-            padding: 12px;
-        }
-
-        .cart-table td {
-            padding: 12px;
-            border-top: 1px solid #ddd;
-            vertical-align: middle;
-        }
-
-        .cart-table tr:hover {
-            background-color: #f9f9f9;
-        }
-
     .empty-cart {
         padding: 20px;
         background-color: #f8f8f8;
@@ -111,10 +90,45 @@ else
         color: #666;
     }
 
-    .cart-total {
-        margin-top: 20px;
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .cart-items {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .cart-item {
+        background-color: white;
+        padding: 16px 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+    }
+
+    .item-main h3 {
+        margin: 0 0 6px 0;
+        color: #333;
         font-size: 18px;
-        text-align: right;
+    }
+
+    .item-price {
+        margin: 0;
+        color: #666;
+    }
+
+    .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
     }
 
     .quantity-box {
@@ -123,86 +137,119 @@ else
         gap: 8px;
     }
 
-    .quantity {
-        font-weight: bold;
-        min-width: 20px;
-        text-align: center;
-    }
-
-    .btn-small {
-        padding: 4px 10px;
-        border-radius: 4px;
-        background-color: #6c757d;
-        color: white;
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
         border: none;
+        border-radius: 6px;
+        background-color: #e5e7eb;
         cursor: pointer;
+        font-weight: 700;
     }
 
-        .btn-small:hover {
-            opacity: 0.85;
+        .quantity-btn:hover {
+            background-color: #c7d2fe;
         }
 
-    .btn-remove {
-        padding: 6px 12px;
-        border-radius: 6px;
-        background-color: #d9534f;
-        color: white;
-        border: none;
-        cursor: pointer;
+    .quantity {
+        min-width: 24px;
+        text-align: center;
+        font-weight: 700;
     }
 
-        .btn-remove:hover {
-            opacity: 0.85;
+    .line-total {
+        min-width: 80px;
+        text-align: right;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .remove-btn {
+        padding: 7px 12px;
+        border: none;
+        border-radius: 6px;
+        background-color: #fee2e2;
+        color: #991b1b;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+        .remove-btn:hover {
+            background-color: #fecaca;
+        }
+
+    .cart-summary {
+        background-color: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        position: sticky;
+        top: 20px;
+    }
+
+        .cart-summary h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+    }
+
+    .summary-total {
+        border-top: 1px solid #ddd;
+        padding-top: 12px;
+        margin-top: 12px;
+        font-size: 18px;
+    }
+
+    .checkout-actions {
+        display: block;
+        margin-top: 18px;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 12px 18px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+        .checkout-btn:hover {
+            background-color: #4338ca;
         }
 
     form {
         display: inline;
     }
-    
-    .cart-total{
-        margin-top: 20px;
-        margin-left: auto;
-        width: 280px;
-        background-color: #f8f8f8;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
 
-    .cart-total p {
-        margin: 8px 0;
-            font-size: 16px;
-    }
+    @@media (max-width: 800px) {
+        .cart-layout {
+            grid-template-columns: 1fr;
+        }
 
-    .grand-total {
-        margin-top: 12px;
-        font-size: 18px;   
-        color: #222;
-    }
+        .cart-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-    .checkout-actions {
-        margin-top: 24px;
-        text-align: right;
-    }
+        .item-actions {
+            width: 100%;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
 
-    .checkout-actions .checkout-btn {
-            display: inline-block;
-            padding: 14px 24px;
-            background-color: #4f46e5;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
-            transition: 0.2s ease;
+        .cart-summary {
+            position: static;
+        }
     }
-
-            .checkout-actions .checkout-btn:hover {
-                background-color: #4338ca;
-                color: white;
-                transform: translateY(-1px);
-                box-shadow: 0 6px 14px rgba(79, 70, 229, 0.4);
-            }
 
 </style>

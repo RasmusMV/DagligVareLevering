@@ -12,81 +12,155 @@
 }
 else
 {
-    var order = Model.CurrentOrder;
+    <!-- Kvitteringsboksen samler alle oplysninger om den gennemførte ordre -->
+    <div class="receipt-box">
+        <div class="receipt-header">
+            <div>
+                <h3>Ordrebekræftelse</h3>
+                <p>Tak for din ordre</p>
+            </div>
 
-    <div class="confirmation-box">
-        <p><strong>Ordre nummer:</strong> @Model.CurrentOrder.OrderId</p>
-        <p><strong>Status:</strong> @Model.CurrentOrder.Status</p>
-        <p><strong>Betaling:</strong> @Model.CurrentOrder.PaymentMethod</p>
-        <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
-        <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
-        <p><strong>Adresse:</strong> @Model.CurrentOrder.User.Adress</p>
-        <p><strong>Bestilt:</strong> @Model.CurrentOrder.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
-        <p>
-            <strong>Forventet levering:</strong>
-            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
-            kl.
-            @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
-        </p>
-    </div>
+            <div class="receipt-order-number">
+                <span>Ordre</span>
+                <strong>#@Model.CurrentOrder.OrderId</strong>
+            </div>
+        </div>
 
+        <!-- Viser kundens leverings- og betalingsoplysninger -->
+        <div class="receipt-info">
+            <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
+            <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
+            <p><strong>Adresse:</strong> @Model.CurrentOrder.Adress</p>
+            <p>
+                <strong>Tidspunkt:</strong>
+                @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+                kl. @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+            </p>
+            <p><strong>Betaling:</strong> @Model.CurrentOrder.PaymentMethod</p>
+            <p><strong>Status:</strong> @Model.CurrentOrder.Status</p>
+        </div>
 
-    <h3>Ordre oversigt</h3>
+        <hr />
 
-    <table class="order-table">
-        <thead>
-            <tr>
-                <th>Produkt</th>
-                <th>Antal</th>
-                <th>Pris</th>
-                <th>Total Pris</th>
-            </tr>
-        </thead>
-        <tbody>
-              @foreach (var orderLine in Model.CurrentOrder.OrderLines)
-            {
+        <h4>Oversigt</h4>
+
+        <!-- Viser alle varer i ordren -->
+        <table class="receipt-table">
+            <thead>
                 <tr>
-                    <td>@orderLine.Product.Name</td>
-                    <td>@orderLine.Quantity</td>
-                    <td>@orderLine.Product.Price.ToString("C")</td>
-                    <td>@orderLine.GetLineTotal().ToString("C")</td>
+                    <th>Vare</th>
+                    <th>Antal</th>
+                    <th>Pris</th>
+                    <th>Total</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var orderLine in Model.CurrentOrder.OrderLines)
+                {
+                    <tr>
+                        <td>@orderLine.Product.Name</td>
+                        <td>@orderLine.Quantity</td>
+                        <td>@orderLine.Product.Price.ToString("C")</td>
+                        <td>@orderLine.GetLineTotal().ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    <div class="total-box">
-        <p><strong>Samlet pris:</strong> @Model.TotalPrice.ToString("C")</p>
+        <!-- Viser prisoversigt inklusiv levering -->
+        <div class="receipt-total">
+            <p><span>Levering:</span> <strong>@Model.CurrentOrder.DeliveryPrice.ToString("C")</strong></p>
+            <p class="grand-total"><span>Samlet:</span> <strong>@Model.TotalPrice.ToString("C")</strong></p>
+        </div>
     </div>
-
 }
 
 <style>
-        h2, h3 {
-        color: #333;
-    }
-    .confirmation-box {
+    .receipt-box {
+        max-width: 760px;
+        margin: 20px auto;
         background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow:0 2px 8px rgba(0,0,0,0.08);
-        margin-bottom: 25px;
+        padding: 28px;
+        border-radius: 8px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.10);
     }
-    .order-table {
-        width: 100%;
-        border-collapse: collapse;
+
+    .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+        .receipt-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .receipt-header p {
+            margin-top: 6px;
+            color: #666;
+        }
+
+    .receipt-order-number {
+        text-align: right;
+    }
+
+        .receipt-order-number span {
+            display: block;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .receipt-order-number strong {
+            font-size: 22px;
+            color: #333;
+        }
+
+    .receipt-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 24px;
         margin-bottom: 20px;
     }
-    .order-table th, .order-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: left;
+
+        .receipt-info p {
+            margin: 4px 0;
+        }
+
+    .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
     }
-    .order-table th {
-        background-color: #f2f2f2;
+
+        .receipt-table th,
+        .receipt-table td {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .receipt-table th {
+            background-color: #f4f4f4;
+        }
+
+    .receipt-total {
+        margin-top: 22px;
+        margin-left: auto;
+        width: 260px;
     }
-    .total-box {
-        text-align: right;
-        font-size: 1.2em;
-    }
+
+        .receipt-total p {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .receipt-total .grand-total {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-size: 18px;
+        }
+
 </style>
