@@ -2,7 +2,15 @@
 @using DagligVareLevering.Models
 @model DagligVareLevering.Pages.Purchase.TrackOrderModel
 
+
 <h2>Følg din ordre</h2>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="status-message">
+        @TempData["StatusMessage"]
+    </div>
+}
 
 @if (Model.CurrentOrder == null)
 {
@@ -49,6 +57,18 @@ else
                 <p>Leveret</p>
             </div>
         </div>
+
+        <!-- Giver kunden mulighed for at annullere ordren, hvis den ikke er for langt i processen -->
+        @if (Model.CanCancelOrder())
+        {
+            <form method="post" asp-page-handler="Cancel" class="cancel-form">
+                <button type="submit" class="cancel-btn">Annuller ordre</button>
+            </form>
+        }
+        else if (Model.CurrentOrder.Status == OrderStatus.Cancelled)
+        {
+            <p class="cancelled-message">Ordren er annulleret.</p>
+        }
     </div>
 }
 
@@ -56,6 +76,13 @@ else
     h2 {
         margin-bottom: 20px;
         color: #222;
+    }
+
+    .empty-message {
+        padding: 18px;
+        background-color: #f8f8f8;
+        border-radius: 8px;
+        color: #666;
     }
 
     .tracking-box {
@@ -122,6 +149,42 @@ else
             .tracking-step.completed span {
                 background-color: #4f46e5;
             }
+
+    .cancel-form {
+        margin-top: 24px;
+        text-align: right;
+    }
+
+    .cancel-btn {
+        padding: 10px 16px;
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .cancel-btn:hover {
+            background-color: #fecaca;
+        }
+
+    .cancelled-message {
+        margin-top: 20px;
+        padding: 12px;
+        background-color: #f3f4f6;
+        border-radius: 8px;
+        color: #555;
+        font-weight: 600;
+    }
+
+    .status-message {
+        margin-bottom: 16px;
+        padding: 12px;
+        background-color: #eef2ff;
+        color: #312e81;
+        border-radius: 8px;
+    }
 
     @@media (max-width: 700px) {
         .tracking-steps {
