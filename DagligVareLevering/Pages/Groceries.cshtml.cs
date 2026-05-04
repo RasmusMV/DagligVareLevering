@@ -26,7 +26,7 @@ namespace DagligVareLevering.Pages
         public Product? ProductStore { get; set; }
         public List<Models.Store> Stores { get; private set; }
 
-        public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
+        public IList<IGrouping<string, Models.Product>> GroupedProducts { get; set; }
 
       
         public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
