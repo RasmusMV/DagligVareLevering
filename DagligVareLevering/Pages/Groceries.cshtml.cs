@@ -32,7 +32,7 @@ namespace DagligVareLevering.Pages
         public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
         {
             var products = await _dbService.GetObjectsAsync();
-
+            
             // filtrer før gruppering
             if (maxPrice.HasValue)
             {
@@ -43,6 +43,8 @@ namespace DagligVareLevering.Pages
             {
                 products = products.Where(p => p.StoreId == storeId.Value).ToList();
             }
+            // sorterer efter pris, laveste først.
+            products = products.OrderBy(p => p.Price).ToList();
 
             // Gruppér EFTER filtrering
             GroupedProducts = products.GroupBy(p => p.Name).ToList();
@@ -59,6 +61,7 @@ namespace DagligVareLevering.Pages
                 ProductStore = products
                     .FirstOrDefault(p => p.Store != null && p.Store.Name == storeName);
             }
+
         }
         public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
         {
