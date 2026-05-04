@@ -47,6 +47,9 @@ namespace DagligVareLevering.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal DeliveryPrice { get; set; }
 
+        [MaxLength(50)]
+        public string? PaymentMethod { get; set; }
+
         [Required, MaxLength(100)]
         public string Adress { get; set; }
 

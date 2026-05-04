@@ -3,24 +3,46 @@
 @{
 }
 
+
+<form method="get">
+    <label>Max Pris:</label>
+    <input type="number" name="maxPrice" value="@Request.Query["maxPrice"]" /> <!-- request query sørger for at input bliver bevaret -->
+
+    <select name="storeId">
+        <option value="">Alle Butikker</option>
+        @foreach (var store in Model.Stores)
+        {
+            <option value="@store.StoreId"
+                    selected="@(Request.Query["storeId"] == store.StoreId.ToString())">
+                @store.Name
+            </option>
+        }
+    </select>
+    <button type="submit">Filtrer</button>  
+
+</form>
+
+<!-- cards som indeholder produkter med samme navn-->
 <div class="container">
     <div class="product-grid">
         
             @foreach (var group in Model.GroupedProducts)
         {
             <div class="card">
-                <h3>@group.Key</h3> <!-- Product name -->
+                <h3>@group.Key</h3> <!-- Produkt navn -->
                 @foreach (var item in group)
                 {
                     <div>
-                        <p>@item.Store - @item.Price kr</p>
+                        <p>@item.Information <br />
+                           @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
+                           @item.Price kr</p>
 
-
+                           <!-- se produkt vidrerfører dig til en "side"" med produktinformation" - virker ikke lige pt->
                         <a asp-page="/Groceries" asp-route-id="@item.ProductId">
                             Se produkt
                         </a>
-
-                        <form method="post" asp-page-handler="Increase">
+                        <!--tilføjer produkt til cart-->
+                        <form method="post" asp-page-handler="AddToCart">
                             <input type="hidden" name="productId" value="@item.ProductId" />
                             <button type="submit" class="btn-small">Tilføj Produkt</button>
                         </form>

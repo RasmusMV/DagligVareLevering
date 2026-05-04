@@ -6,36 +6,52 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
+using DagligVareLevering.Service;
 
 namespace DagligVareLevering.Pages
 {
     public class GroceriesModel : PageModel
     {
 
-        private readonly AppDbContext _context;
-
-        public GroceriesModel(AppDbContext context)
+        private IService<Product> _dbService;
+        private IService<BasketItem> _basketService;
+        private IService<Models.Store> _storeService;
+        public GroceriesModel(IService<Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
         {
-            _context = context;
+            _dbService = context;
+            _basketService = basketService;
+            _storeService = storeService;
         }
-        public Models.Product? SelectedProduct { get; set; }
-        public Models.Product? ProductStore { get; set; }
+        public Product? SelectedProduct { get; set; }
+        public Product? ProductStore { get; set; }
+        public List<Models.Store> Stores { get; private set; }
 
         public IList<IGrouping<string, Models.Product>> GroupedProducts { get; set; }
 
-        public void OnGet(int? id, string? storeName)
+      
+        public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
         {
-            var products = _context.Products
-                .OrderBy(p => p.Name)
-                .ThenBy(p => p.Price).ThenBy(p => p.Store.Name)
-                .ToList();
+            var products = await _dbService.GetObjectsAsync();
 
+            // filtrer før gruppering
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
+            }
+
+            if (storeId.HasValue)
+            {
+                products = products.Where(p => p.StoreId == storeId.Value).ToList();
+            }
+
+            // Gruppér EFTER filtrering
             GroupedProducts = products.GroupBy(p => p.Name).ToList();
+
+            Stores = (await _storeService.GetObjectsAsync()).ToList();
 
             if (id != null)
             {
-                SelectedProduct = products
-                    .FirstOrDefault(p => p.ProductId == id);
+                SelectedProduct = products.FirstOrDefault(p => p.ProductId == id);
             }
 
             if (!string.IsNullOrEmpty(storeName))
@@ -43,23 +59,33 @@ namespace DagligVareLevering.Pages
                 ProductStore = products
                     .FirstOrDefault(p => p.Store != null && p.Store.Name == storeName);
             }
-
         }
-
-        public IActionResult OnPostIncrease(int productId)
+        public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
         {
             int userId = 1;
+            BasketItem newBasketItem = new BasketItem();
+            newBasketItem.ProductId = productId;
+            newBasketItem.UserId = userId;
+            newBasketItem.Quantity = 1;
+            await _basketService.AddObjectAsync(newBasketItem);
+            return RedirectToPage();
+        }
 
-            BasketItem? itemToIncrease = _context.BasketItems
+        /*
+        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
+        public async Task<IActionResult> OnPostIncreaseAsync(int productId, int userId)
+        {
+            BasketItem? itemToIncrease = (await _basketService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             if (itemToIncrease != null)
             {
                 itemToIncrease.Quantity++;
-                _context.SaveChanges();
+                await _basketService.UpdateObjectAsync(itemToIncrease);
             }
 
             return RedirectToPage();
         }
+        */
     }
 }
