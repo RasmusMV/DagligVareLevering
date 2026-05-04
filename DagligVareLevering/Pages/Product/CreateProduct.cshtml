@@ -6,30 +6,30 @@
 
 <form method="post">
 	<div class="form-group">
-		<label asp-for="Product.Name" class="control-lable"></label>
-		<input asp-for="Product.Name" class="form-control" />
-		<span asp-validation-for="Product.Name" class="text-danger"></span>
+		<label asp-for="ProductDto.Name" class="control-label"></label>
+		<input asp-for="ProductDto.Name" class="form-control" />
+		<span asp-validation-for="ProductDto.Name" class="text-danger"></span>
 	</div>
 	<div class="form-group">
-		<label asp-for="Product.Price" class="control-lable"></label>
-		<input asp-for="Product.Price" class="form-control" />
-		<span asp-validation-for="Product.Price" class="text-danger"></span>
+		<label asp-for="ProductDto.Price" class="control-label"></label>
+		<input asp-for="ProductDto.Price" class="form-control" />
+		<span asp-validation-for="ProductDto.Price" class="text-danger"></span>
 	</div>
 	<div class="form-group">
-		<label asp-for="Product.Information" class="control-lable"></label>
-		<input asp-for="Product.Information" class="form-control" />
-		<span asp-validation-for="Product.Information" class="text-danger"></span>
+		<label asp-for="ProductDto.Information" class="control-label"></label>
+		<input asp-for="ProductDto.Information" class="form-control" />
+		<span asp-validation-for="ProductDto.Information" class="text-danger"></span>
 	</div>
 	<div class="form-group">
-		<label class="control-lable">Store</label>
-		<input list="store-list" name="StoreName" class="form-control" placeholder="Søg efter en store" />
-		<datalist id="store-list">
+		<label asp-for="ProductDto.StoreId" class="control-label">Store</label>
+		<select asp-for="ProductDto.StoreId" class="form-control">
+			<option value="">-- Vælg en store --</option>
 			@foreach(var store in Model.StoreList)
-			{
-				<option value="@store.Name"></option>
-			}
-		</datalist>
-		<span asp-validation-for="StoreName" class="text-danger"></span>
+					{
+						<option value="@store.StoreId">@store.Name</option>
+					}
+		</select>
+		<span asp-validation-for="ProductDto.StoreId" class="text-danger"></span>
 	</div>
 	<div class="form-group">
 		<input type="submit" value="create" class="btn btn-primary" />
