@@ -1,4 +1,5 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.DTOs;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,10 +19,7 @@ namespace DagligVareLevering.Pages.Product
         }
 
         [BindProperty]
-        public Models.Product Product { get; set; }
-
-        [BindProperty]
-        public string StoreName { get; set; }
+        public ProductDto ProductDto { get; set; }
 
         public List<Models.Store> StoreList { get; set; }
 
@@ -33,26 +31,21 @@ namespace DagligVareLevering.Pages.Product
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var stores = await _storeService.GetObjectsAsync();
-            var matchedStore = stores.FirstOrDefault(s => s.Name == StoreName);
-
-            if(matchedStore == null)
-            {
-                ModelState.AddModelError("StoreName", "Store blev ikke fundet, valgte du en gyldig store?");
-                await LoadStoresAsync();
-                return Page();
-            }
-
-            ModelState.Remove("Product.StoreId");
-            ModelState.Remove("Product.Store");
-            Product.StoreId = matchedStore.StoreId;
-
             if (!ModelState.IsValid)
             {
                 await LoadStoresAsync();
                 return Page();
             }
-            await _productService.AddObjectAsync(Product);
+
+            var product = new Models.Product
+            {
+                Name = ProductDto.Name,
+                Price = ProductDto.Price,
+                Information = ProductDto.Information,
+                StoreId = ProductDto.StoreId
+            };
+
+            await _productService.AddObjectAsync(product);
             return RedirectToPage("/Index");
         }
 
