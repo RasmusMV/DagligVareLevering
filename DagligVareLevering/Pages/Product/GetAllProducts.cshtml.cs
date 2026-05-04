@@ -1,22 +1,16 @@
-using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using System.Linq;
-using System.Collections.Generic;
-using DagligVareLevering.Service;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Product
 {
-    public class GroceriesModel : PageModel
+    public class GetAllProductsModel : PageModel
     {
-
         private IService<Models.Product> _dbService;
         private IService<BasketItem> _basketService;
         private IService<Models.Store> _storeService;
-        public GroceriesModel(IService<Models.Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
+        public GetAllProductsModel(IService<Models.Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
         {
             _dbService = context;
             _basketService = basketService;
@@ -28,11 +22,11 @@ namespace DagligVareLevering.Pages
 
         public IList<IGrouping<string, Models.Product>> GroupedProducts { get; set; }
 
-      
+
         public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
         {
             var products = await _dbService.GetObjectsAsync();
-            
+
             // filtrer før gruppering
             if (maxPrice.HasValue)
             {
@@ -63,7 +57,7 @@ namespace DagligVareLevering.Pages
             }
 
         }
-        public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
+        public async Task<IActionResult> OnPostAddToCartAsync(int productId)
         {
             int userId = 1;
             BasketItem newBasketItem = new BasketItem();
@@ -73,22 +67,5 @@ namespace DagligVareLevering.Pages
             await _basketService.AddObjectAsync(newBasketItem);
             return RedirectToPage();
         }
-
-        /*
-        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
-        public async Task<IActionResult> OnPostIncreaseAsync(int productId, int userId)
-        {
-            BasketItem? itemToIncrease = (await _basketService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
-
-            if (itemToIncrease != null)
-            {
-                itemToIncrease.Quantity++;
-                await _basketService.UpdateObjectAsync(itemToIncrease);
-            }
-
-            return RedirectToPage();
-        }
-        */
     }
 }

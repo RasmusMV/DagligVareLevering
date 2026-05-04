@@ -1,5 +1,5 @@
 ﻿@page
-@model DagligVareLevering.Pages.GroceriesModel
+@model DagligVareLevering.Pages.Product.GetAllProductsModel
 @{
 }
 
@@ -18,26 +18,28 @@
             </option>
         }
     </select>
-    <button type="submit">Filtrer</button>  
+    <button type="submit">Filtrer</button>
 
 </form>
 
 <!-- cards som indeholder produkter med samme navn-->
 <div class="container">
     <div class="product-grid">
-        
-            @foreach (var group in Model.GroupedProducts)
+
+        @foreach (var group in Model.GroupedProducts)
         {
             <div class="card">
                 <h3>@group.Key</h3> <!-- Produkt navn -->
                 @foreach (var item in group)
                 {
                     <div>
-                        <p>@item.Information <br />
-                           @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
-                           @item.Price kr</p>
+                        <p>
+                            @item.Information <br />
+                            @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
+                            @item.Price kr
+                        </p>
 
-                           <!-- se produkt vidrerfører dig til en "side"" med produktinformation" - virker ikke lige pt->
+                        <!-- se produkt vidrerfører dig til en "side"" med produktinformation" - virker ikke lige pt->
                         <a asp-page="/Groceries" asp-route-id="@item.ProductId">
                             Se produkt
                         </a>
@@ -50,10 +52,9 @@
                 }
             </div>
         }
+        </div>
     </div>
-</div>
 
- 
 <style>
     .card {
         /* Add shadows to create the "card" effect */
