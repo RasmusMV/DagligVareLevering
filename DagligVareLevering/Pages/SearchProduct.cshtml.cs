@@ -7,20 +7,20 @@ namespace DagligVareLevering.Pages
     public class SearchProductModel : PageModel
     {
    
-            public List<Product> AllProducts { get; set; }
-            public List<Product> FilteredProducts { get; set; }
+            public List<Models.Product> AllProducts { get; set; }
+            public List<Models.Product> FilteredProducts { get; set; }
 
             [BindProperty]
             public string SearchText { get; set; }
 
             public void OnGet()
             {
-                AllProducts = new List<Product>
+                AllProducts = new List<Models.Product>
             {
-                new Product("Mælk", 12m, "Letmælk", null),
-                new Product("Brød", 20m, "Rugbrød", null),
-                new Product("Smør", 18m, "Lurpak", null),
-                new Product("Ost", 25m, "Skiveost", null)
+                new Models.Product("Mælk", 12m, "Letmælk", null),
+                new Models.Product("Brød", 20m, "Rugbrød", null),
+                new Models.Product("Smør", 18m, "Lurpak", null),
+                new Models.Product("Ost", 25m, "Skiveost", null)
             };
 
                 FilteredProducts = AllProducts;
@@ -28,12 +28,12 @@ namespace DagligVareLevering.Pages
 
             public void OnPost()
             {
-                AllProducts = new List<Product>
+                AllProducts = new List<Models.Product>
             {
-                new Product("Mælk", 12m, "Letmælk", null),
-                new Product("Brød", 20m, "Rugbrød", null),
-                new Product("Smør", 18m, "Lurpak", null),
-                new Product("Ost", 25m, "Skiveost", null)
+                new Models.Product("Mælk", 12m, "Letmælk", null),
+                new Models.Product("Brød", 20m, "Rugbrød", null),
+                new Models.Product("Smør", 18m, "Lurpak", null),
+                new Models.Product("Ost", 25m, "Skiveost", null)
             };
 
                 if (string.IsNullOrWhiteSpace(SearchText))

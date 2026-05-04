@@ -13,20 +13,20 @@ namespace DagligVareLevering.Pages
     public class GroceriesModel : PageModel
     {
 
-        private IService<Product> _dbService;
+        private IService<Models.Product> _dbService;
         private IService<BasketItem> _basketService;
         private IService<Models.Store> _storeService;
-        public GroceriesModel(IService<Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
+        public GroceriesModel(IService<Models.Product> context, IService<BasketItem> basketService, IService<Models.Store> storeService)
         {
             _dbService = context;
             _basketService = basketService;
             _storeService = storeService;
         }
-        public Product? SelectedProduct { get; set; }
-        public Product? ProductStore { get; set; }
+        public Models.Product? SelectedProduct { get; set; }
+        public Models.Product? ProductStore { get; set; }
         public List<Models.Store> Stores { get; private set; }
 
-        public IList<IGrouping<string, Product>> GroupedProducts { get; set; }
+        public IList<IGrouping<string, Models.Product>> GroupedProducts { get; set; }
 
       
         public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
