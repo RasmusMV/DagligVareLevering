@@ -35,6 +35,5 @@ namespace DagligVareLevering.Models
         public int StoreId { get; set; }
         [ForeignKey("StoreId")]
         public Store Store { get; set; }
-
     }
 }

@@ -1,0 +1,20 @@
+﻿@page
+@model DagligVareLevering.Pages.OfferEmailsModel
+
+<h2>Tilbudsmails</h2>
+
+<form method="post">
+    <div class="form-check">
+        <input asp-for="WantsOfferEmails" class="form-check-input" />
+        <label asp-for="WantsOfferEmails" class="form-check-label">
+            Jeg vil gerne modtage tilbudsmails fra Levering APS
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Gem valg</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p class="mt-3 text-success">@Model.Message</p>
+}

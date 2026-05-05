@@ -1,0 +1,167 @@
+﻿@page
+@model DagligVareLevering.Pages.Purchase.DeliveryTimeModel
+@{
+}
+
+<h2>Vælg leveringstidspunkt</h2>
+
+<!-- Navigation så brugeren kan gå frem og tilbage mellem uger -->
+<div class="week-navigation">
+    <a href="?weekOffset=@(Model.WeekOffset - 1)" class="week-btn">← Forrige uge</a>
+
+    <span class="week-title">
+        Uge @System.Globalization.ISOWeek.GetWeekOfYear(Model.WeekDays.First())
+    </span>
+
+    <a href="?weekOffset=@(Model.WeekOffset + 1)" class="week-btn">Næste uge →</a>
+</div>
+
+<!-- Viser valgt leveringstidspunkt, hvis kunden allerede har valgt et -->
+@if (Model.CurrentOrder != null && Model.CurrentOrder.ExpectedDeliveryTime != DateTime.MinValue)
+{
+    <p class="selected-time">
+        <strong>Valgt levering:</strong>
+        @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+        kl.
+        @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+    </p>
+}
+
+<div asp-validation-summary="All" class="validation-message"></div>
+
+<!-- Leveringsskema med dage og tidsintervaller -->
+<table class="delivery-table">
+    <thead>
+        <tr>
+            <th>Tidsinterval</th>
+            @foreach (DateTime day in Model.WeekDays)
+            {
+                <th>@day.ToString("ddd dd/MM")</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (string timeSlot in Model.TimeSlots)
+        {
+            <tr>
+                <td class="time-cell">@timeSlot</td>
+
+                @foreach (DateTime day in Model.WeekDays)
+                {
+                    bool isUnavailable = Model.IsSlotUnavailable(day, timeSlot);
+                    bool isSelected = Model.IsSelectedSlot(day, timeSlot);
+
+                    <td>
+                        @if (isUnavailable)
+                        {
+                            <button type="button" class="slot-btn disabled" disabled>Ikke mulig</button>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="SelectTime">
+                                <input type="hidden" name="weekOffset" value="@Model.WeekOffset" />
+                                <input type="hidden" name="SelectedDate" value="@day.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="SelectedTimeSlot" value="@timeSlot" />
+
+                                <button type="submit" class="slot-btn @(isSelected ? "selected" : "")">
+                                    @(isSelected ? "Valgt" : "Vælg")
+                                </button>
+                            </form>
+                        }
+                    </td>
+                }
+            
+
+                
+            </tr>
+          }
+    </tbody>
+</table>
+
+<style>
+    .week-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .week-btn {
+        display: inline-block;
+        background-color: #4f46e5;
+        color: white;
+        padding: 9px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 3px 8px rgba(79, 70, 229, 0.22);
+    }
+
+        .week-btn:hover {
+            background-color: #4338ca;
+            color: white;
+            text-decoration: none;
+        }
+
+    .week-title {
+        font-weight: 700;
+        font-size: 18px;
+        color: #222;
+    }
+
+    .delivery-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 14px;
+    }
+
+        .delivery-table th,
+        .delivery-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .delivery-table th {
+            background-color: #f4f4f4;
+            font-weight: 700;
+        }
+
+    .time-cell {
+        font-weight: bold;
+        background-color: #fafafa;
+        white-space: nowrap;
+    }
+
+    .slot-btn {
+        min-width: 72px;
+        padding: 6px 8px;
+        border: none;
+        border-radius: 6px;
+        background-color: #e5e7eb;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .slot-btn:hover {
+            background-color: #c7d2fe;
+        }
+
+        .slot-btn.selected {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 700;
+        }
+
+        .slot-btn.disabled {
+            background-color: #f1f1f1;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+</style>

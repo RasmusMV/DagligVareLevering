@@ -1,4 +1,5 @@
 ﻿using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DagligVareLevering.Service
@@ -38,6 +39,11 @@ namespace DagligVareLevering.Service
         {
             _context.Set<T>().Update(obj);
             await _context.SaveChangesAsync();
+        }
+
+        public IQueryable<T> GetAllObjectInfoAsync()
+        {
+            return _context.Set<T>().AsNoTracking();
         }
     }
 }

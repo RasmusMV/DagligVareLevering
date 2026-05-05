@@ -4,41 +4,46 @@ namespace DagligVareLevering.Service
 {
     public class ProductService : IProductService
     {
-        private readonly IService<Order> _dbService;
+        private readonly IService<Product> _dbService;
 
-        public ProductService(IService<Order> dbService)
+        public ProductService(IService<Product> dbService)
         {
             _dbService = dbService;
         }
 
-        public Task<IEnumerable<Product>> NameSearch(string name)
+        public async Task<IEnumerable<Product>> NameSearch(string name)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(name))
+            {
+                return await _dbService.GetObjectsAsync();
+            }
+            return (await _dbService.GetObjectsAsync())
+                .Where(x => x.Name.ToLower().Contains(name.ToLower()));
         }
 
-        public Task<IEnumerable<Product>> PriceFilter(int maxPrice, int minPrice = 0)
+        public async Task<IEnumerable<Product>> PriceFilter(int maxPrice, int minPrice = 0)
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).Where(x => (minPrice == 0 && x.Price <= maxPrice) || (maxPrice == 0 && x.Price >= minPrice) || (x.Price >= minPrice && x.Price <= maxPrice));
         }
 
-        public Task<IEnumerable<Product>> SortById()
+        public async Task<IEnumerable<Product>> SortById()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.ProductId);
         }
 
-        public Task<IEnumerable<Product>> SortByIdDescending()
+        public async Task<IEnumerable<Product>> SortByIdDescending()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderByDescending(x => x.ProductId);
         }
 
-        public Task<IEnumerable<Product>> SortByName()
+        public async Task<IEnumerable<Product>> SortByName()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.Name);
         }
 
-        public Task<IEnumerable<Product>> SortByPrice()
+        public async Task<IEnumerable<Product>> SortByPrice()
         {
-            throw new NotImplementedException();
+            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.Price);
         }
     }
 }

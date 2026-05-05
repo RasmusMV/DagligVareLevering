@@ -44,6 +44,7 @@ namespace DagligVareLevering.Models
         [Required]
         public UserRole Role { get; set; } = UserRole.Customer;
 
+        public bool WantsOfferEmails { get; set; }
 
 
     }
