@@ -1,0 +1,48 @@
+﻿@page
+@model AccountModel
+
+<h2>My Account</h2>
+
+<h4>Edit Details</h4>
+
+<form method="post" asp-page-handler="Update">
+    <div class="mb-2">
+        <label>Name</label>
+        <input asp-for="User.Name" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label>Email</label>
+        <input asp-for="User.Email" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label>Address</label>
+        <input asp-for="User.Adress" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label>Phone</label>
+        <input asp-for="User.Phonenumber" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label>Password</label>
+        <input asp-for="User.Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">
+        Save Changes
+    </button>
+</form>
+
+<hr />
+
+<h4>Delete Account</h4>
+
+<form method="post" asp-page-handler="Delete">
+    <button type="submit" class="btn btn-danger"
+            onclick="return confirm('Er du sikker på, at du vil slette din bruger?');">
+        Slet bruger
+    </button>
+</form>
