@@ -26,7 +26,7 @@ public class LoginModel(AppDbContext context) : PageModel
         {
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserRole", user.Role.ToString());
-
+            HttpContext.Session.SetString("UserName", user.Name);
             return RedirectToPage("/Index");
         }
 

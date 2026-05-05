@@ -50,6 +50,7 @@ namespace DagligVareLevering.Models
     public enum UserRole
     {
         Customer,
-        Admin
+        Admin,
+        Worker
     }
 }
