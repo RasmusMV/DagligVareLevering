@@ -41,7 +41,18 @@ namespace DagligVareLevering.Models
 
         public virtual ICollection<Order>? OrderHistory { get; set; }
 
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Customer;
+
+        [Required]
         public bool WantsOfferEmails { get; set; }
 
+
+    }
+    public enum UserRole
+    {
+        Customer,
+        Admin,
+        Worker
     }
 }
