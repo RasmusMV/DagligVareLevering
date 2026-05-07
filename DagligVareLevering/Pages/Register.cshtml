@@ -1,0 +1,18 @@
+﻿@page
+@model RegisterModel
+
+<form method="post">
+    <input asp-for="User.Name" placeholder="Navn" />
+    <input asp-for="User.Email" placeholder="Email" />
+    <input asp-for="User.Password" type="password" placeholder="Password" />
+    <input asp-for="User.Adress" placeholder="Adresse" />
+    <input asp-for="User.Phonenumber" placeholder="Telefon" />
+    <div class="form-group">
+        <input asp-for="User.WantsOfferEmails" type="checkbox" />
+        <label asp-for="User.WantsOfferEmails">
+            Jeg vil gerne modtage emails omkring tilbud
+        </label>
+    </div>
+
+    <button type="submit">Opret Bruger</button>
+</form>
