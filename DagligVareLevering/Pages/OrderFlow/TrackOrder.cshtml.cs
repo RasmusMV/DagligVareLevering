@@ -19,14 +19,19 @@ namespace DagligVareLevering.Pages.Purchase
         public Order? CurrentOrder { get; set; }
 
         // Henter den nyeste ordre for brugeren, når siden vises
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            int userId = 1; // Midlertidig testbruger indtil login virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefaultAsync();
+            return Page();
         }
 
         // Tjekker om et trin i ordrestatussen er nået
@@ -67,7 +72,11 @@ namespace DagligVareLevering.Pages.Purchase
 
         public async Task<IActionResult> OnPostCancelAsync()
         {
-            int userId = 1; // midlertidig testbruger indtil login virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
                 .Where(o => o.UserId == userId)

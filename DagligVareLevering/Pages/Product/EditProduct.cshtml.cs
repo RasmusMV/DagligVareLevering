@@ -25,6 +25,12 @@ namespace DagligVareLevering.Pages.Product
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             Product = await _productService.GetObjectByIdAsync(id);
             if (Product == null)
             {
