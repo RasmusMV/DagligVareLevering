@@ -45,7 +45,11 @@ namespace DagligVareLevering.Pages.Purchase
             TimeSlots = GetTimeSlots();
             WeekDays = GetWeekDays(weekOffset);
 
-            int userId = 1; // midlertidigt indtil login virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
             CurrentOrder = (await _orderService.GetObjectsAsync())
@@ -57,7 +61,7 @@ namespace DagligVareLevering.Pages.Purchase
             {
                 // Sender brugeren tilbage til kurven, hvis der ikke findes en aktiv ordre
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Purchase/Cart");
+                return RedirectToPage("/Cart");
             }
 
             return Page();
@@ -71,7 +75,11 @@ namespace DagligVareLevering.Pages.Purchase
             TimeSlots = GetTimeSlots();
             WeekDays = GetWeekDays(weekOffset);
 
-            int userId = 1; // midlertidigt indtil login virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Henteer den nyeste ordre for brugeren
             CurrentOrder = (await _orderService.GetObjectsAsync())
@@ -83,7 +91,7 @@ namespace DagligVareLevering.Pages.Purchase
             {
                 // Sender brugeren tilbage til kurven, hvis orderen ikke fines
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Purchase/Cart");
+                return RedirectToPage("/Cart");
             }
 
             if (!TimeSlots.Contains(SelectedTimeSlot))
@@ -110,7 +118,7 @@ namespace DagligVareLevering.Pages.Purchase
             // Opdaterer orderen i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
-            return RedirectToPage("/Purchase/OrderSummary");
+            return RedirectToPage("/OrderFlow/OrderSummary");
         }
 
         // Hjælpemetode, så vi ikke gentager de samme linjer i OnGet og OnPost

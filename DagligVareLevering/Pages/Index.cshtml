@@ -1,10 +1,310 @@
 ﻿@page
-@model IndexModel
+@model DagligVareLevering.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Forside";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="frontpage">
+    <section class="search-section">
+        <h1>Hvad mangler du i dag?</h1>
+
+        <!-- Søgefelt øverst på forsiden -->
+        <form method="get" class="search-form">
+            <input asp-for="SearchText" class="search-input" placeholder="Søg efter varer..." />
+            <button type="submit" class="search-btn">Søg</button>
+        </form>
+    </section>
+
+    <!-- Karrusel under søgefeltet -->
+    <section class="carousel-section">
+        <div id="frontpageCarousel"
+             class="carousel slide"
+             data-bs-ride="carousel"
+             data-bs-interval="3500"
+             data-bs-pause="false">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="2"></button>
+            </div>
+
+            <div class="carousel-inner">
+
+                <div class="carousel-item active">
+                    <div class="carousel-content slide-groceries">
+                        <h2>Friske dagligvarer leveret til døren</h2>
+                        <p>Bestil nemt dine varer og vælg selv leveringstidspunkt.</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="carousel-content slide-delivery">
+                        <h2>Planlæg din levering</h2>
+                        <p>Vælg et leveringstidspunkt, der passer til din hverdag.</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="carousel-content slide-tracking">
+                        <h2>Følg din ordre</h2>
+                        <p>Se hvor langt din ordre er, fra modtaget til leveret.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#frontpageCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#frontpageCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Viser et udvalg af produkter på forsiden -->
+    @if (Model.PopularProducts.Count > 0)
+    {
+        <section class="popular-section">
+            <div class="section-header">
+                <h3>Populære varer</h3>
+                <a asp-page="/Product/Index" class="see-all-link">Se alle varer</a>
+            </div>
+
+            <div class="product-grid">
+                @foreach (var product in Model.PopularProducts)
+                {
+                    <div class="product-card">
+                        <h4>@product.Name</h4>
+                        <p>@product.Information</p>
+
+                        <div class="product-bottom">
+                            <strong>@product.Price.ToString("C")</strong>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Viser søgeresultater, hvis kunden har søgt efter en vare -->
+    @if (!string.IsNullOrWhiteSpace(Model.SearchText))
+    {
+        <section class="search-results">
+            <h3>Søgeresultater</h3>
+
+            @if (Model.SearchResults.Count == 0)
+            {
+                <div class="empty-result">
+                    <p>Ingen varer fundet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="product-grid">
+                    @foreach (var product in Model.SearchResults)
+                    {
+                        <div class="product-card">
+                            <h4>@product.Name</h4>
+                            <p>@product.Information</p>
+
+                            <div class="product-bottom">
+                                <strong>@product.Price.ToString("C")</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
 </div>
+
+<style>
+    .frontpage {
+        padding-top: 24px;
+    }
+
+    .search-section {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+        .search-section h1 {
+            margin-bottom: 18px;
+            color: #222;
+            font-size: 34px;
+        }
+
+    .search-form {
+        display: flex;
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 14px 16px;
+        border: none;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-btn {
+        padding: 0 24px;
+        border: none;
+        background-color: #4f46e5;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .search-btn:hover {
+            background-color: #4338ca;
+        }
+
+    .carousel-section {
+        max-width: 920px;
+        margin: 0 auto 34px auto;
+    }
+
+    .carousel-content {
+        min-height: 280px;
+        padding: 48px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        background-size: cover;
+        background-position: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .carousel-content::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0,0,0,0.45);
+        }
+
+        .carousel-content h2,
+        .carousel-content p {
+            position: relative;
+            z-index: 1;
+        }
+
+        .carousel-content h2 {
+            font-size: 30px;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .carousel-content p {
+            font-size: 18px;
+            color: white;
+            margin: 0;
+        }
+
+    .slide-groceries {
+        background-image: url('/images/groceries.jpg');
+    }
+
+    .slide-delivery {
+        background-image: url('/images/delivery.jpg');
+    }
+
+    .slide-tracking {
+        background-image: url('/images/tracking.jpg');
+    }
+
+    .popular-section,
+    .search-results {
+        max-width: 920px;
+        margin: 0 auto 34px auto;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+        .section-header h3,
+        .search-results h3 {
+            margin: 0 0 14px 0;
+            color: #333;
+        }
+
+    .see-all-link {
+        color: #4f46e5;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+        .see-all-link:hover {
+            text-decoration: underline;
+        }
+
+    .empty-result {
+        background-color: #f8f8f8;
+        padding: 18px;
+        border-radius: 8px;
+        color: #666;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .product-card {
+        background-color: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+        .product-card h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .product-card p {
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+    .product-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    @@media (max-width: 800px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .search-form {
+            max-width: 100%;
+        }
+
+        .carousel-content {
+            padding: 32px 20px;
+        }
+    }
+</style>
+

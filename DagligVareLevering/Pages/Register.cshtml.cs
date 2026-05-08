@@ -1,15 +1,15 @@
-using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class RegisterModel : PageModel
 {
-    private readonly AppDbContext _context;
+    private readonly IService<User> _userService;
 
-    public RegisterModel(AppDbContext context)
+    public RegisterModel(IService<User> userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     [BindProperty]
@@ -22,12 +22,11 @@ public class RegisterModel : PageModel
         if (!ModelState.IsValid)
             return Page();
 
-        //Sætter standard rolle til Customer
+        //Sætter standardrolle til Customer
         User.Role = UserRole.Customer;
 
-        //Tilføjer brugeren til databasen
-        _context.Users.Add(User);
-        await _context.SaveChangesAsync();
+        //Tilføjer brugeren via service
+        await _userService.AddObjectAsync(User);
 
         return RedirectToPage("Login");
     }

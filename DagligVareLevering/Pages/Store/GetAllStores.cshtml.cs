@@ -16,9 +16,16 @@ namespace DagligVareLevering.Pages.Store
 
         public List<Models.Store> Stores { get; private set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             Stores = (await _dbService.GetObjectsAsync()).ToList();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)

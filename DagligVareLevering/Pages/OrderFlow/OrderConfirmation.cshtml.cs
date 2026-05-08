@@ -25,9 +25,13 @@ namespace DagligVareLevering.Pages.Purchase
         public decimal TotalPrice { get; set; }
 
         // OnGet -metoden henter data for den aktuelle ordre, herunder ordrelinjer og tilhørende produkter, og beregner den samlede pris
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            int userId = 1;
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if(userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
             // Hent den seneste ordre for den givne bruger
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
              .Include(o => o.User)
@@ -39,7 +43,7 @@ namespace DagligVareLevering.Pages.Purchase
 
 
             if (CurrentOrder == null)
-                return;
+                return RedirectToPage("/OrderHistory");
 
             // Hent ordrelinjerne for den aktuelle ordre
             CurrentOrder.OrderLines = (await _orderLineService.GetObjectsAsync())
@@ -53,6 +57,8 @@ namespace DagligVareLevering.Pages.Purchase
             }
 
             TotalPrice = CurrentOrder.GetTotalPrice();
+
+            return Page();
         }
     }
 }

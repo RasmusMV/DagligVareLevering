@@ -59,13 +59,40 @@ namespace DagligVareLevering.Pages.Product
         }
         public async Task<IActionResult> OnPostAddToCartAsync(int productId)
         {
-            int userId = 1;
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
             BasketItem newBasketItem = new BasketItem();
             newBasketItem.ProductId = productId;
-            newBasketItem.UserId = userId;
+            newBasketItem.UserId = userId!.Value;
             newBasketItem.Quantity = 1;
             await _basketService.AddObjectAsync(newBasketItem);
             return RedirectToPage();
         }
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            Models.Product product = await _dbService.GetObjectByIdAsync(id);
+            await _dbService.DeleteObjectAsync(product);
+            return RedirectToPage("/Groceries");
+        }
+        /*
+        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
+        public async Task<IActionResult> OnPostIncreaseAsync(int productId, int userId)
+        {
+            BasketItem? itemToIncrease = (await _basketService.GetObjectsAsync())
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+
+            if (itemToIncrease != null)
+            {
+                itemToIncrease.Quantity++;
+                await _basketService.UpdateObjectAsync(itemToIncrease);
+            }
+
+            return RedirectToPage();
+        }
+        */
     }
 }
