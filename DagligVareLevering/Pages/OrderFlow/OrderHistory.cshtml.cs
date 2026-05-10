@@ -20,23 +20,36 @@ namespace DagligVareLevering.Pages.Purchase
         public decimal GrandTotal { get; set; }
         public int TotalItems { get; set; }
 
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            AllOrders = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
-            GrandTotal = 0;
-            TotalItems = 0;
-
-            foreach (var order in AllOrders)
+            var role = HttpContext.Session.GetString("UserRole");
+            if(role == "Customer")
             {
-                GrandTotal += order.GetTotalPrice();
-                TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
+                AllOrders = await _orderService.GetAllObjectInfoAsync()
+                    .Include(o => o.OrderLines).ThenInclude(ol => ol.Product)
+                    .Where(o => o.UserId == HttpContext.Session.GetInt32("UserId")).ToListAsync();
+
+                GrandTotal = 0;
+                TotalItems = 0;
+
+                foreach (var order in AllOrders)
+                {
+                    GrandTotal += order.GetTotalPrice();
+                    TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
+                }
             }
+            else if(role == "Admin")
+            {
+                AllOrders = await _orderService.GetAllObjectInfoAsync()
+                .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
+
+            }
+            else
+            {
+                return RedirectToPage("/Login");
+            }
+            return Page();
         }
 
-        public List<Models.Order> GetOrderHistory()
-        {
-            return AllOrders;
-        }
     }
 }

@@ -28,10 +28,14 @@ namespace DagligVareLevering.Pages.Purchase
 
 
         // Henter den nyeste ordre for brugeren og viser den som et resume
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            int userId = 1; // indtil lennos virker
-                            // Hent den aktuelle ordre for brugeren, inklusive relaterede data
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+            // Hent den aktuelle ordre for brugeren, inklusive relaterede data
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
             .Include(o => o.OrderLines)
             .ThenInclude(ol => ol.Product)
@@ -47,12 +51,17 @@ namespace DagligVareLevering.Pages.Purchase
                 // Viser den adresse, der allerede er gemt på orderen
                 DeliveryAddress = CurrentOrder.Adress;
             }
+            return Page();
         }
 
         // Gemmer betalingsform, markerer orderen som modtaget og sender brugeren videre til kvittering
         public async Task<IActionResult> OnPostAsync()
         {
-            int userId = 1; // indtil lennos virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
             .Include(o => o.OrderLines)
@@ -65,7 +74,7 @@ namespace DagligVareLevering.Pages.Purchase
 
             if (CurrentOrder == null)
             {
-                return RedirectToPage("/Purchase/DeliveryTime");
+                return RedirectToPage("/OrderFlow/DeliveryTime");
             }
 
             // Opdaterer kun leveringsadressen, hvis brugeren har skrevet en ny adresse
@@ -79,7 +88,7 @@ namespace DagligVareLevering.Pages.Purchase
 
             // Gemmer ændringerne i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
-            return RedirectToPage("/Purchase/OrderConfirmation");
+            return RedirectToPage("/OrderFlow/OrderConfirmation");
 
         }
 
