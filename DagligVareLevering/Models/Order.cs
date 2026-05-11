@@ -36,6 +36,7 @@ namespace DagligVareLevering.Models
         [Required]
         public int UserId { get; set; }
         [ForeignKey("UserId")]
+        [InverseProperty("OrderHistory")]
         public User User { get; set; }
         
         public DateTime TimeOfOrder { get; set; }
@@ -56,5 +57,11 @@ namespace DagligVareLevering.Models
         [Required]
         [MaxLength(50)]
         public string Status { get; set; } = OrderStatus.Processing;
+
+        public int? WorkerId { get; set; }
+        [ForeignKey("WorkerId")]
+        [InverseProperty("WorkerOrders")]
+        public User? Worker { get; set; }
+
     }
 }

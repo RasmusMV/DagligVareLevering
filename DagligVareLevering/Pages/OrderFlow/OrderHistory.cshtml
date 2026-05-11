@@ -51,4 +51,43 @@
         }
     }
 
+    @if (HttpContext.Session.GetString("UserRole") == "Worker")
+    {
+        <h2 class="mb-4">Ledige ordrer</h2>
+        <div class="row">
+            @foreach (var order in Model.AllOrders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Ordre #@order.OrderId</h5>
+                            <p><strong>Kunde:</strong> @order.User.Name</p>
+                            <p><strong>Leveringsadresse:</strong> @order.Adress</p>
+                            <p><strong>Antal varer:</strong> @order.OrderLines.Sum(l => l.Quantity)</p>
+                            <ul class="list-unstyled">
+                                @foreach (var line in order.OrderLines)
+                                {
+                                    <li>
+                                        <strong>@line.Product.Name</strong><br />
+                                        Antal: @line.Quantity
+                                    </li>
+                                    <hr />
+                                }
+                            </ul>
+                            <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
+
+                            <form method="post">
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <button type="submit" asp-page-handler="TakeOrder"
+                                        class="btn btn-primary w-100">
+                                    Tag denne ordre
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
 }

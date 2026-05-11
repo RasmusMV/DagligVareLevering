@@ -90,6 +90,7 @@ namespace DagligVareLevering.Pages.Purchase
             // Gemmer ændringerne i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
+            // Fjerner BasketItem fra kurven
             foreach (BasketItem item in (await _basketItemService.GetObjectsAsync()).Where(b => b.UserId == userId))
             {
                 await _basketItemService.DeleteObjectAsync(item);

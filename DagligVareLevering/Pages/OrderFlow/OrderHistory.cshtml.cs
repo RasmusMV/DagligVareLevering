@@ -44,11 +44,41 @@ namespace DagligVareLevering.Pages.Purchase
                 .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
 
             }
+            else if(role == "Worker")
+            {
+                AllOrders = await _orderService.GetAllObjectInfoAsync()
+                    .Include(o => o.OrderLines)
+                    .Include(o => o.User)
+                    .Where(o => o.WorkerId == null && (o.Status == OrderStatus.Processing || o.Status == OrderStatus.Received))
+                    .ToListAsync();
+            }
             else
             {
                 return RedirectToPage("/Login");
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostTakeOrderAsync(int orderId)
+        {
+            int? workerId = HttpContext.Session.GetInt32("UserId");
+            if(workerId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            var order = await _orderService.GetAllObjectInfoAsync()
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if(order != null && order.WorkerId == null)
+            {
+                order.WorkerId = workerId;
+                order.Status = OrderStatus.OutForDelivery;
+                await _orderService.UpdateObjectAsync(order);
+            }
+
+            return RedirectToPage("placeholder");
+
         }
 
     }
