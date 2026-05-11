@@ -1,44 +1,46 @@
 ﻿@page
-@model DagligVareLevering.Pages.Purchase.OrderHistoryModel
+@model DagligVareLevering.Pages.OrderFlow.OrderHistoryModel
 @{
 
-    <h2 class="mb-4">Købshistorik</h2>
-
-    <div class="row">
-        @foreach (var order in Model.AllOrders)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
+    @if(HttpContext.Session.GetString("UserRole") == "Customer" || HttpContext.Session.GetString("UserRole") == "Admin")
+    {
+        <h2 class="mb-4">Købshistorik</h2>
+        <div class="row">
+            @foreach (var order in Model.AllOrders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
                         
-                        <h5 class="card-title">Ordre #@order.OrderId</h5>
-                        <p><strong>Dato:</strong> @order.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
-                        <p><strong>Antal varer:</strong> @order.OrderLines.Sum(line => line.Quantity)</p>
+                            <h5 class="card-title">Ordre #@order.OrderId</h5>
+                            <p><strong>Dato:</strong> @order.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
+                            <p><strong>Antal varer:</strong> @order.OrderLines.Sum(line => line.Quantity)</p>
 
-                        <ul class="list-unstyled">
-                            @foreach (var line in order.OrderLines)
-                            {
-                                <li>
-                                    <strong>@line.Product.Name</strong><br />
-                                    Antal: @line.Quantity <br />
-                                    pris: @line.GetLineTotal() kr.
-                                </li>
-                                <hr />
-                            }
-                        </ul>
+                            <ul class="list-unstyled">
+                                @foreach (var line in order.OrderLines)
+                                {
+                                    <li>
+                                        <strong>@line.Product.Name</strong><br />
+                                        Antal: @line.Quantity <br />
+                                        pris: @line.GetLineTotal() kr.
+                                    </li>
+                                    <hr />
+                                }
+                            </ul>
 
-                         <p class="mt-3">
-                            <strong>Status:</strong><br />
-                            @order.Status <br />
-                            <strong>Pris for denne ordre:</strong><br />
-                            @order.GetTotalPrice() kr.
-                        </p>
+                            <p class="mt-3">
+                                <strong>Status:</strong><br />
+                                @order.Status <br />
+                                <strong>Pris for denne ordre:</strong><br />
+                                @order.GetTotalPrice() kr.
+                            </p>
                             
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
         
     {
         var role = HttpContext.Session.GetString("UserRole");

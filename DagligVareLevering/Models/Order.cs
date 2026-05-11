@@ -43,8 +43,6 @@ namespace DagligVareLevering.Models
 
         public DateTime ExpectedDeliveryTime { get; set; }
 
-        public DateTime ExpectedDeliveryDate { get; set; }
-        
         [Column(TypeName = "decimal(18,2)")]
         public decimal DeliveryPrice { get; set; }
 

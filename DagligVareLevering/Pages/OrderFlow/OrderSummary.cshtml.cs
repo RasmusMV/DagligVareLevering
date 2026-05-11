@@ -4,7 +4,7 @@ using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.EntityFrameworkCore;
 
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderSummaryModel : PageModel
     {

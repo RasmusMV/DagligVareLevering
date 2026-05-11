@@ -4,3 +4,49 @@
 <h2>Worker Dashboard</h2>
 
 <p>Velkommen! Her kan du se dine leveringer.</p>
+
+@if (!Model.ActiveOrders.Any())
+{
+	<div class="alert alert-info">
+		Du har ingen aktive leveringer.
+		<a asp-page="/OrderFlow/OrderHistory">Find en ordre</a>
+	</div>
+}
+else
+{
+	<div class="row">
+        @foreach (var order in Model.ActiveOrders)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Ordre #@order.OrderId</h5>
+                        <p><strong>Kunde:</strong> @order.User.Name</p>
+                        <p><strong>Leveringsadresse:</strong> @order.Adress</p>
+                        <p>
+                            <strong>Forventet levering:</strong>
+                            @order.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
+                            kl. @order.ExpectedDeliveryTime.ToString("HH:mm")
+                        </p>
+                        <hr />
+                        <h6>Varer:</h6>
+                        <ul class="list-unstyled">
+                            @foreach (var line in order.OrderLines)
+                            {
+                                <li>
+                                    <strong>@line.Product.Name</strong> x @line.Quantity
+                                </li>
+                            }
+                        </ul>
+                        <hr />
+                        <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
+                        <a asp-page="/OrderFlow/DeliveryRoute"
+                               class="btn btn-primary w-100">
+                            Se rute
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+	</div>
+}

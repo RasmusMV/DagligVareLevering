@@ -1,5 +1,5 @@
 ﻿@page
-@model DagligVareLevering.Pages.Purchase.OrderConfirmationModel
+@model DagligVareLevering.Pages.OrderFlow.OrderConfirmationModel
 @{
 }
 <h2>Kvittering</h2>
@@ -33,7 +33,7 @@ else
             <p><strong>Adresse:</strong> @Model.CurrentOrder.Adress</p>
             <p>
                 <strong>Tidspunkt:</strong>
-                @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+                @Model.CurrentOrder.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
                 kl. @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
             </p>
             <p><strong>Betaling:</strong> @Model.CurrentOrder.PaymentMethod</p>

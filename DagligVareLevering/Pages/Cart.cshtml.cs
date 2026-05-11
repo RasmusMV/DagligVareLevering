@@ -14,6 +14,7 @@ namespace DagligVareLevering.Models
         private IService<BasketItem> _dbService;
         private IService<Order> _orderService;
         private IService<OrderLine> _orderLineService;
+        private IService<User> _userService;
 
 
         public decimal DeliveryPrice { get; set; }
@@ -24,12 +25,14 @@ namespace DagligVareLevering.Models
         IService<BasketItem> dbService,
         IService<Product> productService,
         IService<Order> orderService,
-        IService<OrderLine> orderLineService)
+        IService<OrderLine> orderLineService,
+        IService<User> userService)
         {
             _dbService = dbService;
             _productService = productService;
             _orderService = orderService;
             _orderLineService = orderLineService;
+            _userService = userService;
         }
 
 
@@ -136,6 +139,8 @@ namespace DagligVareLevering.Models
                 return RedirectToPage("/Login");
             }
 
+            User user = await _userService.GetObjectByIdAsync(userId!.Value);
+
             BasketItems = (await _dbService.GetObjectsAsync())
                 .Where(b => b.UserId == userId)
                 .ToList();
@@ -148,7 +153,7 @@ namespace DagligVareLevering.Models
             Order order = new Order
             {
                 UserId = userId!.Value,
-                Adress = "Test adresse",
+                Adress = user.Adress,
                 DeliveryPrice = 29m,
                 Status = OrderStatus.Processing
             };
