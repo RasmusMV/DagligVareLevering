@@ -47,15 +47,17 @@ input[type=submit] {
 
 /* PRIMARY BUTTON */
 
-.btn-primary,
+.btn.btn-primary,
+btn-primary,
 .add-btn,
 .checkout-btn,
 .small-btn {
-    background: var(--primary);
+    background: auto;
     color: white;
 }
 
     .btn-primary:hover,
+    .btn.btn-primary:hover,
     .add-btn:hover,
     .checkout-btn:hover,
     .small-btn:hover {
