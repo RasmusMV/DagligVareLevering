@@ -39,7 +39,11 @@ namespace DagligVareLevering.Models
 
         public virtual ICollection<BasketItem>? Basket { get; set; }
 
+        [InverseProperty("User")]
         public virtual ICollection<Order>? OrderHistory { get; set; }
+
+        [InverseProperty("Worker")]
+        public virtual ICollection<Order>? WorkerOrders { get; set; }
 
         [Required]
         public UserRole Role { get; set; } = UserRole.Customer;

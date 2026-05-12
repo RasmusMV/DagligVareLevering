@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderConfirmationModel : PageModel
     {

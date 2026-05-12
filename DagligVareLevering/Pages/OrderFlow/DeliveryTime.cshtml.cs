@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class DeliveryTimeModel : PageModel
     {
@@ -112,7 +112,6 @@ namespace DagligVareLevering.Pages.Purchase
             TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
 
             // Gemmer valgt dato og starttidspunkt på orderen
-            CurrentOrder.ExpectedDeliveryDate = SelectedDate.Date;
             CurrentOrder.ExpectedDeliveryTime = SelectedDate.Date.Add(startTime);
 
             // Opdaterer orderen i databasen
@@ -158,7 +157,7 @@ namespace DagligVareLevering.Pages.Purchase
             string[] splitTime = timeSlot.Split('-');
             TimeSpan startTime = TimeSpan.Parse(splitTime[0]);
 
-            return CurrentOrder.ExpectedDeliveryDate.Date == date.Date
+            return CurrentOrder.ExpectedDeliveryTime.Date == date.Date
                 && CurrentOrder.ExpectedDeliveryTime.TimeOfDay == startTime;
         }
 
