@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using DagligVareLevering.Service;
 using Microsoft.IdentityModel.Tokens;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Product
 {
     public class GroceriesModel : PageModel
     {
