@@ -37,7 +37,7 @@
                            @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
                            @item.Price kr</p>
 
-                           <!-- se produkt vidrerfører dig til en "side"" med produktinformation" - virker ikke lige pt->
+                           <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->
                         <a asp-page="/Product/ProductDetails" asp-route-id="@item.ProductId">
                             Se produkt
                         </a>
