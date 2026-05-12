@@ -1,4 +1,5 @@
-﻿using DagligVareLevering.Pages;
+﻿using DagligVareLevering.Models.Enums;
+using DagligVareLevering.Pages;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -54,7 +55,7 @@ namespace DagligVareLevering.Models
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; } = OrderStatus.Processing;
+        public OrderStatus Status { get; set; } = OrderStatus.Processing;
 
         public int? WorkerId { get; set; }
         [ForeignKey("WorkerId")]

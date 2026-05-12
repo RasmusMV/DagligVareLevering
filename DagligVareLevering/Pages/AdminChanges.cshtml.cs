@@ -1,5 +1,6 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

@@ -40,8 +40,7 @@ else
                         </ul>
                         <hr />
                         <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
-                        <a asp-page="/OrderFlow/DeliveryRoute"
-                               class="btn btn-primary w-100">
+                        <a asp-page="/OrderFlow/DeliveryRoute" asp-route-id="@order.OrderId" class="btn btn-primary w-100">
                             Se rute
                         </a>
                     </div>
