@@ -5,14 +5,23 @@
 }
 
 <div class="frontpage">
-    <section class="search-section">
-        <h1>Hvad mangler du i dag?</h1>
+    <!-- Hero-sektionen samler overskrift, søgning og hurtige kategorier -->
+    <section class="front-hero">
+        <div class="hero-text">
+            <p class="eyebrow">Dagligvarer direkte til døren</p>
+            <h1>Hvad mangler du i dag?</h1>
+            <p class="hero-subtitle">
+                Søg efter dine varer, læg dem i kurven og vælg selv leveringstidspunkt.
+            </p>
+        </div>
 
         <!-- Søgefeltet sender søgeteksten som en GET-request, så resultatet kan vises på samme side -->
         <form method="get" class="search-form">
-            <input asp-for="SearchText" class="search-input" placeholder="Søg efter varer..." />
+            <input asp-for="SearchText" class="search-input" placeholder="Søg efter mælk, rugbrød, frugt..." />
             <button type="submit" class="search-btn">Søg</button>
         </form>
+
+     
     </section>
 
     @if (TempData["StatusMessage"] != null)
@@ -116,7 +125,7 @@
                 <h3>Populære varer</h3>
 
                 <!-- Linker kunden videre til siden med alle dagligvarer -->
-                <a asp-page="/Groceries" class="see-all-link">Se alle varer</a>
+                <a asp-page="/Product/GetAllProducts" class="see-all-link">Se alle varer</a>
             </div>
 
             <div class="product-grid">
@@ -147,219 +156,32 @@
             </div>
         </section>
     }
+
+    <!-- Viser kort hvordan kunden bruger LeveringAPS -->
+    <section class="how-it-works">
+        <h3>Sådan fungerer det</h3>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <span class="step-number">1</span>
+                <h4>Vælg varer</h4>
+                <p>Find dine dagligvarer via søgning eller produktoversigten.</p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">2</span>
+                <h4>Vælg levering</h4>
+                <p>Vælg den dato og det tidspunkt, der passer dig bedst.</p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">3</span>
+                <h4>Følg ordren</h4>
+                <p>Se ordrestatus og følg din levering frem til den er leveret.</p>
+            </div>
+        </div>
+    </section>
 </div>
 
-<style>
-    .frontpage {
-        padding-top: 24px;
-    }
 
-    .search-section {
-        text-align: center;
-        margin-bottom: 28px;
-    }
-
-        .search-section h1 {
-            margin-bottom: 18px;
-            color: #222;
-            font-size: 34px;
-        }
-
-    .search-form {
-        display: flex;
-        width: 100%;
-        max-width: 620px;
-        margin: 0 auto;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        overflow: hidden;
-    }
-
-    .search-input {
-        flex: 1;
-        padding: 14px 16px;
-        border: none;
-        font-size: 16px;
-        outline: none;
-    }
-
-    .search-btn,
-    .cart-btn {
-        border: none;
-        background-color: #4f46e5;
-        color: white;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    .search-btn {
-        padding: 0 24px;
-    }
-
-        .search-btn:hover,
-        .cart-btn:hover {
-            background-color: #4338ca;
-        }
-
-    .status-message {
-        max-width: 920px;
-        margin: 0 auto 18px auto;
-        padding: 12px;
-        background-color: #eef2ff;
-        color: #312e81;
-        border-radius: 8px;
-    }
-
-    .carousel-section,
-    .popular-section,
-    .search-results {
-        max-width: 920px;
-        margin: 0 auto 34px auto;
-    }
-
-    .carousel-content {
-        min-height: 280px;
-        padding: 48px;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        background-size: cover;
-        background-position: center;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-        .carousel-content::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-color: rgba(0,0,0,0.45);
-        }
-
-        .carousel-content h2,
-        .carousel-content p {
-            position: relative;
-            z-index: 1;
-            color: white;
-        }
-
-    .slide-groceries {
-        background-image: url('/images/groceries.jpg');
-    }
-
-    .slide-delivery {
-        background-image: url('/images/delivery.jpg');
-    }
-
-    .slide-tracking {
-        background-image: url('/images/tracking.jpg');
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-    }
-
-        .section-header h3,
-        .search-results h3 {
-            margin: 0 0 14px 0;
-            color: #333;
-        }
-
-    .see-all-link {
-        color: #4f46e5;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-        .see-all-link:hover {
-            text-decoration: underline;
-        }
-
-    .empty-result {
-        background-color: #f8f8f8;
-        padding: 18px;
-        border-radius: 8px;
-        color: #666;
-    }
-
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }
-
-    .product-card {
-        background-color: white;
-        padding: 18px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-        .product-card h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .product-card p {
-            color: #666;
-            margin-bottom: 16px;
-        }
-
-    .store-name {
-        margin: 0 0 12px 0;
-        color: #555;
-        font-size: 14px;
-    }
-
-    .product-bottom {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .product-actions {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .cart-btn {
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 14px;
-    }
-
-    .product-actions form {
-        margin: 0;
-    }
-
-    @@media (max-width: 800px) {
-        .product-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .search-form {
-            max-width: 100%;
-        }
-
-        .carousel-content {
-            padding: 32px 20px;
-        }
-
-        .product-actions {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-    }
-</style>
 
