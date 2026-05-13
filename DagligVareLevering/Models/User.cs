@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DagligVareLevering.Models.Enums;
 
 namespace DagligVareLevering.Models
 {
@@ -53,10 +54,5 @@ namespace DagligVareLevering.Models
 
 
     }
-    public enum UserRole
-    {
-        Customer,
-        Admin,
-        Worker
-    }
+
 }

@@ -1,4 +1,5 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -155,7 +156,6 @@ namespace DagligVareLevering.Models
                 UserId = userId!.Value,
                 Adress = user.Adress,
                 DeliveryPrice = 29m,
-                Status = OrderStatus.Processing
             };
 
             await _orderService.AddObjectAsync(order);

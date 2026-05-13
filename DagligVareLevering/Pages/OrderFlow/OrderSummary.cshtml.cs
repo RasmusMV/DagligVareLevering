@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.EntityFrameworkCore;
+using DagligVareLevering.Models.Enums;
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
