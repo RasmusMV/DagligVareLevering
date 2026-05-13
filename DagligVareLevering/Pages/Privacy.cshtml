@@ -1,8 +1,119 @@
 ﻿@page
-@model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Privatlivspolitik";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="privacy-page">
+    <div class="privacy-header">
+        <h2>Privatlivspolitik</h2>
+        <p>
+            Her kan du læse, hvordan LeveringAPS behandler dine personoplysninger,
+            når du opretter en bruger, bestiller varer og bruger vores leveringsservice.
+        </p>
+    </div>
+
+    <div class="privacy-card">
+        <h3>1. Hvilke oplysninger indsamler vi?</h3>
+        <p>
+            Når du bruger LeveringAPS, kan vi behandle oplysninger som navn, email,
+            telefonnummer, adgangskode, leveringsadresse, ordreoplysninger,
+            betalingsform og ordrestatus.
+        </p>
+
+        <h3>2. Hvad bruger vi oplysningerne til?</h3>
+        <p>
+            Oplysningerne bruges til at oprette og administrere din bruger, håndtere
+            din indkøbskurv, gennemføre bestillinger, vælge leveringstidspunkt,
+            vise kvitteringer og give dig mulighed for at følge din ordre.
+        </p>
+
+        <h3>3. Levering og medarbejderadgang</h3>
+        <p>
+            Leveringsmedarbejdere kan få adgang til nødvendige ordreoplysninger,
+            såsom leveringsadresse, leveringstidspunkt og de varer, der skal leveres.
+            Det gør det muligt at behandle og levere ordren korrekt.
+        </p>
+
+        <h3>4. Opbevaring af oplysninger</h3>
+        <p>
+            Vi opbevarer oplysninger, så længe det er nødvendigt for at kunne
+            administrere brugere, vise ordrehistorik og dokumentere gennemførte
+            eller annullerede ordrer.
+        </p>
+
+        <h3>5. Dine rettigheder</h3>
+        <p>
+            Som bruger kan du se og opdatere dine kontooplysninger. Du kan også
+            slette din bruger, hvis du ikke længere ønsker at bruge systemet.
+        </p>
+
+        <h3>6. Sikkerhed</h3>
+        <p>
+            Vi arbejder på at beskytte dine oplysninger mod uautoriseret adgang.
+            I en færdig produktionsløsning bør adgangskoder altid gemmes krypteret
+            eller hashed og aldrig som almindelig tekst.
+        </p>
+
+        <h3>7. Kontakt</h3>
+        <p>
+            Hvis du har spørgsmål til privatliv eller behandling af oplysninger,
+            kan du kontakte LeveringAPS på
+            <strong>kontakt@leveringaps.dk</strong>.
+        </p>
+    </div>
+</section>
+
+<style>
+    .privacy-page {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 0 40px 0;
+    }
+
+    .privacy-header {
+        margin-bottom: 22px;
+    }
+
+        .privacy-header h2 {
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .privacy-header p {
+            color: #555;
+            font-size: 17px;
+            line-height: 1.6;
+            max-width: 760px;
+        }
+
+    .privacy-card {
+        background-color: white;
+        padding: 28px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+        .privacy-card h3 {
+            margin-top: 24px;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 20px;
+        }
+
+            .privacy-card h3:first-child {
+                margin-top: 0;
+            }
+
+        .privacy-card p {
+            color: #444;
+            line-height: 1.65;
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+    @@media (max-width: 700px) {
+        .privacy-card {
+            padding: 20px;
+        }
+    }
+</style>
