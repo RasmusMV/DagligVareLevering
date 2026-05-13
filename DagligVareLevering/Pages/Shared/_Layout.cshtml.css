@@ -46,3 +46,154 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+
+/* Styling af navbar */
+
+.custom-navbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 14px 28px;
+    background-color: white;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+    margin-bottom: 24px;
+}
+
+.nav-left {
+    justify-self: start;
+}
+
+.nav-center {
+    justify-self: center;
+}
+
+.nav-right {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-link {
+    font-size: 24px;
+    font-weight: 800;
+    color: #222;
+    text-decoration: none;
+}
+
+    .brand-link:hover {
+        color: #4f46e5;
+    }
+
+.menu-btn {
+    background-color: #f4f4f4;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-weight: 700;
+    color: #333;
+}
+
+    .menu-btn:hover {
+        background-color: #e5e7eb;
+    }
+
+.nav-action,
+.cart-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+    .nav-action:hover,
+    .cart-link:hover {
+        color: #4f46e5;
+    }
+
+.cart-link {
+    padding: 8px 12px;
+    background-color: #4f46e5;
+    color: white;
+    border-radius: 8px;
+}
+
+    .cart-link:hover {
+        background-color: #4338ca;
+        color: white;
+    }
+
+.user-name {
+    color: #555;
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .custom-navbar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .nav-left,
+    .nav-center,
+    .nav-right {
+        justify-self: center;
+    }
+
+    .nav-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Footer med links til centrale informationssider */
+.site-footer {
+    margin-top: 40px;
+    padding: 22px 28px;
+    border-top: 1px solid #e5e7eb;
+    background-color: white;
+    color: #555;
+}
+
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+    .footer-content p {
+        margin: 0;
+    }
+
+.footer-links {
+    display: flex;
+    gap: 18px;
+}
+
+    .footer-links a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .footer-links a:hover {
+            color: #4f46e5;
+        }
+
+@media (max-width: 700px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+

@@ -61,6 +61,6 @@ namespace DagligVareLevering.Models
         [ForeignKey("WorkerId")]
         [InverseProperty("WorkerOrders")]
         public User? Worker { get; set; }
-
+       
     }
 }

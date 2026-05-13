@@ -11,14 +11,11 @@ namespace DagligVareLevering.Pages.OrderFlow
     {
         // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
         private IService<Models.Order> _orderService;
-        private IService<Models.Product> _productService;
-        private IService<OrderLine> _orderLineService;
+   
 
-        public OrderConfirmationModel(IService<Models.Order> ordreService, IService<OrderLine> orderLineService, IService<Models.Product> productService)
+        public OrderConfirmationModel(IService<Models.Order> ordreService)
         {
-            _orderService = ordreService;
-            _orderLineService = orderLineService;
-            _productService = productService;
+            _orderService = ordreService; 
         }
 
         public Models.Order? CurrentOrder { get; set; }
@@ -37,24 +34,13 @@ namespace DagligVareLevering.Pages.OrderFlow
              .Include(o => o.User)
              .Include(o => o.OrderLines)
              .ThenInclude(ol => ol.Product)
-             .Where(o => o.UserId == userId)
+             .Where(o => o.UserId == userId.Value)
              .OrderByDescending(o => o.TimeOfOrder)
              .FirstOrDefaultAsync();
 
 
             if (CurrentOrder == null)
                 return RedirectToPage("/OrderHistory");
-
-            // Hent ordrelinjerne for den aktuelle ordre
-            CurrentOrder.OrderLines = (await _orderLineService.GetObjectsAsync())
-                .Where(ol => ol.OrderId == CurrentOrder.OrderId)
-                .ToList();
-
-            // For hver ordrelinje, hent det tilhørende produkt
-            foreach (var line in CurrentOrder.OrderLines)
-            {
-                line.Product = await _productService.GetObjectByIdAsync(line.ProductId);
-            }
 
             TotalPrice = CurrentOrder.GetTotalPrice();
 

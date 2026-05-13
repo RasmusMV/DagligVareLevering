@@ -53,7 +53,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
             CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefault();
 
@@ -83,7 +83,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             // Henteer den nyeste ordre for brugeren
             CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefault();
 
@@ -118,13 +118,6 @@ namespace DagligVareLevering.Pages.OrderFlow
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
             return RedirectToPage("/OrderFlow/OrderSummary");
-        }
-
-        // Hjælpemetode, så vi ikke gentager de samme linjer i OnGet og OnPost
-        private void LoadCalendarData(int weekOffset)
-        {
-            TimeSlots = GetTimeSlots();
-            WeekDays = GetWeekDays(weekOffset);
         }
 
         // Tjekker om et leveringstidspunkt skal deaktiveres i tabellen

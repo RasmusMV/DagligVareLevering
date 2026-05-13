@@ -16,87 +16,98 @@
         var username = Context.Session.GetString("UserName");
     }
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">DagligVareLevering</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                       <li class="nav-item">
-                           <a class="nav-link text-dark" asp-area="" asp-page="/Product/GetAllProducts">Køb Ind</a>
-                       </li>     
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/OrderFlow/OrderHistory">Ordrehistorik</a>
-                        </li>                       
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Cart">Cart</a>
-                        </li>
-           
-                        @if (userId == null)
-                        {
-                          //ikke logget ind
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Login">Log Ind</a>
-                            </li>
+        <nav class="custom-navbar">
+            <div class="nav-left">
+                <div class="dropdown">
+                    <button class="menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Menu
+                    </button>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Register">Opret bruger</a>
-                            </li>
-                        }
-                        else
-                        {
-                           //logget ind
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">Hello @username</span>
-                            </li>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-page="/Index">Forside</a>
+                        </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Account">Min bruger</a>
+                        <li>
+                            <a class="dropdown-item" asp-page="/Product/GetAllProducts">Køb ind</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" asp-page="/OrderFlow/TrackOrder">Følg ordre</a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" asp-page="/OrderFlow/OrderHistory">Ordrehistorik</a>
+                        </li>
+
+                        @if (userId != null)
+                        {
+                            <li><hr class="dropdown-divider" /></li>
+
+                            <li>
+                                <a class="dropdown-item" asp-page="/Account">Min bruger</a>
                             </li>
 
                             @if (role == "Admin")
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/AdminChanges">Manage Users</a>
+                                <li>
+                                    <a class="dropdown-item" asp-page="/AdminChanges">Administrer brugere</a>
                                 </li>
                             }
 
                             @if (role == "Worker")
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-page="/Worker">Worker Page</a>
+                                <li>
+                                    <a class="dropdown-item" asp-page="/Worker">Worker dashboard</a>
                                 </li>
                             }
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Logout">Log ud</a>
+                            <li>
+                                <a class="dropdown-item" asp-page="/Logout">Log ud</a>
                             </li>
                         }
                     </ul>
                 </div>
             </div>
+
+            <div class="nav-center">
+                <a asp-page="/Index" class="brand-link">LeveringAPS</a>
+            </div>
+
+            <div class="nav-right">
+                @if (userId == null)
+                {
+                    <a asp-page="/Login" class="nav-action">Log ind</a>
+                    <a asp-page="/Register" class="nav-action">Opret</a>
+                }
+                else
+                {
+                    <span class="user-name">Hej @username</span>
+                }
+
+                <a asp-page="/Cart" class="cart-link">Kurv</a>
+            </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - DagligVareLevering - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2026 - LeveringAPS</p>
+
+            <div class="footer-links">
+                <a asp-page="/Privacy">Privatlivspolitik</a>
+                <a asp-page="/AboutUs">Om os</a>
+                <a asp-page="/Jobs">Søg job</a>
+            </div>
         </div>
     </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
