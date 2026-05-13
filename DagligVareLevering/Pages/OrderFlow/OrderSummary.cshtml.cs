@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.EntityFrameworkCore;
+using DagligVareLevering.Models.Enums;
 
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderSummaryModel : PageModel
     {
         // Service til at håndtere databaseoperationer for ordrer
         private IService<Order> _orderService;
-
-        public OrderSummaryModel(IService<Order> orderService)
+        private IService<BasketItem> _basketItemService;
+        public OrderSummaryModel(IService<Order> orderService, IService<BasketItem> basketItemService)
         {
             _orderService = orderService;
+            _basketItemService = basketItemService;
         }
 
         // Indeholder den aktuelle ordre, som kunden er ved at gennemføre
@@ -88,6 +90,13 @@ namespace DagligVareLevering.Pages.Purchase
 
             // Gemmer ændringerne i databasen
             await _orderService.UpdateObjectAsync(CurrentOrder);
+
+            // Fjerner BasketItem fra kurven
+            foreach (BasketItem item in (await _basketItemService.GetObjectsAsync()).Where(b => b.UserId == userId))
+            {
+                await _basketItemService.DeleteObjectAsync(item);
+            }
+
             return RedirectToPage("/OrderFlow/OrderConfirmation");
 
         }

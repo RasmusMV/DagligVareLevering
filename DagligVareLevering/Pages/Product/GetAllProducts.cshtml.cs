@@ -7,8 +7,9 @@ using System.Data;
 using System.Linq;
 using System.Collections.Generic;
 using DagligVareLevering.Service;
+using Microsoft.IdentityModel.Tokens;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Product
 {
     public class GroceriesModel : PageModel
     {
@@ -66,18 +67,33 @@ namespace DagligVareLevering.Pages
         public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
+            //Finder første instans hvor userId og productId er i en entity
+            var existingBasketItem = await _basketService.GetAllObjectInfoAsync()
+                .Where(x => x.UserId == userId && x.ProductId == productId).FirstOrDefaultAsync();
+            //Hvis der er en entity der har både userId og productId allerede, så øges Quantity propertyen med 1
+            if (existingBasketItem != null)
+            {
+                existingBasketItem.Quantity += 1;
+                await _basketService.UpdateObjectAsync(existingBasketItem);
+            }
+            //Ellers bliver en ny entity lavet med productId og userId
+            else
+            {
+                BasketItem newBasketItem = new BasketItem();
+                newBasketItem.ProductId = productId;
+                newBasketItem.UserId = userId!.Value;
+                newBasketItem.Quantity = 1;
+                await _basketService.AddObjectAsync(newBasketItem);
+            }
 
-            BasketItem newBasketItem = new BasketItem();
-            newBasketItem.ProductId = productId;
-            newBasketItem.UserId = userId!.Value;
-            newBasketItem.Quantity = 1;
-            await _basketService.AddObjectAsync(newBasketItem);
             return RedirectToPage();
         }
+
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             Models.Product product = await _dbService.GetObjectByIdAsync(id);

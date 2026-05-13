@@ -1,11 +1,12 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Numerics;
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderHistoryModel : PageModel
     {
@@ -26,8 +27,10 @@ namespace DagligVareLevering.Pages.Purchase
             if(role == "Customer")
             {
                 AllOrders = await _orderService.GetAllObjectInfoAsync()
-                    .Include(o => o.OrderLines).ThenInclude(ol => ol.Product)
-                    .Where(o => o.UserId == HttpContext.Session.GetInt32("UserId")).ToListAsync();
+                    .Include(o => o.OrderLines)
+                    .ThenInclude(ol => ol.Product)
+                    .Where(o => o.UserId == HttpContext.Session.GetInt32("UserId"))
+                    .ToListAsync();
 
                 GrandTotal = 0;
                 TotalItems = 0;
@@ -41,14 +44,47 @@ namespace DagligVareLevering.Pages.Purchase
             else if(role == "Admin")
             {
                 AllOrders = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
+                .Include(o => o.OrderLines)
+                .ThenInclude(ol => ol.Product)
+                .ToListAsync();
 
+            }
+            else if(role == "Worker")
+            {
+                AllOrders = await _orderService.GetAllObjectInfoAsync()
+                    .Include(o => o.OrderLines)
+                    .ThenInclude(ol => ol.Product)
+                    .Include(o => o.User)
+                    .Where(o => o.WorkerId == null && (o.Status == OrderStatus.Processing || o.Status == OrderStatus.Received))
+                    .ToListAsync();
             }
             else
             {
                 return RedirectToPage("/Login");
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostTakeOrderAsync(int orderId)
+        {
+            int? workerId = HttpContext.Session.GetInt32("UserId");
+            if(workerId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            var order = await _orderService.GetAllObjectInfoAsync()
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+            if(order != null && order.WorkerId == null)
+            {
+                order.WorkerId = workerId;
+                order.Status = OrderStatus.OutForDelivery;
+                await _orderService.UpdateObjectAsync(order);
+            }
+
+            return RedirectToPage("/OrderFlow/DeliveryRoute");
+
         }
 
     }

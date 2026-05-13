@@ -1,10 +1,11 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore; 
 
-namespace DagligVareLevering.Pages.Purchase
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class TrackOrderModel : PageModel
     {// Service bruges til at hente ordredata fra databasen
@@ -35,7 +36,7 @@ namespace DagligVareLevering.Pages.Purchase
         }
 
         // Tjekker om et trin i ordrestatussen er nået
-        public bool IsStepCompleted(string step)
+        public bool IsStepCompleted(OrderStatus step)
         {
             if (CurrentOrder == null)
             {
@@ -43,7 +44,7 @@ namespace DagligVareLevering.Pages.Purchase
             }
 
             // Statusserne er placeret i den rækkefølge, ordren gennemgår dem
-            List<string> statusOrder = new List<string>
+            List<OrderStatus> statusOrder = new List<OrderStatus>
             {
                 OrderStatus.Received,
                 OrderStatus.Processing,

@@ -1,6 +1,7 @@
 ﻿@page
 @using DagligVareLevering.Models
-@model DagligVareLevering.Pages.Purchase.TrackOrderModel
+@using DagligVareLevering.Models.Enums
+@model DagligVareLevering.Pages.OrderFlow.TrackOrderModel
 
 
 <h2>Følg din ordre</h2>
@@ -30,7 +31,7 @@ else
 
             <p>
                 <strong>Forventet levering:</strong>
-                @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy")
+                @Model.CurrentOrder.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
                 kl. @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
             </p>
         </div>

@@ -1,5 +1,5 @@
 ﻿@page
-@model DagligVareLevering.Pages.Purchase.OrderSummaryModel
+@model DagligVareLevering.Pages.OrderFlow.OrderSummaryModel
 @{
 }
 
@@ -19,7 +19,7 @@ else
         <h3>Levering </h3>
         <p>
             <strong>Valgt levering:</strong>
-            @Model.CurrentOrder.ExpectedDeliveryDate.ToString("dd-MM-yyyy") kl.
+            @Model.CurrentOrder.ExpectedDeliveryTime.ToString("dd-MM-yyyy") kl.
             @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
         </p>
 
