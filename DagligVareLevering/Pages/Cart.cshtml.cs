@@ -50,7 +50,7 @@ namespace DagligVareLevering.Models
             }
 
             // Hent varer i kurven for den aktuelle bruger og beregn priser
-            await LoadCartData(userId!.Value);
+            await LoadCartData(userId.Value);
             return Page();
         }
 
@@ -65,7 +65,7 @@ namespace DagligVareLevering.Models
 
             // Find det indkøbselement, der skal fjernes, baseret på produktId
             BasketItem? itemToRemove = (await _dbService.GetObjectsAsync())
-                  .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, slet det fra databasen
             if (itemToRemove != null)
@@ -87,7 +87,7 @@ namespace DagligVareLevering.Models
 
             // Find det indkøbselement, der skal forøges, baseret på produktId og userId
             BasketItem? itemToIncrease = (await _dbService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, forøg mængden og opdater det i databasen
             if (itemToIncrease != null && itemToIncrease.Quantity < 100)
@@ -110,7 +110,7 @@ namespace DagligVareLevering.Models
 
             // Find det indkøbselement, der skal formindskes, baseret på produktId og userId
             BasketItem? itemToDecrease = (await _dbService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, formindsk mængden og opdater det i databasen. Hvis mængden når 0, slet elementet
             if (itemToDecrease != null)
@@ -140,10 +140,15 @@ namespace DagligVareLevering.Models
                 return RedirectToPage("/Login");
             }
 
-            User user = await _userService.GetObjectByIdAsync(userId!.Value);
+            User? user = await _userService.GetObjectByIdAsync(userId.Value);
+
+            if (user == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             BasketItems = (await _dbService.GetObjectsAsync())
-                .Where(b => b.UserId == userId)
+                .Where(b => b.UserId == userId.Value)
                 .ToList();
 
             if (BasketItems.Count == 0)
@@ -153,7 +158,7 @@ namespace DagligVareLevering.Models
 
             Order order = new Order
             {
-                UserId = userId!.Value,
+                UserId = userId.Value,
                 Adress = user.Adress,
                 DeliveryPrice = 29m,
             };

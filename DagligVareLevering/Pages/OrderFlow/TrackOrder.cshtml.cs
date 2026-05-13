@@ -29,7 +29,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefaultAsync();
             return Page();
@@ -80,7 +80,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefaultAsync();
 
