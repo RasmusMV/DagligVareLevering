@@ -8,14 +8,21 @@
     <section class="search-section">
         <h1>Hvad mangler du i dag?</h1>
 
-        <!-- Søgefelt øverst på forsiden -->
+        <!-- Søgefeltet sender søgeteksten som en GET-request, så resultatet kan vises på samme side -->
         <form method="get" class="search-form">
             <input asp-for="SearchText" class="search-input" placeholder="Søg efter varer..." />
             <button type="submit" class="search-btn">Søg</button>
         </form>
     </section>
 
-    <!-- Karrusel under søgefeltet -->
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="status-message">
+            @TempData["StatusMessage"]
+        </div>
+    }
+
+    <!-- Karrusellen viser centrale funktioner i systemet og skifter automatisk mellem slides -->
     <section class="carousel-section">
         <div id="frontpageCarousel"
              class="carousel slide"
@@ -23,14 +30,7 @@
              data-bs-interval="3500"
              data-bs-pause="false">
 
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#frontpageCarousel" data-bs-slide-to="2"></button>
-            </div>
-
             <div class="carousel-inner">
-
                 <div class="carousel-item active">
                     <div class="carousel-content slide-groceries">
                         <h2>Friske dagligvarer leveret til døren</h2>
@@ -51,7 +51,6 @@
                         <p>Se hvor langt din ordre er, fra modtaget til leveret.</p>
                     </div>
                 </div>
-
             </div>
 
             <button class="carousel-control-prev" type="button" data-bs-target="#frontpageCarousel" data-bs-slide="prev">
@@ -64,32 +63,7 @@
         </div>
     </section>
 
-    <!-- Viser et udvalg af produkter på forsiden -->
-    @if (Model.PopularProducts.Count > 0)
-    {
-        <section class="popular-section">
-            <div class="section-header">
-                <h3>Populære varer</h3>
-                <a asp-page="/Product/Index" class="see-all-link">Se alle varer</a>
-            </div>
-
-            <div class="product-grid">
-                @foreach (var product in Model.PopularProducts)
-                {
-                    <div class="product-card">
-                        <h4>@product.Name</h4>
-                        <p>@product.Information</p>
-
-                        <div class="product-bottom">
-                            <strong>@product.Price.ToString("C")</strong>
-                        </div>
-                    </div>
-                }
-            </div>
-        </section>
-    }
-
-    <!-- Viser søgeresultater, hvis kunden har søgt efter en vare -->
+    <!-- Søgeresultater vises over populære varer, når kunden har søgt efter et produkt -->
     @if (!string.IsNullOrWhiteSpace(Model.SearchText))
     {
         <section class="search-results">
@@ -110,13 +84,67 @@
                             <h4>@product.Name</h4>
                             <p>@product.Information</p>
 
+                            <!-- Viser hvilken butik produktet hører til -->
+                            <p class="store-name">
+                                <strong>Butik:</strong> @product.Store.Name
+                            </p>
+
                             <div class="product-bottom">
                                 <strong>@product.Price.ToString("C")</strong>
+
+                                <div class="product-actions">
+                                    <!-- Formularen lægger produktet direkte i den indloggede brugers kurv -->
+                                    <form method="post" asp-page-handler="AddToCart">
+                                        <input type="hidden" name="productId" value="@product.ProductId" />
+                                        <input type="hidden" asp-for="SearchText" />
+                                        <button type="submit" class="cart-btn">Læg i kurv</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     }
                 </div>
             }
+        </section>
+    }
+
+    <!-- Populære varer viser et udvalg af produkter fra databasen på forsiden -->
+    @if (Model.PopularProducts.Count > 0)
+    {
+        <section class="popular-section">
+            <div class="section-header">
+                <h3>Populære varer</h3>
+
+                <!-- Linker kunden videre til siden med alle dagligvarer -->
+                <a asp-page="/Groceries" class="see-all-link">Se alle varer</a>
+            </div>
+
+            <div class="product-grid">
+                @foreach (var product in Model.PopularProducts)
+                {
+                    <div class="product-card">
+                        <h4>@product.Name</h4>
+                        <p>@product.Information</p>
+
+                        <!-- Viser hvilken butik produktet hører til -->
+                        <p class="store-name">
+                            <strong>Butik:</strong> @product.Store.Name
+                        </p>
+
+                        <div class="product-bottom">
+                            <strong>@product.Price.ToString("C")</strong>
+
+                            <div class="product-actions">
+                                <!-- Formularen lægger produktet direkte i den indloggede brugers kurv -->
+                                <form method="post" asp-page-handler="AddToCart">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <button type="submit" class="cart-btn">Læg i kurv</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </section>
     }
 </div>
@@ -156,8 +184,8 @@
         outline: none;
     }
 
-    .search-btn {
-        padding: 0 24px;
+    .search-btn,
+    .cart-btn {
         border: none;
         background-color: #4f46e5;
         color: white;
@@ -165,11 +193,27 @@
         cursor: pointer;
     }
 
-        .search-btn:hover {
+    .search-btn {
+        padding: 0 24px;
+    }
+
+        .search-btn:hover,
+        .cart-btn:hover {
             background-color: #4338ca;
         }
 
-    .carousel-section {
+    .status-message {
+        max-width: 920px;
+        margin: 0 auto 18px auto;
+        padding: 12px;
+        background-color: #eef2ff;
+        color: #312e81;
+        border-radius: 8px;
+    }
+
+    .carousel-section,
+    .popular-section,
+    .search-results {
         max-width: 920px;
         margin: 0 auto 34px auto;
     }
@@ -201,18 +245,7 @@
         .carousel-content p {
             position: relative;
             z-index: 1;
-        }
-
-        .carousel-content h2 {
-            font-size: 30px;
             color: white;
-            margin-bottom: 12px;
-        }
-
-        .carousel-content p {
-            font-size: 18px;
-            color: white;
-            margin: 0;
         }
 
     .slide-groceries {
@@ -225,12 +258,6 @@
 
     .slide-tracking {
         background-image: url('/images/tracking.jpg');
-    }
-
-    .popular-section,
-    .search-results {
-        max-width: 920px;
-        margin: 0 auto 34px auto;
     }
 
     .section-header {
@@ -287,10 +314,33 @@
             margin-bottom: 16px;
         }
 
+    .store-name {
+        margin: 0 0 12px 0;
+        color: #555;
+        font-size: 14px;
+    }
+
     .product-bottom {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .product-actions {
+        display: flex;
+        justify-content: flex-start;
         align-items: center;
+        gap: 10px;
+    }
+
+    .cart-btn {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .product-actions form {
+        margin: 0;
     }
 
     @@media (max-width: 800px) {
@@ -304,6 +354,11 @@
 
         .carousel-content {
             padding: 32px 20px;
+        }
+
+        .product-actions {
+            align-items: flex-start;
+            flex-direction: column;
         }
     }
 </style>
