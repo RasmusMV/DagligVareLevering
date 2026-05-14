@@ -1,14 +1,14 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class RegisterModel : PageModel
 {
-    private readonly IService<User> _userService;
+    private readonly IRepository<User> _userService;
 
-    public RegisterModel(IService<User> userService)
+    public RegisterModel(IRepository<User> userService)
     {
         _userService = userService;
     }

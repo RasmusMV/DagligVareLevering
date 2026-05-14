@@ -1,7 +1,8 @@
 
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +12,8 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class DeliveryTimeModel : PageModel
     {
-        private IService<Order> _orderService;
-        public DeliveryTimeModel(IService<Order> orderService)
+        private IOrderService _orderService;
+        public DeliveryTimeModel(IOrderService orderService)
         {
             _orderService = orderService;
         }
@@ -52,10 +53,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
-            CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefault();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
             if (CurrentOrder == null)
             {
@@ -82,10 +80,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             // Henteer den nyeste ordre for brugeren
-            CurrentOrder = (await _orderService.GetObjectsAsync())
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefault();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
             if (CurrentOrder == null)
             {

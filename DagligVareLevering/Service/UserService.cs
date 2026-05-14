@@ -1,21 +1,22 @@
 ﻿using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using Microsoft.EntityFrameworkCore;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 
 namespace DagligVareLevering.Service
 {
-    public class UserService : IUserService
+    public class UserService : GenericService<User>, IUserService
     {
-        private IService<Models.User> _userService;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IService<Models.User> userService)
+        public UserService(IUserRepository userRepository) : base(userRepository)
         {
-            _userService = userService;
+            _userRepository = userRepository;
         }
 
-        public async Task<int> GetTotalUsers()
+        public Task<int> GetTotalUsersAsync()
         {
-            return await _userService.GetAllObjectInfoAsync().Where(x => x.Role == UserRole.Customer).CountAsync();
+            return _userRepository.GetTotalUsersAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +11,13 @@ namespace DagligVareLevering.Pages.OrderFlow
     public class OrderConfirmationModel : PageModel
     {
         // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
-        private IService<Models.Order> _orderService;
-        private IService<Models.Product> _productService;
-        private IService<OrderLine> _orderLineService;
+        private IOrderService _orderService;
+        private IRepository<Models.Product> _productService;
+        private IRepository<OrderLine> _orderLineService;
 
-        public OrderConfirmationModel(IService<Models.Order> ordreService, IService<OrderLine> orderLineService, IService<Models.Product> productService)
+        public OrderConfirmationModel(IOrderService orderService, IRepository<OrderLine> orderLineService, IRepository<Models.Product> productService)
         {
-            _orderService = ordreService;
+            _orderService = orderService;
             _orderLineService = orderLineService;
             _productService = productService;
         }
@@ -33,13 +34,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
             // Hent den seneste ordre for den givne bruger
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-             .Include(o => o.User)
-             .Include(o => o.OrderLines)
-             .ThenInclude(ol => ol.Product)
-             .Where(o => o.UserId == userId)
-             .OrderByDescending(o => o.TimeOfOrder)
-             .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
 
             if (CurrentOrder == null)

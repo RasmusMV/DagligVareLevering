@@ -1,49 +1,82 @@
 ﻿using DagligVareLevering.Models;
+using DagligVareLevering.Models.DTOs;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 
 namespace DagligVareLevering.Service
 {
-    public class ProductService : IProductService
+    public class ProductService : GenericService<Product>, IProductService
     {
-        private readonly IService<Product> _dbService;
 
-        public ProductService(IService<Product> dbService)
+        public ProductService(IRepository<Product> repository) : base(repository){ }
+
+        public async Task CreateProductAsync(ProductDto productDto)
         {
-            _dbService = dbService;
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Information = productDto.Information,
+                StoreId = productDto.StoreId
+            };
+            await AddObjectAsync(product);
+        }
+
+        public async Task<Dictionary<string, List<Product>>> GetGroupedProductsAsync(decimal? maxPrice, int? storeId)
+        {
+            var products = await GetObjectsAsync();
+
+            // filtrer før gruppering
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.Price <= maxPrice.Value).ToList();
+            }
+
+            if (storeId.HasValue)
+            {
+                products = products.Where(p => p.StoreId == storeId.Value).ToList();
+            }
+
+            return products.OrderBy(p => p.Price)
+                .GroupBy(p => p.Name)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
         }
 
         public async Task<IEnumerable<Product>> NameSearch(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return await _dbService.GetObjectsAsync();
+                return await GetObjectsAsync();
             }
-            return (await _dbService.GetObjectsAsync())
+            return (await GetObjectsAsync())
                 .Where(x => x.Name.ToLower().Contains(name.ToLower()));
         }
 
         public async Task<IEnumerable<Product>> PriceFilter(int maxPrice, int minPrice = 0)
         {
-            return (await _dbService.GetObjectsAsync()).Where(x => (minPrice == 0 && x.Price <= maxPrice) || (maxPrice == 0 && x.Price >= minPrice) || (x.Price >= minPrice && x.Price <= maxPrice));
+            return (await GetObjectsAsync())
+                .Where(x => (minPrice == 0 && x.Price <= maxPrice) || (maxPrice == 0 && x.Price >= minPrice) || (x.Price >= minPrice && x.Price <= maxPrice));
         }
 
         public async Task<IEnumerable<Product>> SortById()
         {
-            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.ProductId);
+            return (await GetObjectsAsync()).OrderBy(x => x.ProductId);
         }
 
         public async Task<IEnumerable<Product>> SortByIdDescending()
         {
-            return (await _dbService.GetObjectsAsync()).OrderByDescending(x => x.ProductId);
+            return (await GetObjectsAsync()).OrderByDescending(x => x.ProductId);
         }
 
         public async Task<IEnumerable<Product>> SortByName()
         {
-            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.Name);
+            return (await GetObjectsAsync()).OrderBy(x => x.Name);
         }
 
         public async Task<IEnumerable<Product>> SortByPrice()
         {
-            return (await _dbService.GetObjectsAsync()).OrderBy(x => x.Price);
+            return (await GetObjectsAsync()).OrderBy(x => x.Price);
         }
     }
 }

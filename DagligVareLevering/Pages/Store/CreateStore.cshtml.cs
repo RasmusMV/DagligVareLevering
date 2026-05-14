@@ -1,5 +1,5 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,9 +7,9 @@ namespace DagligVareLevering.Pages.Store
 {
     public class CreateStoreModel : PageModel
     {
-        private IService<Models.Store> _dbService;
+        private IRepository<Models.Store> _dbService;
 
-        public CreateStoreModel(IService<Models.Store> dbService)
+        public CreateStoreModel(IRepository<Models.Store> dbService)
         {
             _dbService = dbService;
         }

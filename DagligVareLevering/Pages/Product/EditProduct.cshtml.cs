@@ -1,4 +1,5 @@
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -6,10 +7,10 @@ namespace DagligVareLevering.Pages.Product
 {
     public class EditProductModel : PageModel
     {
-        private IService<Models.Product> _productService;
-        private IService<Models.Store> _storeService;
+        private IProductService _productService;
+        private IRepository<Models.Store> _storeService;
 
-        public EditProductModel(IService<Models.Product> productService, IService<Models.Store> storeService)
+        public EditProductModel(IProductService productService, IRepository<Models.Store> storeService)
         {
             _productService = productService;
             _storeService = storeService;

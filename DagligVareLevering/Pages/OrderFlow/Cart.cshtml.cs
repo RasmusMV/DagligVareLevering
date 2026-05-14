@@ -1,21 +1,23 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace DagligVareLevering.Models
+namespace DagligVareLevering.Pages.OrderFlow
 {
     public class CartModel : PageModel
     {
         //Service til at håndtere databaseoperationer for produkter og indkøbskurv
-        private IService<Product> _productService;
-        private IService<BasketItem> _dbService;
-        private IService<Order> _orderService;
-        private IService<OrderLine> _orderLineService;
-        private IService<User> _userService;
+        private IProductService _productService;
+        private IBasketItemService _basketItemService;
+        private IOrderService _orderService;
+        private IRepository<OrderLine> _orderLineService;
+        private IUserService _userService;
 
 
         public decimal DeliveryPrice { get; set; }
@@ -23,13 +25,13 @@ namespace DagligVareLevering.Models
         public decimal TotalWithDelivery { get; set; }
 
         public CartModel(
-        IService<BasketItem> dbService,
-        IService<Product> productService,
-        IService<Order> orderService,
-        IService<OrderLine> orderLineService,
-        IService<User> userService)
+        IBasketItemService basketItemService,
+        IProductService productService,
+        IOrderService orderService,
+        IRepository<OrderLine> orderLineService,
+        IUserService userService)
         {
-            _dbService = dbService;
+            _basketItemService = basketItemService;
             _productService = productService;
             _orderService = orderService;
             _orderLineService = orderLineService;
@@ -64,13 +66,13 @@ namespace DagligVareLevering.Models
             }
 
             // Find det indkøbselement, der skal fjernes, baseret på produktId
-            BasketItem? itemToRemove = (await _dbService.GetObjectsAsync())
+            BasketItem? itemToRemove = (await _basketItemService.GetObjectsAsync())
                   .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             // Hvis elementet findes, slet det fra databasen
             if (itemToRemove != null)
             {
-                await _dbService.DeleteObjectAsync(itemToRemove);
+                await _basketItemService.DeleteObjectAsync(itemToRemove);
             }
 
             return RedirectToPage();
@@ -86,14 +88,14 @@ namespace DagligVareLevering.Models
             }
 
             // Find det indkøbselement, der skal forøges, baseret på produktId og userId
-            BasketItem? itemToIncrease = (await _dbService.GetObjectsAsync())
+            BasketItem? itemToIncrease = (await _basketItemService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             // Hvis elementet findes, forøg mængden og opdater det i databasen
             if (itemToIncrease != null && itemToIncrease.Quantity < 100)
             {
                 itemToIncrease.Quantity++;
-                await _dbService.UpdateObjectAsync(itemToIncrease);
+                await _basketItemService.UpdateObjectAsync(itemToIncrease);
             }
 
             return RedirectToPage();
@@ -109,7 +111,7 @@ namespace DagligVareLevering.Models
             }
 
             // Find det indkøbselement, der skal formindskes, baseret på produktId og userId
-            BasketItem? itemToDecrease = (await _dbService.GetObjectsAsync())
+            BasketItem? itemToDecrease = (await _basketItemService.GetObjectsAsync())
                 .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
 
             // Hvis elementet findes, formindsk mængden og opdater det i databasen. Hvis mængden når 0, slet elementet
@@ -119,11 +121,11 @@ namespace DagligVareLevering.Models
 
                 if (itemToDecrease.Quantity <= 0)
                 {
-                    await _dbService.DeleteObjectAsync(itemToDecrease);
+                    await _basketItemService.DeleteObjectAsync(itemToDecrease);
                 }
                 else
                 {
-                    await _dbService.UpdateObjectAsync(itemToDecrease);
+                    await _basketItemService.UpdateObjectAsync(itemToDecrease);
                 }
                
               
@@ -142,7 +144,7 @@ namespace DagligVareLevering.Models
 
             User user = await _userService.GetObjectByIdAsync(userId!.Value);
 
-            BasketItems = (await _dbService.GetObjectsAsync())
+            BasketItems = (await _basketItemService.GetObjectsAsync())
                 .Where(b => b.UserId == userId)
                 .ToList();
 
@@ -179,7 +181,7 @@ namespace DagligVareLevering.Models
         // LoadCartData -metoden henter indkøbskurvens data for en given bruger, herunder hvilke varer der er i kurven, og beregner priserne
         private async Task LoadCartData(int userId)
         {
-            BasketItems = (await _dbService.GetObjectsAsync())
+            BasketItems = (await _basketItemService.GetObjectsAsync())
                 .Where(b => b.UserId == userId)
                 .ToList();
 

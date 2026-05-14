@@ -1,5 +1,5 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,14 +7,14 @@ namespace DagligVareLevering.Pages
 {
     public class OfferEmailsModel : PageModel
     {
-        private IService<User> _userService;
+        private IRepository<User> _userService;
 
         [BindProperty]
         public bool WantsOfferEmails { get; set; }
 
         public string Message { get; set; }
 
-        public OfferEmailsModel(IService<User> userService)
+        public OfferEmailsModel(IRepository<User> userService)
         {
             _userService = userService;
         }

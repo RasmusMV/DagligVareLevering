@@ -1,9 +1,12 @@
 ﻿using DagligVareLevering.Models;
+using DagligVareLevering.Models.DTOs;
 
-namespace DagligVareLevering.Service
+namespace DagligVareLevering.Service.Interfaces
 {
-    public interface IProductService
+    public interface IProductService : IService<Product>
     {
+        Task CreateProductAsync(ProductDto productDto);
+        Task<Dictionary<string, List<Product>>> GetGroupedProductsAsync(decimal? maxPrice, int? storeId);
         Task<IEnumerable<Product>> SortById();
         Task<IEnumerable<Product>> SortByIdDescending();
         Task<IEnumerable<Product>> SortByPrice();

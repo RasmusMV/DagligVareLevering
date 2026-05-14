@@ -1,5 +1,5 @@
 using DagligVareLevering.EFDbContext;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +10,9 @@ namespace DagligVareLevering.Pages
     public class IndexModel : PageModel
     {
         // Service bruges til at hente produkter fra databasen
-        private IService<DagligVareLevering.Models.Product> _productService;
+        private IRepository<DagligVareLevering.Models.Product> _productService;
 
-        public IndexModel(IService<DagligVareLevering.Models.Product> productService)
+        public IndexModel(IRepository<DagligVareLevering.Models.Product> productService)
         {
             _productService = productService;
         }

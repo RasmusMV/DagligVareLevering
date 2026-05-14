@@ -1,6 +1,7 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,11 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class DeliveryRouteModel : PageModel
     {
-        private IService<Order> _orderService;
-        private IService<User> _userService;
+        private IOrderService _orderService;
+        private IUserService _userService;
         private IConfiguration _configuration;
 
-        public DeliveryRouteModel(IService<Order> orderService, IService<User> userService, IConfiguration configuration)
+        public DeliveryRouteModel(IOrderService orderService, IUserService userService, IConfiguration configuration)
         {
             _orderService = orderService;
             _userService = userService;
@@ -36,13 +37,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines.OrderBy(ol => ol.Product.StoreId))
-                .ThenInclude(ol => ol.Product)
-                .ThenInclude(p => p.Store)
-                .Include(o => o.User)
-                .Where(o => o.WorkerId == workerId && o.Status == OrderStatus.OutForDelivery && o.OrderId == id)
-                .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetWorkerActiveOrderAsync(workerId.Value, id);
 
             if (CurrentOrder == null)
             {
@@ -58,7 +53,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             DeliveryAdress = CurrentOrder.Adress + ", Danmark";
 
-            var worker = await _userService.GetObjectByIdAsync(workerId!.Value);
+            var worker = await _userService.GetObjectByIdAsync(workerId.Value);
             WorkerAdress = worker.Adress + ", Danmark";
 
             return Page();
@@ -72,14 +67,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            var order = await _orderService.GetAllObjectInfoAsync()
-                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.WorkerId == workerId);
-
-            if(order != null)
-            {
-                order.Status = OrderStatus.Delivered;
-                await _orderService.UpdateObjectAsync(order);
-            }
+            await _orderService.MarkOrderAsDeliveredAsync(orderId, workerId.Value);
 
             return RedirectToPage("/OrderFlow/OrderHistory");
         }

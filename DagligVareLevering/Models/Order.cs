@@ -14,11 +14,6 @@ namespace DagligVareLevering.Models
             OrderLines = new List<OrderLine>();
         }
 
-        public decimal GetTotalPrice()
-        {
-            return OrderLines.Sum(line => line.GetLineTotal()) + DeliveryPrice;
-        }
-
         public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
         {
             OrderLines = orderLines;
@@ -62,5 +57,9 @@ namespace DagligVareLevering.Models
         [InverseProperty("WorkerOrders")]
         public User? Worker { get; set; }
 
+        public decimal GetTotalPrice()
+        {
+            return OrderLines.Sum(line => line.GetLineTotal()) + DeliveryPrice;
+        }
     }
 }

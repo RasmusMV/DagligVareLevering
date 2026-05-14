@@ -1,5 +1,6 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,9 +8,9 @@ namespace DagligVareLevering.Pages.Product
 {
     public class ProductDetailsModel : PageModel
     {
-        private readonly IService<Models.Product> _productService;
+        private readonly IProductService _productService;
 
-        public ProductDetailsModel(IService<Models.Product> productService)
+        public ProductDetailsModel(IProductService productService)
         {
             _productService = productService;
         }

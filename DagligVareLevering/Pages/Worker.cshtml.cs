@@ -1,15 +1,16 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class WorkerModel : PageModel
 {
-    private IService<Order> _orderService;
+    private IOrderService _orderService;
 
-    public WorkerModel(IService<Order> orderService)
+    public WorkerModel(IOrderService orderService)
     {
         _orderService = orderService;
     }
@@ -25,12 +26,7 @@ public class WorkerModel : PageModel
             return RedirectToPage("/Login");
         }
 
-        ActiveOrders = await _orderService.GetAllObjectInfoAsync()
-            .Include(o => o.OrderLines)
-            .ThenInclude(ol => ol.Product)
-            .Include(o => o.User)
-            .Where(o => o.WorkerId == workerId && o.Status == OrderStatus.OutForDelivery)
-            .ToListAsync();
+        ActiveOrders = (await _orderService.GetOrdersByWorkerAsync(workerId!.Value)).ToList();
 
         return Page();
     }
