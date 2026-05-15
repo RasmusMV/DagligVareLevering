@@ -14,9 +14,29 @@ namespace DagligVareLevering.Service
             _userRepository = userRepository;
         }
 
-        public Task<int> GetTotalUsersAsync()
+        public async Task<int> GetTotalUsersAsync()
         {
-            return _userRepository.GetTotalUsersAsync();
+            return await _userRepository.GetTotalUsersAsync();
+        }
+
+        public async Task<User?> LoginAsync(string email, string password)
+        {
+            return (await GetObjectsAsync())
+                .FirstOrDefault(u => u.Email == email && u.Password == password);
+        }
+
+        public async Task UpdateOfferEmailsAsync(int userId, bool wantsOfferEmails)
+        {
+            var user = await GetObjectByIdAsync(userId);
+
+            user.WantsOfferEmails = wantsOfferEmails;
+            await UpdateObjectAsync(user);
+        }
+
+        public async Task RegisterUserAsync(User user)
+        {
+            user.Role = UserRole.Customer;
+            await AddObjectAsync(user);
         }
     }
 }

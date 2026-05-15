@@ -11,9 +11,9 @@ namespace DagligVareLevering.Pages.OrderFlow
     public class OrderConfirmationModel : PageModel
     {
         // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
-        private IOrderService _orderService;
-        private IRepository<Models.Product> _productService;
-        private IRepository<OrderLine> _orderLineService;
+        private readonly IOrderService _orderService;
+        private readonly IRepository<Models.Product> _productService;
+        private readonly IRepository<OrderLine> _orderLineService;
 
         public OrderConfirmationModel(IOrderService orderService, IRepository<OrderLine> orderLineService, IRepository<Models.Product> productService)
         {

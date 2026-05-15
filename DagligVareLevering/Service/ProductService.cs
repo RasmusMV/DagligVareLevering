@@ -43,6 +43,19 @@ namespace DagligVareLevering.Service
 
         }
 
+        public async Task<List<Product>> SearchProductsAsync(string searchText)
+        {
+            return (await GetObjectsAsync())
+                .Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                    || p.Information.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        public async Task<List<Product>> GetPopularProductsAsync(int count)
+        {
+            return (await GetObjectsAsync()).Take(count).ToList();
+        }
+
         public async Task<IEnumerable<Product>> NameSearch(string name)
         {
             if (string.IsNullOrEmpty(name))

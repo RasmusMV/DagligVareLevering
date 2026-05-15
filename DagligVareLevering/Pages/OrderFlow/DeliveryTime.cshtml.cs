@@ -12,7 +12,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class DeliveryTimeModel : PageModel
     {
-        private IOrderService _orderService;
+        private readonly IOrderService _orderService;
         public DeliveryTimeModel(IOrderService orderService)
         {
             _orderService = orderService;

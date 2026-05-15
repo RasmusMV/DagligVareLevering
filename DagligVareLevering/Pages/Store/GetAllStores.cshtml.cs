@@ -7,11 +7,11 @@ namespace DagligVareLevering.Pages.Store
 {
     public class GetAllStoresModel : PageModel
     {
-        private IRepository<Models.Store> _dbService;
+        private readonly IRepository<Models.Store> _storeService;
 
-        public GetAllStoresModel(IRepository<Models.Store> dbService)
+        public GetAllStoresModel(IRepository<Models.Store> storeService)
         {
-            _dbService = dbService;
+            _storeService = storeService;
         }
 
         public List<Models.Store> Stores { get; private set; }
@@ -24,14 +24,14 @@ namespace DagligVareLevering.Pages.Store
                 return RedirectToPage("/Index");
             }
 
-            Stores = (await _dbService.GetObjectsAsync()).ToList();
+            Stores = (await _storeService.GetObjectsAsync()).ToList();
             return Page();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            Models.Store store = await _dbService.GetObjectByIdAsync(id);
-            await _dbService.DeleteObjectAsync(store);
+            Models.Store store = await _storeService.GetObjectByIdAsync(id);
+            await _storeService.DeleteObjectAsync(store);
             return RedirectToPage("GetAllStores");
         }
     }

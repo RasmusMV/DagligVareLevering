@@ -8,10 +8,12 @@ namespace DagligVareLevering.Service
     public class OrderService : GenericService<Order>, IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<OrderLine> _orderLineRepository;
 
-        public OrderService(IOrderRepository orderRepository) : base(orderRepository)
+        public OrderService(IOrderRepository orderRepository, IRepository<OrderLine> orderLineRepository) : base(orderRepository)
         {
             _orderRepository = orderRepository;
+            _orderLineRepository = orderLineRepository;
         }
 
         public Task<Order> GetLatestUserOrderAsync(int userId)
@@ -93,6 +95,28 @@ namespace DagligVareLevering.Service
             await UpdateObjectAsync(order);
         }
 
+        public async Task CheckoutAsync(int userId, string userAddress, List<BasketItem> basketItems)
+        {
+            var order = new Order
+            {
+                UserId = userId,
+                Adress = userAddress,
+                DeliveryPrice = 29m
+            };
+
+            await AddObjectAsync(order);
+
+            foreach (var item in basketItems)
+            {
+                await _orderLineRepository.AddObjectAsync(new OrderLine
+                {
+                    OrderId = order.OrderId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity
+                });
+            }
+        }
+
         public async Task<IEnumerable<Order>> SortById()
         {
             return (await GetObjectsAsync()).OrderBy(x => x.OrderId);
@@ -115,7 +139,7 @@ namespace DagligVareLevering.Service
 
         public async Task<decimal> GetTotalRevenue()
         {
-            return (await GetObjectsAsync()).Sum(x => x.GetTotalPrice() + x.DeliveryPrice);
+            return (await GetObjectsAsync()).Where(x => x.Status == OrderStatus.Delivered).Sum(x => x.GetTotalPrice() + x.DeliveryPrice);
         }
 
         public async Task<int> GetMonthlyOrderCount()
@@ -128,7 +152,7 @@ namespace DagligVareLevering.Service
         {
             var lastMonth = DateTime.Now.AddMonths(-1);
             return (await GetObjectsAsync())
-                .Where(x => x.TimeOfOrder >= lastMonth)
+                .Where(x => x.TimeOfOrder >= lastMonth && x.Status == OrderStatus.Delivered)
                 .Sum(x => x.GetTotalPrice() + x.DeliveryPrice);
         }
 

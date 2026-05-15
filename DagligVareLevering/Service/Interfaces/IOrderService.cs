@@ -14,6 +14,7 @@ namespace DagligVareLevering.Service.Interfaces
         Task TakeOrderAsync(int orderId, int workerId);
         Task ConfirmOrderAsync(int userId, string? deliveryAdress, string paymentMethod);
         Task CancelOrderAsync(int orderId);
+        Task CheckoutAsync(int userId, string userAddress, List<BasketItem> basketItems);
         Task<IEnumerable<Order>> SortById();
         Task<IEnumerable<Order>> SortByIdDescending();
         Task<IEnumerable<Order>> SortByTotalPrice();

@@ -1,4 +1,5 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,8 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderHistoryModel : PageModel
     {
-        private IOrderService _orderService;
-        private IRepository<OrderLine> _orderLineService;
+        private readonly IOrderService _orderService;
+        private readonly IRepository<OrderLine> _orderLineService;
         public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService)
         {
             _orderService = orderService;
@@ -28,7 +29,8 @@ namespace DagligVareLevering.Pages.OrderFlow
                 GrandTotal = 0;
                 TotalItems = 0;
 
-                foreach (var order in AllOrders)
+                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received 
+                || o.Status == OrderStatus.Processing || o.Status == OrderStatus.OutForDelivery || o.Status == OrderStatus.Delayed))
                 {
                     GrandTotal += order.GetTotalPrice();
                     TotalItems += order.OrderLines.Sum(ol => ol.Quantity);

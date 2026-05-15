@@ -8,8 +8,8 @@ namespace DagligVareLevering.Pages.Statistics
 {
     public class StatisticsModel : PageModel
     {
-        private IOrderService _orderService;
-        private IUserService _userService;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
 
         public StatisticsModel(IOrderService orderService, IUserService userService)
         {

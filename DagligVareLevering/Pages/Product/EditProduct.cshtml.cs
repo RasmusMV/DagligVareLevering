@@ -7,8 +7,8 @@ namespace DagligVareLevering.Pages.Product
 {
     public class EditProductModel : PageModel
     {
-        private IProductService _productService;
-        private IRepository<Models.Store> _storeService;
+        private readonly IProductService _productService;
+        private readonly IRepository<Models.Store> _storeService;
 
         public EditProductModel(IProductService productService, IRepository<Models.Store> storeService)
         {

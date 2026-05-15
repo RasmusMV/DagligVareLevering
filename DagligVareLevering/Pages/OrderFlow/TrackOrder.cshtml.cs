@@ -10,7 +10,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class TrackOrderModel : PageModel
     {// Service bruges til at hente ordredata fra databasen
-        private IOrderService _orderService;
+        private readonly IOrderService _orderService;
 
         public TrackOrderModel(IOrderService orderService)
         {

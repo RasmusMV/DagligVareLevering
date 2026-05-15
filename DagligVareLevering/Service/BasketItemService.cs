@@ -1,5 +1,6 @@
 ﻿using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.DTOs;
 using DagligVareLevering.Repositories;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
@@ -8,7 +9,11 @@ namespace DagligVareLevering.Service
 {
     public class BasketItemService : GenericService<BasketItem>, IBasketItemService
     {
-        public BasketItemService(IRepository<BasketItem> repository) : base(repository) { }
+        private readonly IBasketItemRepository _basketItemRepository;
+        public BasketItemService(IBasketItemRepository basketItemRepository) : base(basketItemRepository)
+        {
+            _basketItemRepository = basketItemRepository;
+        }
 
         public async Task ClearBasketAsync(int userId)
         {
@@ -38,6 +43,64 @@ namespace DagligVareLevering.Service
                 newBasketItem.Quantity = 1;
                 await AddObjectAsync(newBasketItem);
             }
+        }
+
+        public async Task RemoveItemAsync(int userId, int productId)
+        {
+            var item = (await GetObjectsAsync()).FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+            if (item != null)
+            {
+                await DeleteObjectAsync(item);
+            }
+        }
+
+        public async Task IncreaseQuantityAsync(int userId, int productId)
+        {
+            var item = (await GetObjectsAsync())
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+            if (item != null && item.Quantity < 100)
+            {
+                item.Quantity++;
+                await UpdateObjectAsync(item);
+            }
+        }
+
+        public async Task DecreaseQuantityAsync(int userId, int productId)
+        {
+            var item = (await GetObjectsAsync())
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+            if (item != null)
+            {
+                item.Quantity--;
+                if (item.Quantity <= 0)
+                {
+                    await DeleteObjectAsync(item);
+                }
+                else
+                {
+                    await UpdateObjectAsync(item);
+                }
+            }
+        }
+
+        public async Task<List<BasketItem>> GetUserBasketItemsAsync(int userId)
+        {
+            return await _basketItemRepository.GetUserBasketItemsWithProductsAsync(userId);
+        }
+
+        public async Task<CartSummary> GetCartSummaryAsync(int userId)
+        {
+            var items = await GetUserBasketItemsAsync(userId);
+            var deliveryPrice = items.Any() ? 29m : 0m;
+            var itemsTotal = items.Where(i => i.Product != null).Sum(i => i.Product.Price * i.Quantity);
+
+            return new CartSummary
+            {
+                Items = items,
+                DeliveryPrice = deliveryPrice,
+                ItemsTotalPrice = itemsTotal,
+                TotalWithDelivery = itemsTotal + deliveryPrice
+            };
         }
 
     }

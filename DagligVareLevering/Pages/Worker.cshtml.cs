@@ -1,14 +1,11 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 public class WorkerModel : PageModel
 {
-    private IOrderService _orderService;
+    private readonly IOrderService _orderService;
 
     public WorkerModel(IOrderService orderService)
     {

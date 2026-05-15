@@ -10,9 +10,9 @@ namespace DagligVareLevering.Pages.OrderFlow
 {
     public class DeliveryRouteModel : PageModel
     {
-        private IOrderService _orderService;
-        private IUserService _userService;
-        private IConfiguration _configuration;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
         public DeliveryRouteModel(IOrderService orderService, IUserService userService, IConfiguration configuration)
         {

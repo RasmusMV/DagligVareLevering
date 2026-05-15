@@ -11,8 +11,8 @@ namespace DagligVareLevering.Pages.OrderFlow
     public class OrderSummaryModel : PageModel
     {
         // Service til at håndtere databaseoperationer for ordrer
-        private IOrderService _orderService;
-        private IBasketItemService _basketItemService;
+        private readonly IOrderService _orderService;
+        private readonly IBasketItemService _basketItemService;
         public OrderSummaryModel(IOrderService orderService, IBasketItemService basketItemService)
         {
             _orderService = orderService;

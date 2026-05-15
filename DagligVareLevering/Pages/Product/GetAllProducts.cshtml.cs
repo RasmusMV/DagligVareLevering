@@ -15,9 +15,9 @@ namespace DagligVareLevering.Pages.Product
     public class GroceriesModel : PageModel
     {
 
-        private IProductService _productService;
-        private IBasketItemService _basketService;
-        private IRepository<Models.Store> _storeService;
+        private readonly IProductService _productService;
+        private readonly IBasketItemService _basketService;
+        private readonly IRepository<Models.Store> _storeService;
         public GroceriesModel(IProductService productService, IBasketItemService basketService, IRepository<Models.Store> storeService)
         {
             _productService = productService;

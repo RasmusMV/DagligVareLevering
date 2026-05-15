@@ -1,46 +1,26 @@
-using DagligVareLevering.EFDbContext;
-using DagligVareLevering.Models;
-using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Models.DTOs;
 using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
     public class CartModel : PageModel
     {
         //Service til at håndtere databaseoperationer for produkter og indkøbskurv
-        private IProductService _productService;
-        private IBasketItemService _basketItemService;
-        private IOrderService _orderService;
-        private IRepository<OrderLine> _orderLineService;
-        private IUserService _userService;
+        private readonly IBasketItemService _basketItemService;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
 
-
-        public decimal DeliveryPrice { get; set; }
-        public decimal ItemsTotalPrice { get; set; }
-        public decimal TotalWithDelivery { get; set; }
-
-        public CartModel(
-        IBasketItemService basketItemService,
-        IProductService productService,
-        IOrderService orderService,
-        IRepository<OrderLine> orderLineService,
-        IUserService userService)
+        public CartModel(IBasketItemService basketItemService, IOrderService orderService, IUserService userService)
         {
             _basketItemService = basketItemService;
-            _productService = productService;
             _orderService = orderService;
-            _orderLineService = orderLineService;
             _userService = userService;
         }
 
-
-        // Liste over varer i indkøbskurven, som skal vises på siden
-        public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
+        // CartSummary Dto til at gemme leveringsprisen, den totale pris af produkterne den samlede, og BasketItems
+        public CartSummary CartSummary { get; set; }
 
         // OnGet -metoden henter data for indkøbskurven, herunder hvilke varer der er i kurven, og beregner priserne
         public async Task<IActionResult> OnGet()
@@ -52,7 +32,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             // Hent varer i kurven for den aktuelle bruger og beregn priser
-            await LoadCartData(userId!.Value);
+            CartSummary = await _basketItemService.GetCartSummaryAsync(userId.Value);
             return Page();
         }
 
@@ -65,16 +45,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            // Find det indkøbselement, der skal fjernes, baseret på produktId
-            BasketItem? itemToRemove = (await _basketItemService.GetObjectsAsync())
-                  .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
-
-            // Hvis elementet findes, slet det fra databasen
-            if (itemToRemove != null)
-            {
-                await _basketItemService.DeleteObjectAsync(itemToRemove);
-            }
-
+            await _basketItemService.RemoveItemAsync(userId.Value, productId);
             return RedirectToPage();
         }
 
@@ -87,16 +58,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            // Find det indkøbselement, der skal forøges, baseret på produktId og userId
-            BasketItem? itemToIncrease = (await _basketItemService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
-
-            // Hvis elementet findes, forøg mængden og opdater det i databasen
-            if (itemToIncrease != null && itemToIncrease.Quantity < 100)
-            {
-                itemToIncrease.Quantity++;
-                await _basketItemService.UpdateObjectAsync(itemToIncrease);
-            }
+            await _basketItemService.IncreaseQuantityAsync(userId.Value, productId);
 
             return RedirectToPage();
         }
@@ -110,26 +72,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            // Find det indkøbselement, der skal formindskes, baseret på produktId og userId
-            BasketItem? itemToDecrease = (await _basketItemService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
-
-            // Hvis elementet findes, formindsk mængden og opdater det i databasen. Hvis mængden når 0, slet elementet
-            if (itemToDecrease != null)
-            {
-                itemToDecrease.Quantity--;
-
-                if (itemToDecrease.Quantity <= 0)
-                {
-                    await _basketItemService.DeleteObjectAsync(itemToDecrease);
-                }
-                else
-                {
-                    await _basketItemService.UpdateObjectAsync(itemToDecrease);
-                }
-               
-              
-            }
+            await _basketItemService.DecreaseQuantityAsync(userId.Value, productId);
 
             return RedirectToPage();
         }
@@ -142,62 +85,18 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            User user = await _userService.GetObjectByIdAsync(userId!.Value);
-
-            BasketItems = (await _basketItemService.GetObjectsAsync())
-                .Where(b => b.UserId == userId)
-                .ToList();
-
-            if (BasketItems.Count == 0)
+            var basketItems = await _basketItemService.GetUserBasketItemsAsync(userId.Value);
+            if (!basketItems.Any())
             {
                 return RedirectToPage();
             }
 
-            Order order = new Order
-            {
-                UserId = userId!.Value,
-                Adress = user.Adress,
-                DeliveryPrice = 29m,
-            };
-
-            await _orderService.AddObjectAsync(order);
-
-            foreach (BasketItem item in BasketItems)
-            {
-                OrderLine orderLine = new OrderLine
-                {
-                    OrderId = order.OrderId,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity
-                };
-
-                await _orderLineService.AddObjectAsync(orderLine);
-            }
+            var user = await _userService.GetObjectByIdAsync(userId.Value);
+            await _orderService.CheckoutAsync(userId.Value, user.Adress, basketItems);
 
             return RedirectToPage("/OrderFlow/DeliveryTime");
         }
 
-
-        // LoadCartData -metoden henter indkøbskurvens data for en given bruger, herunder hvilke varer der er i kurven, og beregner priserne
-        private async Task LoadCartData(int userId)
-        {
-            BasketItems = (await _basketItemService.GetObjectsAsync())
-                .Where(b => b.UserId == userId)
-                .ToList();
-
-            foreach (var item in BasketItems)
-            {
-                item.Product = await _productService.GetObjectByIdAsync(item.ProductId);
-            }
-
-            DeliveryPrice = BasketItems.Any() ? 29m : 0m; // Fast leveringspris, hvis der er varer i kurven
-
-            ItemsTotalPrice = BasketItems
-                .Where(item => item.Product != null)
-                .Sum(item => item.Product.Price * item.Quantity);
-
-            TotalWithDelivery = ItemsTotalPrice + DeliveryPrice;
-        }
     }
 }
 
