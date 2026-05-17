@@ -16,12 +16,18 @@ namespace DagligVareLevering.Pages
         // Service bruges til at lægge produkter i brugerens kurv
         private IService<BasketItem> _basketService;
 
+        // Service bruges til at udløse et event, når en vare lægges i kurven
+        private CartEventService _cartEventService;
+
+
         public IndexModel(
             IService<DagligVareLevering.Models.Product> productService,
-            IService<BasketItem> basketService)
+            IService<BasketItem> basketService,
+            CartEventService cartEventService)
         {
             _productService = productService;
             _basketService = basketService;
+            _cartEventService=cartEventService;
         }
 
         // Gemmer søgeteksten fra søgefeltet
@@ -70,7 +76,14 @@ namespace DagligVareLevering.Pages
             if (userId == null)
             {
                 return RedirectToPage("/Login");
+
             }
+            // Lytter på eventet og viser en besked, når en vare lægges i kurven
+            _cartEventService.CartItemAdded += item =>
+            {
+                TempData["StatusMessage"] = "Varen er lagt i kurven.";
+            };
+
 
             // Tjekker om produktet allerede findes i brugerens kurv
             BasketItem? existingItem = (await _basketService.GetObjectsAsync())
@@ -88,6 +101,10 @@ namespace DagligVareLevering.Pages
                 }
 
                 await _basketService.UpdateObjectAsync(existingItem);
+
+                // Udløser eventet, når en eksisterende vare får øget antal i kurven
+                _cartEventService.OnCartItemAdded(existingItem);
+
             }
             else
             {
@@ -100,10 +117,10 @@ namespace DagligVareLevering.Pages
                 };
 
                 await _basketService.AddObjectAsync(basketItem);
-            }
+                // Udløser eventet, når en ny vare lægges i kurven
+                _cartEventService.OnCartItemAdded(basketItem);
 
-            // Viser en besked til brugeren efter varen er lagt i kurven
-            TempData["StatusMessage"] = "Varen er lagt i kurven.";
+            }
 
             // Sender brugeren tilbage til forsiden og bevarer søgningen
             return RedirectToPage(new { searchText = SearchText });

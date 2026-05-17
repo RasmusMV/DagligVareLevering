@@ -50,7 +50,11 @@ else
                     @foreach (var line in order.OrderLines)
                     {
                         <li>
+                            <div> 
                             <span>@line.Product.Name</span>
+                            <small>Butik: @line.Product.Store.Name </small>
+                            </div>
+
                             <strong>x @line.Quantity</strong>
                         </li>
                     }
@@ -144,6 +148,18 @@ else
             border-top: 1px solid #eee;
             padding: 9px 0;
         }
+
+
+            .order-lines li div {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .order-lines li small {
+                color: #666;
+                font-size: 13px;
+            }
 
     .order-footer {
         margin-top: 18px;
