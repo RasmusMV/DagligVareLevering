@@ -34,12 +34,14 @@ public class WorkerModel : PageModel
         ActiveOrders = await _orderService.GetAllObjectInfoAsync()
             .Include(o => o.User)
             .Include(o => o.OrderLines)
-                .ThenInclude(ol => ol.Product)
-            .Where(o => o.Status == OrderStatus.Received
-                     || o.Status == OrderStatus.Processing
-                     || o.Status == OrderStatus.OutForDelivery)
-            .OrderBy(o => o.ExpectedDeliveryTime)
-            .ToListAsync();
+             .ThenInclude(ol => ol.Product)
+             .ThenInclude(p => p.Store)
+     .Where(o => o.Status == OrderStatus.Received
+              || o.Status == OrderStatus.Processing
+              || o.Status == OrderStatus.OutForDelivery)
+     .OrderBy(o => o.ExpectedDeliveryTime)
+     .ToListAsync();
+
 
         return Page();
     }
