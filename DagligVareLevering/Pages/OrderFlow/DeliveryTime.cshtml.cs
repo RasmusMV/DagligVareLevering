@@ -115,13 +115,6 @@ namespace DagligVareLevering.Pages.OrderFlow
             return RedirectToPage("/OrderFlow/OrderSummary");
         }
 
-        // Hjælpemetode, så vi ikke gentager de samme linjer i OnGet og OnPost
-        private void LoadCalendarData(int weekOffset)
-        {
-            TimeSlots = GetTimeSlots();
-            WeekDays = GetWeekDays(weekOffset);
-        }
-
         // Tjekker om et leveringstidspunkt skal deaktiveres i tabellen
         public bool IsSlotUnavailable(DateTime date, string timeSlot)
         {

@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using DagligVareLevering.Models;
-using Microsoft.EntityFrameworkCore;
-using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 
 namespace DagligVareLevering.Pages.OrderFlow
@@ -27,7 +24,6 @@ namespace DagligVareLevering.Pages.OrderFlow
         // Gemmer leveringsadressen fra formularen, hvis brugeren ændrer den
         [BindProperty]
         public string DeliveryAddress { get; set; } = string.Empty;
-
 
 
         // Henter den nyeste ordre for brugeren og viser den som et resume

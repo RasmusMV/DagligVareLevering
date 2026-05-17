@@ -1,0 +1,22 @@
+﻿@page
+@model NotificationsModel
+
+<h2>Dine notifikationer</h2>
+
+@if (Model.Notifications.Count == 0)
+{
+    <p>Ingen notifikationer.</p>
+}
+else
+{
+    @foreach (var notification in Model.Notifications)
+    {
+        <div class="notification-box">
+            <p>@notification.Message</p>
+
+            <small>
+                @notification.CreatedAt.ToString("dd-MM-yyyy HH:mm")
+            </small>
+        </div>
+    }
+}

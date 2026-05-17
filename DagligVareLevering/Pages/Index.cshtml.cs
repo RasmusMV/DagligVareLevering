@@ -23,12 +23,14 @@ namespace DagligVareLevering.Pages
         public List<DagligVareLevering.Models.Product> SearchResults { get; set; }
             = new List<DagligVareLevering.Models.Product>();
 
-        // Indeholder et udvalg af produkter, der vises på forsiden
+        // Indeholder et udvalg af produkter, der vises som populære varer på forsiden
         public List<DagligVareLevering.Models.Product> PopularProducts { get; set; }
             = new List<DagligVareLevering.Models.Product>();
 
         public async Task OnGet()
         {
+            List<DagligVareLevering.Models.Product> allProducts =
+                (await _productService.GetObjectsAsync()).ToList();
 
             // Viser de første seks produkter som populære varer på forsiden
             PopularProducts = await _productService.GetPopularProductsAsync(6);
@@ -39,7 +41,55 @@ namespace DagligVareLevering.Pages
                 SearchResults = await _productService.SearchProductsAsync(SearchText);
             }
         }
+
+
+        public async Task<IActionResult> OnPostAddToCartAsync(int productId)
+        {
+            // Henter den indloggede brugers id fra sessionen
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            // Hvis brugeren ikke er logget ind, sendes brugeren til login
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            // Tjekker om produktet allerede findes i brugerens kurv
+            BasketItem? existingItem = (await _basketService.GetObjectsAsync())
+                .FirstOrDefault(b => b.UserId == userId.Value && b.ProductId == productId);
+
+            if (existingItem != null)
+            {
+                // Hvis varen allerede er i kurven, øges antallet
+                existingItem.Quantity++;
+
+                // Sikrer at antal ikke bliver højere end den maksimale grænse
+                if (existingItem.Quantity > 100)
+                {
+                    existingItem.Quantity = 100;
+                }
+
+                await _basketService.UpdateObjectAsync(existingItem);
+            }
+            else
+            {
+                // Hvis varen ikke findes i kurven, oprettes en ny BasketItem
+                BasketItem basketItem = new BasketItem
+                {
+                    UserId = userId.Value,
+                    ProductId = productId,
+                    Quantity = 1
+                };
+
+                await _basketService.AddObjectAsync(basketItem);
+            }
+
+            // Viser en besked til brugeren efter varen er lagt i kurven
+            TempData["StatusMessage"] = "Varen er lagt i kurven.";
+
+            // Sender brugeren tilbage til forsiden og bevarer søgningen
+            return RedirectToPage(new { searchText = SearchText });
+        }
     }
+
 }
-
-
