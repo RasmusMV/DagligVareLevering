@@ -11,7 +11,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<List<BasketItem>> GetUserBasketItemsWithProductsAsync(int userId)
         {
-            return await Query()
+            return await QueryAsync()
                 .Include(b => b.Product)
                 .Where(b => b.UserId == userId)
                 .ToListAsync();

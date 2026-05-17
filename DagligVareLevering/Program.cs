@@ -5,6 +5,8 @@ using DagligVareLevering.Models;
 using DagligVareLevering.Repositories;
 using DagligVareLevering.Service.Interfaces;
 using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Observers.Interfaces;
+using DagligVareLevering.Observers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IBasketItemService, BasketItemService>();
+//Observers
+builder.Services.AddScoped<IOrderObserver, OrderObserver>();
 
 var app = builder.Build();
 

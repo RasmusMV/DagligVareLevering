@@ -12,7 +12,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<int> GetTotalUsersAsync()
         {
-            return await Query().Where(x => x.Role == UserRole.Customer).CountAsync();
+            return await QueryAsync().Where(x => x.Role == UserRole.Customer).CountAsync();
         }
     }
 }

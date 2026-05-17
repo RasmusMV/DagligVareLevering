@@ -83,14 +83,14 @@ namespace DagligVareLevering.Service
             }
         }
 
-        public async Task<List<BasketItem>> GetUserBasketItemsAsync(int userId)
+        public async Task<List<BasketItem>> GetUserBasketItemsWithProductsAsync(int userId)
         {
             return await _basketItemRepository.GetUserBasketItemsWithProductsAsync(userId);
         }
 
         public async Task<CartSummary> GetCartSummaryAsync(int userId)
         {
-            var items = await GetUserBasketItemsAsync(userId);
+            var items = await GetUserBasketItemsWithProductsAsync(userId);
             var deliveryPrice = items.Any() ? 29m : 0m;
             var itemsTotal = items.Where(i => i.Product != null).Sum(i => i.Product.Price * i.Quantity);
 

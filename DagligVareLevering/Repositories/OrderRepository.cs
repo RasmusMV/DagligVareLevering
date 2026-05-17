@@ -10,9 +10,9 @@ namespace DagligVareLevering.Repositories
     {
         public OrderRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Order> GetLatestUserOrderAsync(int userId)
+        public async Task<Order?> GetLatestUserOrderAsync(int userId)
         {
-            return await Query()
+            return await QueryAsync()
              .Include(o => o.User)
              .Include(o => o.OrderLines)
              .ThenInclude(ol => ol.Product)
@@ -23,7 +23,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<IEnumerable<Order>> GetOrdersByWorkerAsync(int workerId)
         {
-            return await Query()
+            return await QueryAsync()
             .Include(o => o.OrderLines)
             .ThenInclude(ol => ol.Product)
             .Include(o => o.User)
@@ -33,7 +33,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<Order?> GetWorkerActiveOrderAsync(int workerId, int id)
         {
-            return await Query()
+            return await QueryAsync()
                 .Include(o => o.OrderLines.OrderBy(ol => ol.Product.StoreId))
                 .ThenInclude(ol => ol.Product)
                 .ThenInclude(p => p.Store)
@@ -44,7 +44,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<IEnumerable<Order>> GetUserOrdersWithOrderLinesAndProducts(int userId)
         {
-            return await Query()
+            return await QueryAsync()
                     .Include(o => o.OrderLines)
                     .ThenInclude(ol => ol.Product)
                     .Where(o => o.UserId == userId)
@@ -53,7 +53,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<IEnumerable<Order>> GetAllOrdersWithOrderLinesAndProducts()
         {
-            return await Query()
+            return await QueryAsync()
                 .Include(o => o.OrderLines)
                 .ThenInclude(ol => ol.Product)
                 .ToListAsync();
@@ -61,7 +61,7 @@ namespace DagligVareLevering.Repositories
 
         public async Task<IEnumerable<Order>> GetAllOrdersWithNoWorker()
         {
-            return await Query()
+            return await QueryAsync()
                     .Include(o => o.OrderLines)
                     .ThenInclude(ol => ol.Product)
                     .Include(o => o.User)

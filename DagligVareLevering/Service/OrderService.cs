@@ -1,5 +1,6 @@
 ﻿using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
+using DagligVareLevering.Observers.Interfaces;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 
@@ -9,14 +10,18 @@ namespace DagligVareLevering.Service
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IRepository<OrderLine> _orderLineRepository;
+        private readonly IEnumerable<IOrderObserver> _observers;
 
-        public OrderService(IOrderRepository orderRepository, IRepository<OrderLine> orderLineRepository) : base(orderRepository)
+        public event EventHandler<Order> OrderTaken;
+
+        public OrderService(IOrderRepository orderRepository, IRepository<OrderLine> orderLineRepository, IEnumerable<IOrderObserver> observers) : base(orderRepository)
         {
             _orderRepository = orderRepository;
             _orderLineRepository = orderLineRepository;
+            _observers = observers;
         }
 
-        public Task<Order> GetLatestUserOrderAsync(int userId)
+        public Task<Order?> GetLatestUserOrderAsync(int userId)
         {
             return _orderRepository.GetLatestUserOrderAsync(userId);
         }
@@ -56,6 +61,11 @@ namespace DagligVareLevering.Service
 
             order.Status = OrderStatus.Delivered;
             await UpdateObjectAsync(order);
+
+            foreach(var observer in _observers)
+            {
+                await observer.OnOrderDeliveredAsync(order);
+            }
         }
 
         public async Task TakeOrderAsync(int orderId, int workerId)
@@ -67,6 +77,8 @@ namespace DagligVareLevering.Service
                 order.WorkerId = workerId;
                 order.Status = OrderStatus.OutForDelivery;
                 await UpdateObjectAsync(order);
+
+                OrderTaken?.Invoke(this, order);
             }
         }
 

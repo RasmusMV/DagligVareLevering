@@ -42,7 +42,7 @@ namespace DagligVareLevering.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public IQueryable<T> Query()
+        public IQueryable<T> QueryAsync()
         {
             return _context.Set<T>().AsNoTracking();
         }

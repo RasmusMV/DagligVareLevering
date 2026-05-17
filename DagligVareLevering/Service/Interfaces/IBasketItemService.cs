@@ -10,7 +10,7 @@ namespace DagligVareLevering.Service.Interfaces
         Task RemoveItemAsync(int userId, int productId);
         Task IncreaseQuantityAsync(int userId, int productId);
         Task DecreaseQuantityAsync(int userId, int productId);
-        Task<List<BasketItem>> GetUserBasketItemsAsync(int userId);
+        Task<List<BasketItem>> GetUserBasketItemsWithProductsAsync(int userId);
         Task<CartSummary> GetCartSummaryAsync(int userId);
     }
 }

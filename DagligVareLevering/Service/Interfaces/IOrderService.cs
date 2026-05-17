@@ -4,8 +4,9 @@ namespace DagligVareLevering.Service.Interfaces
 {
     public interface IOrderService : IService<Order>
     {
-        Task<Order> GetLatestUserOrderAsync(int userId);
-        Task<Order?> GetWorkerActiveOrderAsync(int workerId, int id);
+        event EventHandler<Order> OrderTaken;
+        Task<Order?> GetLatestUserOrderAsync(int userId);
+        Task<Order?> GetWorkerActiveOrderAsync(int workerId, int orderId);
         Task<IEnumerable<Order>> GetOrdersByWorkerAsync(int workerId);
         Task MarkOrderAsDeliveredAsync(int orderId, int workerId);
         Task<IEnumerable<Order>> GetUserOrdersWithOrderLinesAndProducts(int userId);

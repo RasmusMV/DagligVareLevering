@@ -9,7 +9,7 @@ namespace DagligVareLevering.Repositories.Interfaces
         Task DeleteObjectAsync(T obj);
         Task UpdateObjectAsync(T obj);
         Task<T> GetObjectByIdAsync(int id);
-        IQueryable<T> Query();
+        IQueryable<T> QueryAsync();
        
     }
 }

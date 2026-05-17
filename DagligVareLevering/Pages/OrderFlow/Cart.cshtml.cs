@@ -85,7 +85,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            var basketItems = await _basketItemService.GetUserBasketItemsAsync(userId.Value);
+            var basketItems = await _basketItemService.GetUserBasketItemsWithProductsAsync(userId.Value);
             if (!basketItems.Any())
             {
                 return RedirectToPage();
