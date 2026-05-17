@@ -1,7 +1,6 @@
 using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Data;
 
 namespace DagligVareLevering.Pages
 {
@@ -9,10 +8,12 @@ namespace DagligVareLevering.Pages
     {
         // Service bruges til at hente produkter fra databasen
         private readonly IProductService _productService;
+        private readonly IBasketItemService _basketItemService;
 
-        public IndexModel(IProductService productService)
+        public IndexModel(IProductService productService, IBasketItemService basketItemService)
         {
             _productService = productService;
+            _basketItemService = basketItemService;
         }
 
         // Gemmer søgeteksten fra søgefeltet
@@ -29,11 +30,8 @@ namespace DagligVareLevering.Pages
 
         public async Task OnGet()
         {
-            List<DagligVareLevering.Models.Product> allProducts =
-                (await _productService.GetObjectsAsync()).ToList();
-
             // Viser de første seks produkter som populære varer på forsiden
-            PopularProducts = await _productService.GetPopularProductsAsync(6);
+            PopularProducts = await _productService.GetPopularProductsWithStoreAsync(6);
 
             // Søger kun efter produkter, hvis kunden har skrevet noget i søgefeltet
             if (!string.IsNullOrWhiteSpace(SearchText))
@@ -54,35 +52,7 @@ namespace DagligVareLevering.Pages
                 return RedirectToPage("/Login");
             }
 
-            // Tjekker om produktet allerede findes i brugerens kurv
-            BasketItem? existingItem = (await _basketService.GetObjectsAsync())
-                .FirstOrDefault(b => b.UserId == userId.Value && b.ProductId == productId);
-
-            if (existingItem != null)
-            {
-                // Hvis varen allerede er i kurven, øges antallet
-                existingItem.Quantity++;
-
-                // Sikrer at antal ikke bliver højere end den maksimale grænse
-                if (existingItem.Quantity > 100)
-                {
-                    existingItem.Quantity = 100;
-                }
-
-                await _basketService.UpdateObjectAsync(existingItem);
-            }
-            else
-            {
-                // Hvis varen ikke findes i kurven, oprettes en ny BasketItem
-                BasketItem basketItem = new BasketItem
-                {
-                    UserId = userId.Value,
-                    ProductId = productId,
-                    Quantity = 1
-                };
-
-                await _basketService.AddObjectAsync(basketItem);
-            }
+            await _basketItemService.AddOrIncrementAsync(userId.Value, productId);
 
             // Viser en besked til brugeren efter varen er lagt i kurven
             TempData["StatusMessage"] = "Varen er lagt i kurven.";

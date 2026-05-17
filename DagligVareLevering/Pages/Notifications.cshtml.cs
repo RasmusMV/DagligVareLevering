@@ -1,5 +1,6 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Service;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

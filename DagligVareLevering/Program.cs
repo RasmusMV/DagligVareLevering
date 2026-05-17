@@ -23,6 +23,7 @@ builder.Services.AddScoped(typeof(IService<>), typeof(GenericService<>));
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBasketItemRepository, BasketItemRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 //Services
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUserService, UserService>();

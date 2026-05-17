@@ -7,8 +7,11 @@ namespace DagligVareLevering.Service
 {
     public class ProductService : GenericService<Product>, IProductService
     {
-
-        public ProductService(IRepository<Product> repository) : base(repository){ }
+        private readonly IProductRepository _productRepository;
+        public ProductService(IProductRepository productRepository) : base(productRepository)
+        {
+            _productRepository = productRepository;
+        }
 
         public async Task CreateProductAsync(ProductDto productDto)
         {
@@ -19,12 +22,12 @@ namespace DagligVareLevering.Service
                 Information = productDto.Information,
                 StoreId = productDto.StoreId
             };
-            await AddObjectAsync(product);
+            await _productRepository.AddObjectAsync(product);
         }
 
         public async Task<Dictionary<string, List<Product>>> GetGroupedProductsAsync(decimal? maxPrice, int? storeId)
         {
-            var products = await GetObjectsAsync();
+            var products = await _productRepository.GetObjectsAsync();
 
             // filtrer før gruppering
             if (maxPrice.HasValue)
@@ -45,7 +48,7 @@ namespace DagligVareLevering.Service
 
         public async Task<List<Product>> SearchProductsAsync(string searchText)
         {
-            return (await GetObjectsAsync())
+            return (await _productRepository.GetObjectsAsync())
                 .Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)
                     || p.Information.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
@@ -53,43 +56,47 @@ namespace DagligVareLevering.Service
 
         public async Task<List<Product>> GetPopularProductsAsync(int count)
         {
-            return (await GetObjectsAsync()).Take(count).ToList();
+            return (await _productRepository.GetObjectsAsync()).Take(count).ToList();
+        }
+        public async Task<List<Product>> GetPopularProductsWithStoreAsync(int count)
+        {
+            return await _productRepository.GetPopularProductsWithStoreAsync(count);
         }
 
         public async Task<IEnumerable<Product>> NameSearch(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
-                return await GetObjectsAsync();
+                return await _productRepository.GetObjectsAsync();
             }
-            return (await GetObjectsAsync())
+            return (await _productRepository.GetObjectsAsync())
                 .Where(x => x.Name.ToLower().Contains(name.ToLower()));
         }
 
         public async Task<IEnumerable<Product>> PriceFilter(int maxPrice, int minPrice = 0)
         {
-            return (await GetObjectsAsync())
+            return (await _productRepository.GetObjectsAsync())
                 .Where(x => (minPrice == 0 && x.Price <= maxPrice) || (maxPrice == 0 && x.Price >= minPrice) || (x.Price >= minPrice && x.Price <= maxPrice));
         }
 
         public async Task<IEnumerable<Product>> SortById()
         {
-            return (await GetObjectsAsync()).OrderBy(x => x.ProductId);
+            return (await _productRepository.GetObjectsAsync()).OrderBy(x => x.ProductId);
         }
 
         public async Task<IEnumerable<Product>> SortByIdDescending()
         {
-            return (await GetObjectsAsync()).OrderByDescending(x => x.ProductId);
+            return (await _productRepository.GetObjectsAsync()).OrderByDescending(x => x.ProductId);
         }
 
         public async Task<IEnumerable<Product>> SortByName()
         {
-            return (await GetObjectsAsync()).OrderBy(x => x.Name);
+            return (await _productRepository.GetObjectsAsync()).OrderBy(x => x.Name);
         }
 
         public async Task<IEnumerable<Product>> SortByPrice()
         {
-            return (await GetObjectsAsync()).OrderBy(x => x.Price);
+            return (await _productRepository.GetObjectsAsync()).OrderBy(x => x.Price);
         }
     }
 }

@@ -21,6 +21,7 @@ public class WorkerModel : PageModel
     public async Task<IActionResult> OnGetAsync()
     {
         var role = HttpContext.Session.GetString("UserRole");
+        int? workerId = HttpContext.Session.GetInt32("UserId");
 
         if (role != "Worker")
         {
@@ -35,20 +36,13 @@ public class WorkerModel : PageModel
     public async Task<IActionResult> OnPostMarkDeliveredAsync(int orderId)
     {
         var role = HttpContext.Session.GetString("UserRole");
-
+        int? workerId = HttpContext.Session.GetInt32("UserId");
         if (role != "Worker")
         {
             return RedirectToPage("/Login");
         }
 
-        Order? order = await _orderService.GetObjectByIdAsync(orderId);
-
-        if (order != null)
-        {
-            // Opdaterer status, så ordren ikke længere vises som aktiv
-            order.Status = OrderStatus.Delivered;
-            await _orderService.UpdateObjectAsync(order);
-        }
+        await _orderService.MarkOrderAsDeliveredAsync(orderId, workerId.Value);
 
         return RedirectToPage();
     }
