@@ -70,7 +70,14 @@ else
                             <input type="hidden" name="orderId" value="@order.OrderId" />
                             <button type="submit" class="deliver-btn">Marker som leveret</button>
                         </form>
-                    }
+                    }   
+                     <!-- Send forsinkelsesnotifikation -->
+                        <form method="post" asp-page-handler="SendDelay">
+                        <input type="hidden" name="orderId" value="@order.OrderId" />
+                        <button type="submit" class="delay-btn">
+                         Underret om forsinkelse
+                         </button>
+                         </form>
                 </div>
             </div>
         }
