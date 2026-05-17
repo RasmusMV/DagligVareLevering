@@ -21,7 +21,7 @@ builder.Services.AddScoped<IService<User>, DbGenericService<User>>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<CartEventService>();
+
 
 
 
