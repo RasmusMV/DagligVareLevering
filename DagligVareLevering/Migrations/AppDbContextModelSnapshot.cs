@@ -64,11 +64,12 @@ namespace DagligVareLevering.Migrations
                     b.Property<decimal>("DeliveryPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("ExpectedDeliveryDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("ExpectedDeliveryTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -81,9 +82,14 @@ namespace DagligVareLevering.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("WorkerId")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("WorkerId");
 
                     b.ToTable("Orders");
                 });
@@ -201,6 +207,10 @@ namespace DagligVareLevering.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("WantsOfferEmails")
                         .HasColumnType("bit");
 
@@ -236,7 +246,13 @@ namespace DagligVareLevering.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DagligVareLevering.Models.User", "Worker")
+                        .WithMany("WorkerOrders")
+                        .HasForeignKey("WorkerId");
+
                     b.Navigation("User");
+
+                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("DagligVareLevering.Models.OrderLine", b =>
@@ -284,6 +300,8 @@ namespace DagligVareLevering.Migrations
                     b.Navigation("Basket");
 
                     b.Navigation("OrderHistory");
+
+                    b.Navigation("WorkerOrders");
                 });
 #pragma warning restore 612, 618
         }

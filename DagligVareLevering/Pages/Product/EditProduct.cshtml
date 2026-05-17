@@ -1,0 +1,39 @@
+﻿@page
+@model DagligVareLevering.Pages.Product.EditProductModel
+@{
+}
+<form method="post">
+	<input type="hidden" asp-for="Product.StoreId" />
+	<div class="form-group">
+		<label asp-for="Product.Name" class="control-lable"></label>
+		<input asp-for="Product.Name" class="form-control" />
+		<span asp-validation-for="Product.Name" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="Product.Price" class="control-lable"></label>
+		<input asp-for="Product.Price" class="form-control" />
+		<span asp-validation-for="Product.Price" class="text-danger"></span>
+	</div>
+	<div>
+		<label asp-for="Product.Information" class="control-lable"></label>
+		<input asp-for="Product.Information" class="form-control" />
+		<span asp-validation-for="Product.Information" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label class="control-lable">Store</label>
+		<input list="store-list" name="StoreName" class="form-control" value="@Model.StoreName"/>
+		<datalist id="store-list">
+			@foreach(var store in Model.StoreList)
+				{
+					<option value="@store.Name"></option>
+				}
+		</datalist>
+		<span asp-validation-for="StoreName" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<input type="submit" value="update" class="text-danger" />
+	</div>
+</form>
+<div>
+	<a asp-page="/Index">Back to list</a>
+</div>

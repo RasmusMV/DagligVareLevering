@@ -1,0 +1,95 @@
+﻿@page
+@model DagligVareLevering.Pages.OrderFlow.OrderHistoryModel
+@{
+
+    @if(HttpContext.Session.GetString("UserRole") == "Customer" || HttpContext.Session.GetString("UserRole") == "Admin")
+    {
+        <h2 class="mb-4">Købshistorik</h2>
+        <div class="row">
+            @foreach (var order in Model.AllOrders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                        
+                            <h5 class="card-title">Ordre #@order.OrderId</h5>
+                            <p><strong>Dato:</strong> @order.TimeOfOrder.ToString("dd-MM-yyyy HH:mm")</p>
+                            <p><strong>Antal varer:</strong> @order.OrderLines.Sum(line => line.Quantity)</p>
+
+                            <ul class="list-unstyled">
+                                @foreach (var line in order.OrderLines)
+                                {
+                                    <li>
+                                        <strong>@line.Product.Name</strong><br />
+                                        Antal: @line.Quantity <br />
+                                        pris: @line.GetLineTotal() kr.
+                                    </li>
+                                    <hr />
+                                }
+                            </ul>
+
+                            <p class="mt-3">
+                                <strong>Status:</strong><br />
+                                @order.Status <br />
+                                <strong>Pris for denne ordre:</strong><br />
+                                @order.GetTotalPrice() kr.
+                            </p>
+                            
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+        
+    {
+        var role = HttpContext.Session.GetString("UserRole");
+        if(role == "Customer")
+        {
+            <div class="mt-4">
+                <h4>Samlet total for alle ordrer: @Model.GrandTotal kr.</h4>
+                <p><strong>Samlet antal købte varer:</strong> @Model.TotalItems</p>
+            </div>
+        }
+    }
+
+    @if (HttpContext.Session.GetString("UserRole") == "Worker")
+    {
+        <h2 class="mb-4">Ledige ordrer</h2>
+        <div class="row">
+            @foreach (var order in Model.AllOrders)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Ordre #@order.OrderId</h5>
+                            <p><strong>Kunde:</strong> @order.User.Name</p>
+                            <p><strong>Leveringsadresse:</strong> @order.Adress</p>
+                            <p><strong>Antal varer:</strong> @order.OrderLines.Sum(l => l.Quantity)</p>
+                            <ul class="list-unstyled">
+                                @foreach (var line in order.OrderLines)
+                                {
+                                    <li>
+                                        <strong>@line.Product.Name</strong><br />
+                                        Antal: @line.Quantity
+                                    </li>
+                                    <hr />
+                                }
+                            </ul>
+                            <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
+
+                            <form method="post">
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <button type="submit" asp-page-handler="TakeOrder"
+                                        class="btn btn-primary w-100">
+                                    Tag denne ordre
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+}

@@ -1,0 +1,88 @@
+﻿@page
+@model DagligVareLevering.Pages.OrderFlow.DeliveryRouteModel
+@{
+}
+<h2 class="mb-4">Leveringsrute</h2>
+
+<div class="row mb-4">
+	<div class="col-md-4">
+		<div class="card shadow-sm">
+			<div class="card-body">
+				<h5 class="card-title">Ordre #@Model.CurrentOrder.OrderId</h5>
+				<p><strong>Kunde: </strong>@Model.CurrentOrder.User.Name</p>
+				<p><strong>Leveringsadresse: </strong>@Model.CurrentOrder.Adress</p>
+				<p><strong>Forventet levering: </strong>
+					@Model.CurrentOrder.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
+					kl. @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+				</p>
+				<hr />
+				<h6>Varer der skal hentes:</h6>
+				<ul class="list-unstyled">
+					@foreach(var line in Model.CurrentOrder.OrderLines)
+					{
+						<li>
+							<strong>@line.Product.Name</strong> x @line.Quantity
+							<small class="text-muted">- @line.Product.Store.Name</small>
+						</li>
+					}
+				</ul>
+				<hr />
+				<p><strong>Total: </strong>@Model.CurrentOrder.GetTotalPrice() kr.</p>
+
+				<form method="post">
+					<input type="hidden" name="orderId"  value="@Model.CurrentOrder.OrderId" />
+					<button type="submit" asp-page-handler="MarkDelivered" class="btn btn-success w-100">
+						Marker som leveret
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-8">
+		<div id="map" style="height: 500px; border-radius: 8px;"></div>
+	</div>
+</div>
+
+@section Scripts{
+	<script>
+		const storeAdresses = JSON.parse('@Html.Raw(Json.Serialize(Model.StoreAdresses))');
+		const deliveryAdress = "@Model.DeliveryAdress";
+		const workerAdress = "@Model.WorkerAdress";
+
+		window.initMap = function(){
+			const map = new google.maps.Map(document.getElementById("map"), {
+				zoom: 13,
+				center:{lat: 55.6761, lng: 12.5683}
+			});
+
+			const directionsService = new google.maps.DirectionsService();
+			const directionsRenderer = new google.maps.DirectionsRenderer();
+			directionsRenderer.setMap(map);
+
+			const origin = workerAdress;
+			const waypoints = storeAdresses.map(addr => ({
+				location: addr,
+				stopover: true
+			}));
+
+			directionsService.route({
+				origin: origin,
+				destination: deliveryAdress,
+				waypoints: waypoints,
+				optimizeWaypoints: false,
+				travelMode: google.maps.TravelMode.DRIVING
+			}, (result, status) => {
+				if (status === "OK") {
+					directionsRenderer.setDirections(result);
+				} 
+				else {
+					console.error("Directions request failed: " + status);
+				}
+			});
+		}
+
+	</script>
+
+	<script src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&callback=initMap" async defer></script>
+}

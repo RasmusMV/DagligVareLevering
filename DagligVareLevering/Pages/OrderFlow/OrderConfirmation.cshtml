@@ -1,0 +1,271 @@
+﻿@page
+@model DagligVareLevering.Pages.OrderFlow.OrderConfirmationModel
+@{
+}
+<h2>Kvittering</h2>
+
+@if (Model.CurrentOrder == null)
+{
+    <div class="empty-message">
+        <p>Ingen ordre fundet.</p>
+    </div>
+}
+else
+{
+    <!-- Kvitteringsboksen samler alle oplysninger om den gennemførte ordre -->
+    <div class="receipt-box">
+        <div class="receipt-header">
+            <div>
+                <h3>Ordrebekræftelse</h3>
+                <p>Tak for din ordre</p>
+            </div>
+
+            <div class="receipt-order-number">
+                <span>Ordre</span>
+                <strong>#@Model.CurrentOrder.OrderId</strong>
+            </div>
+        </div>
+
+        <!-- Viser kundens leverings- og betalingsoplysninger -->
+        <div class="receipt-info">
+            <p><strong>Navn:</strong> @Model.CurrentOrder.User.Name</p>
+            <p><strong>Email:</strong> @Model.CurrentOrder.User.Email</p>
+            <p><strong>Adresse:</strong> @Model.CurrentOrder.Adress</p>
+            <p>
+                <strong>Tidspunkt:</strong>
+                @Model.CurrentOrder.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
+                kl. @Model.CurrentOrder.ExpectedDeliveryTime.ToString("HH:mm")
+            </p>
+            <p><strong>Betaling:</strong> @Model.CurrentOrder.PaymentMethod</p>
+            <p><strong>Status:</strong> @Model.CurrentOrder.Status</p>
+        </div>
+
+        <hr />
+
+        <h4>Oversigt</h4>
+
+        <!-- Viser alle varer i ordren -->
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Vare</th>
+                    <th>Antal</th>
+                    <th>Pris</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orderLine in Model.CurrentOrder.OrderLines)
+                {
+                    <tr>
+                        <td>@orderLine.Product.Name</td>
+                        <td>@orderLine.Quantity</td>
+                        <td>@orderLine.Product.Price.ToString("C")</td>
+                        <td>@orderLine.GetLineTotal().ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Viser prisoversigt inklusiv levering -->
+        <div class="receipt-total">
+            <p><span>Levering:</span> <strong>@Model.CurrentOrder.DeliveryPrice.ToString("C")</strong></p>
+            <p class="grand-total"><span>Samlet:</span> <strong>@Model.TotalPrice.ToString("C")</strong></p>
+        </div>
+    </div>
+
+    <div class="confirmation-actions">
+        <a asp-page="/OrderFlow/TrackOrder" class="track-btn">Følg ordre</a>
+    </div>
+
+}
+
+<style>
+    .receipt-box {
+        max-width: 760px;
+        margin: 20px auto;
+        background-color: white;
+        padding: 28px;
+        border-radius: 8px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+    }
+
+    .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+        .receipt-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .receipt-header p {
+            margin-top: 6px;
+            color: #666;
+        }
+
+    .receipt-order-number {
+        text-align: right;
+    }
+
+        .receipt-order-number span {
+            display: block;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .receipt-order-number strong {
+            font-size: 22px;
+            color: #333;
+        }
+
+    .receipt-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 24px;
+        margin-bottom: 20px;
+    }
+
+        .receipt-info p {
+            margin: 4px 0;
+        }
+
+    .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+    }
+
+        .receipt-table th,
+        .receipt-table td {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .receipt-table th {
+            background-color: #f4f4f4;
+        }
+
+    .receipt-total {
+        margin-top: 22px;
+        margin-left: auto;
+        width: 260px;
+    }
+
+        .receipt-total p {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .receipt-total .grand-total {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-size: 18px;
+        }
+
+    .confirmation-actions {
+        margin-top: 24px;
+        text-align: right;
+    }
+
+    .track-btn {
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #4f46e5;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+        .track-btn:hover {
+            background-color: #4338ca;
+            color: white;
+        }
+
+    <style >
+    h2 {
+        margin-bottom: 20px;
+        color: #222;
+    }
+
+    .tracking-box {
+        max-width: 760px;
+        background-color: white;
+        padding: 26px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+        .tracking-box h3 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+    .tracking-info {
+        margin-bottom: 28px;
+    }
+
+        .tracking-info p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+    .tracking-steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 26px;
+    }
+
+    .tracking-step {
+        text-align: center;
+        padding: 14px 10px;
+        border-radius: 8px;
+        background-color: #f1f1f1;
+        color: #777;
+    }
+
+        .tracking-step span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tracking-step p {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .tracking-step.completed {
+            background-color: #eef2ff;
+            color: #312e81;
+        }
+
+            .tracking-step.completed span {
+                background-color: #4f46e5;
+            }
+
+    @@media (max-width: 700px) {
+        .tracking-steps {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+
+</style>

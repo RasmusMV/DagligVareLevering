@@ -1,0 +1,19 @@
+﻿@page
+@model DagligVareLevering.Pages.Product.ProductDetailsModel
+@{
+}
+
+<h2>Produkt detaljer</h2>
+
+@if (Model.Product != null)
+{
+    <div>
+        <h3>@Model.Product.Name</h3>
+        <p>@Model.Product.Information</p>
+        <p>Pris: @Model.Product.Price kr</p>
+    </div>
+}
+else
+{
+    <p>Produkt ikke fundet.</p>
+}

@@ -19,6 +19,12 @@ namespace DagligVareLevering.Pages.Store
 
         public IActionResult OnGet()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if(role != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             return Page();
         }
 

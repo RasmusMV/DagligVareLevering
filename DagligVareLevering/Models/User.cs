@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DagligVareLevering.Models.Enums;
 
 namespace DagligVareLevering.Models
 {
@@ -39,9 +40,19 @@ namespace DagligVareLevering.Models
 
         public virtual ICollection<BasketItem>? Basket { get; set; }
 
+        [InverseProperty("User")]
         public virtual ICollection<Order>? OrderHistory { get; set; }
 
+        [InverseProperty("Worker")]
+        public virtual ICollection<Order>? WorkerOrders { get; set; }
+
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Customer;
+
+        [Required]
         public bool WantsOfferEmails { get; set; }
 
+
     }
+
 }
