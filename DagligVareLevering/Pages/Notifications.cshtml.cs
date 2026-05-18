@@ -1,4 +1,5 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service;
 using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -6,25 +7,30 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class NotificationsModel : PageModel
 {
-    private IService<Notification> _notificationService;
+    private readonly IRepository<Notification> _notificationRepository;
 
-    public NotificationsModel(IService<Notification> notificationService)
+    public NotificationsModel(IRepository<Notification> notificationRepository)
     {
-        _notificationService = notificationService;
+        _notificationRepository = notificationRepository;
     }
 
     public List<Notification> Notifications { get; set; }
         = new List<Notification>();
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
-        int currentUserId =
-            HttpContext.Session.GetInt32("UserId").Value;
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        if(userId == null)
+        {
+            return RedirectToPage("/Login");
+        }
 
         Notifications =
-            (await _notificationService.GetObjectsAsync())
-            .Where(n => n.UserId == currentUserId)
+            (await _notificationRepository.GetObjectsAsync())
+            .Where(n => n.UserId == userId.Value)
             .OrderByDescending(n => n.CreatedAt)
             .ToList();
+
+        return Page();
     }
 }

@@ -7,6 +7,7 @@ using DagligVareLevering.Service.Interfaces;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Observers.Interfaces;
 using DagligVareLevering.Observers;
+using DagligVareLevering.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +32,12 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IBasketItemService, BasketItemService>();
 //Observers
 builder.Services.AddScoped<IOrderObserver, OrderObserver>();
+//Handlers 
+builder.Services.AddSingleton<OrderEventsHandler>();
 
 var app = builder.Build();
+
+app.Services.GetRequiredService<OrderEventsHandler>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
