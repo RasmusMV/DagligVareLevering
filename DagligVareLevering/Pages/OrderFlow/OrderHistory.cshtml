@@ -1,5 +1,11 @@
 ﻿@page
 @model DagligVareLevering.Pages.OrderFlow.OrderHistoryModel
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["StatusMessage"]
+    </div>
+}
 @{
 
     @if(HttpContext.Session.GetString("UserRole") == "Customer" || HttpContext.Session.GetString("UserRole") == "Admin")
@@ -34,7 +40,16 @@
                                 <strong>Pris for denne ordre:</strong><br />
                                 @order.GetTotalPrice() kr.
                             </p>
-                            
+                            @if (HttpContext.Session.GetString("UserRole") == "Admin")
+                            {
+                                <form method="post" asp-page-handler="DeleteOrder"
+                                      onsubmit="return confirm('Er du sikker på, at du vil slette denne ordre helt?');">
+                                    <input type="hidden" name="orderId" value="@order.OrderId" />
+                                    <button type="submit" class="btn btn-danger w-100 mt-2">
+                                        Slet ordre
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
                 </div>
@@ -73,9 +88,10 @@
                                         <strong>@line.Product.Name</strong><br />
                                         Antal: @line.Quantity
                                     </li>
-                                    <hr />
+                                    
                                 }
                             </ul>
+                           
                             <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
 
                             <form method="post">
