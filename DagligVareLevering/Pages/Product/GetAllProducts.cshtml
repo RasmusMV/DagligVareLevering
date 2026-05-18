@@ -2,8 +2,13 @@
 @model DagligVareLevering.Pages.Product.GroceriesModel
 @{
 }
+<!-- Søgefeltet sender søgeteksten som en GET-request, så resultatet kan vises på samme side -->
+<form method="get" class="search-form">
+    <input asp-for="SearchText" class="search-input" placeholder="Søg efter mælk, rugbrød, frugt..." />
+    <button type="submit" class="search-btn">Søg</button>
+</form>
 
-
+<!--Filtrerer produkter efter pris eller butik-->
 <form method="get">
     <label>Max Pris:</label>
     <input type="number" name="maxPrice" value="@Request.Query["maxPrice"]" /> <!-- request query sørger for at input bliver bevaret -->
@@ -103,4 +108,6 @@
         grid-template-columns: repeat(3, 1fr); /* 3 columns */
         gap: 20px;
     }
+
+
 </style>
