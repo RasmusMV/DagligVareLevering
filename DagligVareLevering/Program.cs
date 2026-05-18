@@ -11,12 +11,17 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
         .GetConnectionString("DefaultConnection")));
+builder.Services.AddSession();
 builder.Services.AddScoped<IService<BasketItem>, DbGenericService<BasketItem>>();
 builder.Services.AddScoped<IService<Order>, DbGenericService<Order>>();
 builder.Services.AddScoped<IService<OrderLine>, DbGenericService<OrderLine>>();
 builder.Services.AddScoped<IService<Product>, DbGenericService<Product>>();
 builder.Services.AddScoped<IService<Store>, DbGenericService<Store>>();
 builder.Services.AddScoped<IService<User>, DbGenericService<User>>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -31,6 +36,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthorization();
 

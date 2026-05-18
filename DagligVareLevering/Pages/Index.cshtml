@@ -1,10 +1,187 @@
 ﻿@page
-@model IndexModel
+@model DagligVareLevering.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Forside";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="frontpage">
+    <!-- Hero-sektionen samler overskrift, søgning og hurtige kategorier -->
+    <section class="front-hero">
+        <div class="hero-text">
+            <p class="eyebrow">Dagligvarer direkte til døren</p>
+            <h1>Hvad mangler du i dag?</h1>
+            <p class="hero-subtitle">
+                Søg efter dine varer, læg dem i kurven og vælg selv leveringstidspunkt.
+            </p>
+        </div>
+
+        <!-- Søgefeltet sender søgeteksten som en GET-request, så resultatet kan vises på samme side -->
+        <form method="get" class="search-form">
+            <input asp-for="SearchText" class="search-input" placeholder="Søg efter mælk, rugbrød, frugt..." />
+            <button type="submit" class="search-btn">Søg</button>
+        </form>
+
+     
+    </section>
+
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="status-message">
+            @TempData["StatusMessage"]
+        </div>
+    }
+
+    <!-- Karrusellen viser centrale funktioner i systemet og skifter automatisk mellem slides -->
+    <section class="carousel-section">
+        <div id="frontpageCarousel"
+             class="carousel slide"
+             data-bs-ride="carousel"
+             data-bs-interval="3500"
+             data-bs-pause="false">
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="carousel-content slide-groceries">
+                        <h2>Friske dagligvarer leveret til døren</h2>
+                        <p>Bestil nemt dine varer og vælg selv leveringstidspunkt.</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="carousel-content slide-delivery">
+                        <h2>Planlæg din levering</h2>
+                        <p>Vælg et leveringstidspunkt, der passer til din hverdag.</p>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="carousel-content slide-tracking">
+                        <h2>Følg din ordre</h2>
+                        <p>Se hvor langt din ordre er, fra modtaget til leveret.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#frontpageCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next" type="button" data-bs-target="#frontpageCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Søgeresultater vises over populære varer, når kunden har søgt efter et produkt -->
+    @if (!string.IsNullOrWhiteSpace(Model.SearchText))
+    {
+        <section class="search-results">
+            <h3>Søgeresultater</h3>
+
+            @if (Model.SearchResults.Count == 0)
+            {
+                <div class="empty-result">
+                    <p>Ingen varer fundet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="product-grid">
+                    @foreach (var product in Model.SearchResults)
+                    {
+                        <div class="product-card">
+                            <h4>@product.Name</h4>
+                            <p>@product.Information</p>
+
+                            <!-- Viser hvilken butik produktet hører til -->
+                            <p class="store-name">
+                                <strong>Butik:</strong> @product.Store.Name
+                            </p>
+
+                            <div class="product-bottom">
+                                <strong>@product.Price.ToString("C")</strong>
+
+                                <div class="product-actions">
+                                    <!-- Formularen lægger produktet direkte i den indloggede brugers kurv -->
+                                    <form method="post" asp-page-handler="AddToCart">
+                                        <input type="hidden" name="productId" value="@product.ProductId" />
+                                        <input type="hidden" asp-for="SearchText" />
+                                        <button type="submit" class="cart-btn">Læg i kurv</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
+
+    <!-- Populære varer viser et udvalg af produkter fra databasen på forsiden -->
+    @if (Model.PopularProducts.Count > 0)
+    {
+        <section class="popular-section">
+            <div class="section-header">
+                <h3>Populære varer</h3>
+
+                <!-- Linker kunden videre til siden med alle dagligvarer -->
+                <a asp-page="/Product/GetAllProducts" class="see-all-link">Se alle varer</a>
+            </div>
+
+            <div class="product-grid">
+                @foreach (var product in Model.PopularProducts)
+                {
+                    <div class="product-card">
+                        <h4>@product.Name</h4>
+                        <p>@product.Information</p>
+
+                        <!-- Viser hvilken butik produktet hører til -->
+                        <p class="store-name">
+                            <strong>Butik:</strong> @product.Store.Name
+                        </p>
+
+                        <div class="product-bottom">
+                            <strong>@product.Price.ToString("C")</strong>
+
+                            <div class="product-actions">
+                                <!-- Formularen lægger produktet direkte i den indloggede brugers kurv -->
+                                <form method="post" asp-page-handler="AddToCart">
+                                    <input type="hidden" name="productId" value="@product.ProductId" />
+                                    <button type="submit" class="cart-btn">Læg i kurv</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Viser kort hvordan kunden bruger LeveringAPS -->
+    <section class="how-it-works">
+        <h3>Sådan fungerer det</h3>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <span class="step-number">1</span>
+                <h4>Vælg varer</h4>
+                <p>Find dine dagligvarer via søgning eller produktoversigten.</p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">2</span>
+                <h4>Vælg levering</h4>
+                <p>Vælg den dato og det tidspunkt, der passer dig bedst.</p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">3</span>
+                <h4>Følg ordren</h4>
+                <p>Se ordrestatus og følg din levering frem til den er leveret.</p>
+            </div>
+        </div>
+    </section>
 </div>
+
+
+

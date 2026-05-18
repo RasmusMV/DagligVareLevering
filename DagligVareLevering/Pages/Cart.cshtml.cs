@@ -1,4 +1,5 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,6 +15,7 @@ namespace DagligVareLevering.Models
         private IService<BasketItem> _dbService;
         private IService<Order> _orderService;
         private IService<OrderLine> _orderLineService;
+        private IService<User> _userService;
 
 
         public decimal DeliveryPrice { get; set; }
@@ -24,12 +26,14 @@ namespace DagligVareLevering.Models
         IService<BasketItem> dbService,
         IService<Product> productService,
         IService<Order> orderService,
-        IService<OrderLine> orderLineService)
+        IService<OrderLine> orderLineService,
+        IService<User> userService)
         {
             _dbService = dbService;
             _productService = productService;
             _orderService = orderService;
             _orderLineService = orderLineService;
+            _userService = userService;
         }
 
 
@@ -37,23 +41,31 @@ namespace DagligVareLevering.Models
         public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
 
         // OnGet -metoden henter data for indkøbskurven, herunder hvilke varer der er i kurven, og beregner priserne
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            int userId = 1; // indtil lenn
-                            // os virker 
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Hent varer i kurven for den aktuelle bruger og beregn priser
-            await LoadCartData(userId);
+            await LoadCartData(userId.Value);
+            return Page();
         }
 
         // OnPostRemoveAsync -metoden håndterer fjernelse af en vare fra indkøbskurven
         public async Task<IActionResult> OnPostRemoveAsync(int productId)
         {
-            int userId = 1; // indtil lennos virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Find det indkøbselement, der skal fjernes, baseret på produktId
             BasketItem? itemToRemove = (await _dbService.GetObjectsAsync())
-                  .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, slet det fra databasen
             if (itemToRemove != null)
@@ -67,11 +79,15 @@ namespace DagligVareLevering.Models
         // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
         public async Task<IActionResult> OnPostIncreaseAsync(int productId)
         {
-            int userId = 1; // indtil lennos virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Find det indkøbselement, der skal forøges, baseret på produktId og userId
             BasketItem? itemToIncrease = (await _dbService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, forøg mængden og opdater det i databasen
             if (itemToIncrease != null && itemToIncrease.Quantity < 100)
@@ -86,11 +102,15 @@ namespace DagligVareLevering.Models
         // OnPostDecreaseAsync -metoden håndterer formindskelse af mængden af en vare i indkøbskurven
         public async Task<IActionResult> OnPostDecreaseAsync(int productId)
         {
-            int userId = 1; // indtil lennos virker
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             // Find det indkøbselement, der skal formindskes, baseret på produktId og userId
             BasketItem? itemToDecrease = (await _dbService.GetObjectsAsync())
-                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId);
+                .FirstOrDefault(b => b.ProductId == productId && b.UserId == userId.Value);
 
             // Hvis elementet findes, formindsk mængden og opdater det i databasen. Hvis mængden når 0, slet elementet
             if (itemToDecrease != null)
@@ -114,10 +134,21 @@ namespace DagligVareLevering.Models
 
         public async Task<IActionResult> OnPostCheckoutAsync()
         {
-            int userId = 1;
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToPage("/Login");
+            }
+
+            User? user = await _userService.GetObjectByIdAsync(userId.Value);
+
+            if (user == null)
+            {
+                return RedirectToPage("/Login");
+            }
 
             BasketItems = (await _dbService.GetObjectsAsync())
-                .Where(b => b.UserId == userId)
+                .Where(b => b.UserId == userId.Value)
                 .ToList();
 
             if (BasketItems.Count == 0)
@@ -127,10 +158,9 @@ namespace DagligVareLevering.Models
 
             Order order = new Order
             {
-                UserId = userId,
-                Adress = "Test adresse",
+                UserId = userId.Value,
+                Adress = user.Adress,
                 DeliveryPrice = 29m,
-                Status = OrderStatus.Processing
             };
 
             await _orderService.AddObjectAsync(order);
@@ -147,7 +177,7 @@ namespace DagligVareLevering.Models
                 await _orderLineService.AddObjectAsync(orderLine);
             }
 
-            return RedirectToPage("/Purchase/DeliveryTime");
+            return RedirectToPage("/OrderFlow/DeliveryTime");
         }
 
 

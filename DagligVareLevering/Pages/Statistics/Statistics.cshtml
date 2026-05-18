@@ -1,0 +1,35 @@
+﻿@page
+@model DagligVareLevering.Pages.Statistics.StatisticsModel
+@{
+}
+
+<p style="font-size: 13px; color: gray; text-transform: uppercase; letter-spacing: 0.08em;">I alt</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 2rem;">
+	<div class="stat-card">
+		<p class="stat-label">Brugere i alt</p>
+		<p class="stat-value">@Model.TotalUsers</p>
+	</div>
+	<div class="stat-card">
+		<p class="stat-label">Ordrer i alt</p>
+		<p class="stat-value">@Model.TotalOrders</p>
+	</div>
+	<div class="stat-card">
+		<p class="stat-label">Total omsætning</p>
+		<p class="stat-value">@Model.TotalBoughtFor</p>
+	</div>
+</div>
+
+<p style="font-size: 13px; color: gray; text-transform: uppercase; letter-spacing: 0.08em;">Seneste måned</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;">
+	<div class="stat-card">
+		<p class="stat-label">Ordrer</p>
+		<p class="stat-value">@Model.MonthlyOrders</p>
+	</div>
+	<div class="stat-card">
+		<p class="stat-label">Omsætning</p>
+		<p class="stat-value">@Model.MonthlyRevenue kr.</p>
+	</div>
+
+</div>
