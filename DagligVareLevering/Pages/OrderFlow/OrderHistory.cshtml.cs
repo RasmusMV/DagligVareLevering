@@ -1,3 +1,4 @@
+using DagligVareLevering.Handlers;
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Repositories.Interfaces;
@@ -10,10 +11,12 @@ namespace DagligVareLevering.Pages.OrderFlow
     {
         private readonly IOrderService _orderService;
         private readonly IRepository<OrderLine> _orderLineService;
-        public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService)
+        private readonly OrderEventsHandler _orderEventsHandler;
+        public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
         {
             _orderService = orderService;
             _orderLineService = orderLineService;
+            _orderEventsHandler = orderEventsHandler;
         }
         public List<Models.Order> AllOrders { get; set; }
         public decimal GrandTotal { get; set; }

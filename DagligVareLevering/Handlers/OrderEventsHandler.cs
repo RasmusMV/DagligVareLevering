@@ -6,20 +6,14 @@ namespace DagligVareLevering.Handlers
 {
     public class OrderEventsHandler
     {
-        private readonly IRepository<Notification> _notificationRepository;
-        public OrderEventsHandler(IRepository<Notification> notificationRepository, IOrderService orderService)
+        public OrderEventsHandler(IOrderService orderService)
         {
-            _notificationRepository = notificationRepository;
             orderService.OrderTaken += OnOrderTaken;
         }
 
-        private void OnOrderTaken(object? sender, Order order)
+        private async void OnOrderTaken(object? sender, Order order)
         {
-            _notificationRepository.AddObjectAsync(new Notification
-            {
-                UserId = order.WorkerId.Value,
-                Message = $"Du har taget ordre #{order.OrderId} som skal leveres til {order.Adress}"
-            }).GetAwaiter().GetResult();
+            Console.WriteLine($"Du har taget ordre #{order.OrderId} som skal leveres til {order.Adress}");
         }
     }
 }

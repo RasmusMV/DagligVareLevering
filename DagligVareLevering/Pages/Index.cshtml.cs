@@ -58,7 +58,7 @@ namespace DagligVareLevering.Pages
             TempData["StatusMessage"] = "Varen er lagt i kurven.";
 
             // Sender brugeren tilbage til forsiden og bevarer søgningen
-            return RedirectToPage(new { searchText = SearchText });
+            return RedirectToPage(new { SearchText = SearchText });
         }
     }
 

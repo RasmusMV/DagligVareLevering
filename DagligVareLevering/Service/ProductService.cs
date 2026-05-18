@@ -48,7 +48,7 @@ namespace DagligVareLevering.Service
 
         public async Task<List<Product>> SearchProductsAsync(string searchText)
         {
-            return (await _productRepository.GetObjectsAsync())
+            return (await _productRepository.GetAllProductsWithStoreAsync())
                 .Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)
                     || p.Information.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();

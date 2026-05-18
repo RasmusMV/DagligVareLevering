@@ -33,11 +33,9 @@ builder.Services.AddScoped<IBasketItemService, BasketItemService>();
 //Observers
 builder.Services.AddScoped<IOrderObserver, OrderObserver>();
 //Handlers 
-builder.Services.AddSingleton<OrderEventsHandler>();
+builder.Services.AddScoped<OrderEventsHandler>();
 
 var app = builder.Build();
-
-app.Services.GetRequiredService<OrderEventsHandler>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

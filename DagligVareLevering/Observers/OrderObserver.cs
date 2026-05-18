@@ -21,5 +21,7 @@ namespace DagligVareLevering.Observers
                 Message = $"Din ordre #{order.OrderId} er blevet leveret"
             });
         }
+
+
     }
 }
