@@ -1,0 +1,65 @@
+﻿@page
+@model AdminOrdersModel
+
+<h2>Order Management</h2>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["StatusMessage"]
+    </div>
+}
+
+@if (Model.Orders.Count == 0)
+{
+    <div class="alert alert-info">
+        Der findes ingen ordrer.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>OrderId</th>
+                <th>Kunde</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Levering</th>
+                <th>Varer</th>
+                <th>Total</th>
+                <th>Handling</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.User.Name</td>
+                    <td>@order.User.Email</td>
+                    <td>@order.Status</td>
+                    <td>@order.ExpectedDeliveryTime.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>
+                        <ul class="list-unstyled">
+                            @foreach (var line in order.OrderLines)
+                            {
+                                <li>@line.Product.Name x @line.Quantity</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>@order.GetTotalPrice().ToString("C")</td>
+                    <td>
+                        <form method="post" asp-page-handler="DeleteOrder"
+                              onsubmit="return confirm('Er du sikker på, at du vil slette denne ordre helt?');">
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <button type="submit" class="btn btn-danger">
+                                Slet
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

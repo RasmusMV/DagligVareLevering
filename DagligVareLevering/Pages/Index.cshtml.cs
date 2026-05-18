@@ -55,6 +55,8 @@ namespace DagligVareLevering.Pages
 
             await _basketItemService.AddOrIncrementAsync(userId.Value, productId);
 
+            TempData["StatusMessage"] = "Varen er lagt i kurven.";
+
             // Sender brugeren tilbage til forsiden og bevarer søgningen
             return RedirectToPage(new { SearchText = SearchText });
         }
