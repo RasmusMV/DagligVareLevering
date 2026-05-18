@@ -10,9 +10,12 @@ namespace DagligVareLevering.Service
     public class BasketItemService : GenericService<BasketItem>, IBasketItemService
     {
         private readonly IBasketItemRepository _basketItemRepository;
-        public BasketItemService(IBasketItemRepository basketItemRepository) : base(basketItemRepository)
+        private readonly CartEventService _cartEventService;
+
+        public BasketItemService(IBasketItemRepository basketItemRepository, CartEventService cartEventService) : base(basketItemRepository)
         {
             _basketItemRepository = basketItemRepository;
+            _cartEventService=cartEventService;
         }
 
         public async Task ClearBasketAsync(int userId)
@@ -33,6 +36,9 @@ namespace DagligVareLevering.Service
             {
                 existingBasketItem.Quantity += 1;
                 await UpdateObjectAsync(existingBasketItem);
+
+                _cartEventService.OnCartItemAdded(existingBasketItem);
+
             }
             //Ellers bliver en ny entity lavet med productId og userId
             else
@@ -42,6 +48,9 @@ namespace DagligVareLevering.Service
                 newBasketItem.UserId = userId;
                 newBasketItem.Quantity = 1;
                 await AddObjectAsync(newBasketItem);
+
+                _cartEventService.OnCartItemAdded(existingBasketItem);
+
             }
         }
 
