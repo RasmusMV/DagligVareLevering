@@ -15,15 +15,24 @@ namespace DagligVareLevering.Pages.Purchase
         {
             _orderService = orderService;
             _orderLineService = orderLineService;
+
+            OrderViewed += message =>
+            {
+                Console.WriteLine(message);
+            };
         }
         public List<Models.Order> AllOrders { get; set; }
+        public event Action<string> OrderViewed;
         public decimal GrandTotal { get; set; }
         public int TotalItems { get; set; }
 
         public async Task OnGet()
         {
             AllOrders = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines).ThenInclude(ol => ol.Product).ToListAsync();
+                .Include(o => o.OrderLines)
+                .ThenInclude(ol => ol.Product)
+                .ToListAsync();
+
             GrandTotal = 0;
             TotalItems = 0;
 
@@ -32,11 +41,15 @@ namespace DagligVareLevering.Pages.Purchase
                 GrandTotal += order.GetTotalPrice();
                 TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
             }
+
+            OrderViewed?.Invoke("Købshistorik blev åbnet");
         }
+
 
         public List<Models.Order> GetOrderHistory()
         {
             return AllOrders;
         }
+                       
     }
 }
