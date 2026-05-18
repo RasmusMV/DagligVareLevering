@@ -31,6 +31,13 @@
         <input asp-for="User.Password" type="password" class="form-control" />
     </div>
 
+    <div class="form-check mb-3">
+        <input asp-for="User.WantsOfferEmails" class="form-check-input" />
+        <label asp-for="User.WantsOfferEmails" class="form-check-label">
+            Jeg vil gerne modtage tilbudsmails
+        </label>
+    </div>
+
     <button type="submit" class="btn btn-primary mt-2">
         Save Changes
     </button>
