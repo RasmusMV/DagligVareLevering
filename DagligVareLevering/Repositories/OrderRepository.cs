@@ -26,6 +26,7 @@ namespace DagligVareLevering.Repositories
             return await QueryAsync()
             .Include(o => o.OrderLines)
             .ThenInclude(ol => ol.Product)
+            .ThenInclude(p => p.Store)
             .Include(o => o.User)
             .Where(o => o.WorkerId == workerId && o.Status == OrderStatus.OutForDelivery)
             .ToListAsync();
