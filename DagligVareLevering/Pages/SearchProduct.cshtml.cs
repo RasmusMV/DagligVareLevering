@@ -6,11 +6,14 @@ namespace DagligVareLevering.Pages
 {
     public class SearchProductModel : PageModel
     {
-   
-            public List<Models.Product> AllProducts { get; set; }
-            public List<Models.Product> FilteredProducts { get; set; }
+        // Indeholder alle produkter, som kan vises på siden
+        public List<Models.Product> AllProducts { get; set; }
 
-            [BindProperty]
+        // Indeholder de produkter, der matcher kundens søgning
+        public List<Models.Product> FilteredProducts { get; set; }
+
+        // Gemmer den tekst, brugeren skriver i søgefeltet
+        [BindProperty]
             public string SearchText { get; set; }
 
             public void OnGet()
