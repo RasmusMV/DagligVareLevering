@@ -19,7 +19,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public Order? CurrentOrder { get; set; }
 
         // Henter den nyeste ordre for brugeren, når siden vises
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGet(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -27,7 +27,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
+            CurrentOrder = await _orderService.GetObjectByIdAsync(id);
             return Page();
         }
 

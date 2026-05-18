@@ -14,15 +14,6 @@ namespace DagligVareLevering.Models
             OrderLines = new List<OrderLine>();
         }
 
-        public Order(ICollection<OrderLine> orderLines, User user, DateTime expectedDeliveryTime, string adress)
-        {
-            OrderLines = orderLines;
-            User = user;
-            TimeOfOrder = DateTime.Now;
-            ExpectedDeliveryTime = expectedDeliveryTime;
-            Adress = adress;
-            OrderLines = new List<OrderLine>();
-        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }

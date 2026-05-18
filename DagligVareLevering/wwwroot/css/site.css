@@ -48,11 +48,11 @@ input[type=submit] {
 /* PRIMARY BUTTON */
 
 .btn.btn-primary,
-btn-primary,
+.btn-primary,
 .add-btn,
 .checkout-btn,
 .small-btn {
-    background: auto;
+    background: #258cfb;
     color: white;
 }
 
@@ -61,7 +61,7 @@ btn-primary,
     .add-btn:hover,
     .checkout-btn:hover,
     .small-btn:hover {
-        background: var(--primary-light);
+        background: #0072ff;
         transform: translateY(-2px);
     }
 
