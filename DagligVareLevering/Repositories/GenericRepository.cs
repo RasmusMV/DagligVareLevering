@@ -1,14 +1,15 @@
 ﻿using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DagligVareLevering.Service
+namespace DagligVareLevering.Repositories
 {
-    public class DbGenericService<T> : IService<T> where T : class
+    public class GenericRepository<T> : IRepository<T> where T : class
     {
         private readonly AppDbContext _context;
 
-        public DbGenericService(AppDbContext context)
+        public GenericRepository(AppDbContext context)
         {
             _context = context;
         }
@@ -41,7 +42,7 @@ namespace DagligVareLevering.Service
             await _context.SaveChangesAsync();
         }
 
-        public IQueryable<T> GetAllObjectInfoAsync()
+        public IQueryable<T> QueryAsync()
         {
             return _context.Set<T>().AsNoTracking();
         }

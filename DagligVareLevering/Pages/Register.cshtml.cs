@@ -1,14 +1,14 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class RegisterModel : PageModel
 {
-    private readonly IService<User> _userService;
+    private readonly IUserService _userService;
 
-    public RegisterModel(IService<User> userService)
+    public RegisterModel(IUserService userService)
     {
         _userService = userService;
     }
@@ -23,11 +23,7 @@ public class RegisterModel : PageModel
         if (!ModelState.IsValid)
             return Page();
 
-        //Sætter standardrolle til Customer
-        User.Role = UserRole.Customer;
-
-        //Tilføjer brugeren via service
-        await _userService.AddObjectAsync(User);
+        await _userService.RegisterUserAsync(User);
 
         return RedirectToPage("Login");
     }

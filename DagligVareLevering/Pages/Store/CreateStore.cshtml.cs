@@ -1,5 +1,5 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,11 +7,11 @@ namespace DagligVareLevering.Pages.Store
 {
     public class CreateStoreModel : PageModel
     {
-        private IService<Models.Store> _dbService;
+        private readonly IRepository<Models.Store> _storeService;
 
-        public CreateStoreModel(IService<Models.Store> dbService)
+        public CreateStoreModel(IRepository<Models.Store> storeService)
         {
-            _dbService = dbService;
+            _storeService = storeService;
         }
 
         [BindProperty]
@@ -34,7 +34,7 @@ namespace DagligVareLevering.Pages.Store
             {
                 return Page();
             }
-            await _dbService.AddObjectAsync(Store);
+            await _storeService.AddObjectAsync(Store);
             return RedirectToPage("GetAllStores");
         }
     }

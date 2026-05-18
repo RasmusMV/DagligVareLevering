@@ -1,5 +1,5 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +8,14 @@ namespace DagligVareLevering.Pages.Statistics
 {
     public class StatisticsModel : PageModel
     {
-        private IOrderService _orderService;
-        private IUserService _userService;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
+
+        public StatisticsModel(IOrderService orderService, IUserService userService)
+        {
+            _orderService = orderService;
+            _userService = userService;
+        }
 
         public int TotalOrders { get; set; }
 
@@ -21,12 +27,6 @@ namespace DagligVareLevering.Pages.Statistics
 
         public decimal MonthlyRevenue { get; set; }
 
-        public StatisticsModel(IOrderService orderService, IUserService userService)
-        {
-            _orderService = orderService;
-            _userService = userService;
-        }
-
         public async Task<IActionResult> OnGetAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
@@ -37,7 +37,7 @@ namespace DagligVareLevering.Pages.Statistics
                 
             TotalOrders = await _orderService.GetTotalOrders();
             TotalBoughtFor = await _orderService.GetTotalRevenue();
-            TotalUsers = await _userService.GetTotalUsers();
+            TotalUsers = await _userService.GetTotalUsersAsync();
             MonthlyOrders = await _orderService.GetMonthlyOrderCount();
             MonthlyRevenue = await _orderService.GetMonthlyRevenue();
             return Page();

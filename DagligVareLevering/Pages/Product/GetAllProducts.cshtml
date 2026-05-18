@@ -30,11 +30,11 @@
         {
             <div class="card">
                 <h3>@group.Key</h3> <!-- Produkt navn -->
-                @foreach (var item in group)
+                @foreach (var item in group.Value)
                 {
                     <div>
                         <p>@item.Information <br />
-                           @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId).Name <br />
+                           @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId)?.Name <br />
                            @item.Price kr</p>
 
                            <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->

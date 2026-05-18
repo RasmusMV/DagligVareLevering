@@ -1,21 +1,18 @@
-using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderConfirmationModel : PageModel
     {
-        // Services til at håndtere databaseoperationer for ordrer, ordrelinjer og produkter
-        private IService<Models.Order> _orderService;
-   
+        // Service til at håndtere ordrer
+        private readonly IOrderService _orderService;
 
-        public OrderConfirmationModel(IService<Models.Order> ordreService)
+        public OrderConfirmationModel(IOrderService orderService)
         {
-            _orderService = ordreService; 
+            _orderService = orderService;
         }
 
         public Models.Order? CurrentOrder { get; set; }
@@ -30,13 +27,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
             // Hent den seneste ordre for den givne bruger
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-             .Include(o => o.User)
-             .Include(o => o.OrderLines)
-             .ThenInclude(ol => ol.Product)
-             .Where(o => o.UserId == userId.Value)
-             .OrderByDescending(o => o.TimeOfOrder)
-             .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
 
             if (CurrentOrder == null)

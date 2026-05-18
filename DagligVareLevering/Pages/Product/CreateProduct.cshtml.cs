@@ -1,6 +1,7 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.DTOs;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,10 +10,10 @@ namespace DagligVareLevering.Pages.Product
 {
     public class CreateProductModel : PageModel
     {
-        private IService<Models.Product> _productService;
-        private IService<Models.Store> _storeService;
+        private readonly IProductService _productService;
+        private readonly IRepository<Models.Store> _storeService;
 
-        public CreateProductModel(IService<Models.Product> productService, IService<Models.Store> storeService)
+        public CreateProductModel(IProductService productService, IRepository<Models.Store> storeService)
         {
             _productService = productService;
             _storeService = storeService;
@@ -43,15 +44,7 @@ namespace DagligVareLevering.Pages.Product
                 return Page();
             }
 
-            var product = new Models.Product
-            {
-                Name = ProductDto.Name,
-                Price = ProductDto.Price,
-                Information = ProductDto.Information,
-                StoreId = ProductDto.StoreId
-            };
-
-            await _productService.AddObjectAsync(product);
+            await _productService.CreateProductAsync(ProductDto);
             return RedirectToPage("/Index");
         }
 

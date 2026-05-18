@@ -1,6 +1,4 @@
-﻿using DagligVareLevering.Models;
-
-namespace DagligVareLevering.Service
+﻿namespace DagligVareLevering.Service.Interfaces
 {
     public interface IService<T>
     {
@@ -9,7 +7,5 @@ namespace DagligVareLevering.Service
         Task DeleteObjectAsync(T obj);
         Task UpdateObjectAsync(T obj);
         Task<T> GetObjectByIdAsync(int id);
-        IQueryable<T> GetAllObjectInfoAsync();
-       
     }
 }

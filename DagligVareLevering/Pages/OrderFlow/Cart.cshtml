@@ -1,9 +1,9 @@
 ﻿@page
-@model DagligVareLevering.Models.CartModel
+@model DagligVareLevering.Pages.OrderFlow.CartModel
 
 <h2>Min Kurv</h2>
 
-@if (Model.BasketItems.Count == 0)
+@if (Model.CartSummary.Items.Count == 0)
 {
     <div class="empty-cart">
         <p>Din kurv er tom.</p>
@@ -14,7 +14,7 @@ else
     <!-- Viser kurvens varer og ordreoversigt i et samlet layout -->
     <div class="cart-layout">
         <div class="cart-items">
-            @foreach (var item in Model.BasketItems)
+            @foreach (var item in Model.CartSummary.Items)
             {
                 <!-- Viser en enkelt vare i kurven -->
                 <div class="cart-item">
@@ -55,17 +55,17 @@ else
 
             <div class="summary-row">
                 <span>Varer</span>
-                <strong>@Model.ItemsTotalPrice.ToString("C")</strong>
+                <strong>@Model.CartSummary.ItemsTotalPrice.ToString("C")</strong>
             </div>
 
             <div class="summary-row">
                 <span>Levering</span>
-                <strong>@Model.DeliveryPrice.ToString("C")</strong>
+                <strong>@Model.CartSummary.DeliveryPrice.ToString("C")</strong>
             </div>
 
             <div class="summary-row summary-total">
                 <span>Total</span>
-                <strong>@Model.TotalWithDelivery.ToString("C")</strong>
+                <strong>@Model.CartSummary.TotalWithDelivery.ToString("C")</strong>
             </div>
 
             <form method="post" asp-page-handler="Checkout" class="checkout-actions">

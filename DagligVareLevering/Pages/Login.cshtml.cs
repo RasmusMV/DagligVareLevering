@@ -1,11 +1,17 @@
 using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-public class LoginModel(AppDbContext context) : PageModel
+public class LoginModel : PageModel
 {
-    private readonly AppDbContext _context = context;
+    private readonly IUserService _userService;
+
+    public LoginModel(IUserService userService)
+    {
+        _userService = userService;
+    }
 
     [BindProperty]
     public required string Email { get; set; }
@@ -13,14 +19,13 @@ public class LoginModel(AppDbContext context) : PageModel
     [BindProperty]
     public required string Password { get; set; }
 
-    public required string ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; } = string.Empty;
 
     public void OnGet() { }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == Email && u.Password == Password);
+        var user = await _userService.LoginAsync(Email, Password);
 
         if (user != null)
         {
