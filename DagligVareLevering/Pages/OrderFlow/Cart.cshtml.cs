@@ -18,60 +18,68 @@ namespace DagligVareLevering.Pages.OrderFlow
             _orderService = orderService;
             _userService = userService;
         }
-
-        // CartSummary Dto til at gemme leveringsprisen, den totale pris af produkterne den samlede, og BasketItems
+        // CartSummary DTO bruges til at samle kurvens varer, leveringspris og totalpris ét sted
         public CartSummary CartSummary { get; set; }
 
-        // OnGet -metoden henter data for indkøbskurven, herunder hvilke varer der er i kurven, og beregner priserne
         public async Task<IActionResult> OnGet()
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
 
-            // Hent varer i kurven for den aktuelle bruger og beregn priser
+            // Henter kurvens indhold og beregner priser via basket service
             CartSummary = await _basketItemService.GetCartSummaryAsync(userId.Value);
+
             return Page();
         }
 
-        // OnPostRemoveAsync -metoden håndterer fjernelse af en vare fra indkøbskurven
         public async Task<IActionResult> OnPostRemoveAsync(int productId)
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
 
+            // Fjerner produktet fra brugerens kurv
             await _basketItemService.RemoveItemAsync(userId.Value, productId);
+
             return RedirectToPage();
         }
 
-        // OnPostIncreaseAsync -metoden håndterer forøgelse af mængden af en vare i indkøbskurven
         public async Task<IActionResult> OnPostIncreaseAsync(int productId)
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
 
+            // Øger antallet af det valgte produkt i kurven
             await _basketItemService.IncreaseQuantityAsync(userId.Value, productId);
 
             return RedirectToPage();
         }
 
-        // OnPostDecreaseAsync -metoden håndterer formindskelse af mængden af en vare i indkøbskurven
         public async Task<IActionResult> OnPostDecreaseAsync(int productId)
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
 
+            // Sænker antallet af det valgte produkt i kurven
             await _basketItemService.DecreaseQuantityAsync(userId.Value, productId);
 
             return RedirectToPage();
@@ -79,19 +87,27 @@ namespace DagligVareLevering.Pages.OrderFlow
 
         public async Task<IActionResult> OnPostCheckoutAsync()
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
             if (userId == null)
             {
                 return RedirectToPage("/Login");
             }
 
+            // Henter brugerens kurv med tilhørende produkter
             var basketItems = await _basketItemService.GetUserBasketItemsWithProductsAsync(userId.Value);
+
+            // Hvis kurven er tom, bliver brugeren på kurvsiden
             if (!basketItems.Any())
             {
                 return RedirectToPage();
             }
 
+            // Henter brugerens adresse, så den kan bruges som standard leveringsadresse
             var user = await _userService.GetObjectByIdAsync(userId.Value);
+
+            // Opretter en ordre ud fra kurvens varer
             await _orderService.CheckoutAsync(userId.Value, user.Adress, basketItems);
 
             return RedirectToPage("/OrderFlow/DeliveryTime");
