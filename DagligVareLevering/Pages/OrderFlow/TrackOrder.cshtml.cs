@@ -1,4 +1,5 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,14 +29,14 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefaultAsync();
             return Page();
         }
 
         // Tjekker om et trin i ordrestatussen er nået
-        public bool IsStepCompleted(string step)
+        public bool IsStepCompleted(OrderStatus step)
         {
             if (CurrentOrder == null)
             {
@@ -43,7 +44,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             // Statusserne er placeret i den rækkefølge, ordren gennemgår dem
-            List<string> statusOrder = new List<string>
+            List<OrderStatus> statusOrder = new List<OrderStatus>
             {
                 OrderStatus.Received,
                 OrderStatus.Processing,
@@ -79,7 +80,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
 
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId)
+                .Where(o => o.UserId == userId.Value)
                 .OrderByDescending(o => o.TimeOfOrder)
                 .FirstOrDefaultAsync();
 

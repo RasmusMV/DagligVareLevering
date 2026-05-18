@@ -1,4 +1,5 @@
 ﻿using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DagligVareLevering.Service

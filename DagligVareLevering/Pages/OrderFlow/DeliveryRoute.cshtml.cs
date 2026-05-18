@@ -1,4 +1,5 @@
 using DagligVareLevering.Models;
+using DagligVareLevering.Models.Enums;
 using DagligVareLevering.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -25,7 +26,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public string DeliveryAdress { get; set; }
         public string WorkerAdress { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGet(int id)
         {
             int? workerId = HttpContext.Session.GetInt32("UserId");
             var role = HttpContext.Session.GetString("UserRole");
@@ -40,7 +41,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 .ThenInclude(ol => ol.Product)
                 .ThenInclude(p => p.Store)
                 .Include(o => o.User)
-                .Where(o => o.WorkerId == workerId && o.Status == OrderStatus.OutForDelivery)
+                .Where(o => o.WorkerId == workerId && o.Status == OrderStatus.OutForDelivery && o.OrderId == id)
                 .FirstOrDefaultAsync();
 
             if (CurrentOrder == null)

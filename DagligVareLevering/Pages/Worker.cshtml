@@ -1,52 +1,214 @@
 ﻿@page
+@using DagligVareLevering.Models
+@using DagligVareLevering.Models.Enums
 @model WorkerModel
 
 <h2>Worker Dashboard</h2>
 
-<p>Velkommen! Her kan du se dine leveringer.</p>
+<p>Velkommen! Her kan du se dine aktive leveringer.</p>
 
-@if (!Model.ActiveOrders.Any())
+@if (Model.ActiveOrders.Count == 0)
 {
-	<div class="alert alert-info">
-		Du har ingen aktive leveringer.
-		<a asp-page="/OrderFlow/OrderHistory">Find en ordre</a>
-	</div>
+    <!-- Vises hvis der ikke findes nogen aktive ordrer til levering -->
+    <div class="empty-message">
+        <p>Der er ingen aktive ordrer lige nu.</p>
+    </div>
 }
 else
 {
-	<div class="row">
+    <!-- Viser alle aktive ordrer, som leveringsmedarbejderen skal håndtere -->
+    <div class="worker-orders">
         @foreach (var order in Model.ActiveOrders)
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Ordre #@order.OrderId</h5>
-                        <p><strong>Kunde:</strong> @order.User.Name</p>
-                        <p><strong>Leveringsadresse:</strong> @order.Adress</p>
-                        <p>
-                            <strong>Forventet levering:</strong>
-                            @order.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
-                            kl. @order.ExpectedDeliveryTime.ToString("HH:mm")
-                        </p>
-                        <hr />
-                        <h6>Varer:</h6>
-                        <ul class="list-unstyled">
-                            @foreach (var line in order.OrderLines)
-                            {
-                                <li>
-                                    <strong>@line.Product.Name</strong> x @line.Quantity
-                                </li>
-                            }
-                        </ul>
-                        <hr />
-                        <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
-                        <a asp-page="/OrderFlow/DeliveryRoute"
-                               class="btn btn-primary w-100">
-                            Se rute
-                        </a>
+            <!-- Hver ordre vises som et separat kort -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h3>Ordre #@order.OrderId</h3>
+                        <p><strong>Status:</strong> @order.Status</p>
                     </div>
+
+                    <!-- Viser forventet leveringsdato og tidspunkt -->
+                    <div class="delivery-time">
+                        <strong>Levering</strong>
+                        @order.ExpectedDeliveryTime.ToString("dd-MM-yyyy")
+                    </div>
+                </div>
+
+                <!-- Viser kundens kontakt- og leveringsoplysninger -->
+                <div class="order-info">
+                    <p><strong>Kunde:</strong> @order.User.Name</p>
+                    <p><strong>Adresse:</strong> @order.Adress</p>
+                    <p><strong>Email:</strong> @order.User.Email</p>
+                    <p><strong>Telefon:</strong> @order.User.Phonenumber</p>
+                </div>
+
+                <h4>Varer</h4>
+
+                <!-- Viser hvilke varer og hvor mange af hver vare der skal leveres -->
+                <ul class="order-lines">
+                    @foreach (var line in order.OrderLines)
+                    {
+                        <li>
+                            <div> 
+                            <span>@line.Product.Name</span>
+                            <small>Butik: @line.Product.Store.Name </small>
+                            </div>
+
+                            <strong>x @line.Quantity</strong>
+                        </li>
+                    }
+                </ul>
+
+                <div class="order-footer">
+                    <p><strong>Total:</strong> @order.GetTotalPrice().ToString("C")</p>
+
+                    <!-- Knappen vises kun hvis ordren endnu ikke er markeret som leveret -->
+                    @if (order.Status != OrderStatus.Delivered)
+                    {
+                        <form method="post" asp-page-handler="MarkDelivered">
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <button type="submit" class="deliver-btn">Marker som leveret</button>
+                        </form>
+                    }   
+                     <!-- Send forsinkelsesnotifikation -->
+                        <form method="post" asp-page-handler="SendDelay">
+                        <input type="hidden" name="orderId" value="@order.OrderId" />
+                        <button type="submit" class="delay-btn">
+                         Underret om forsinkelse
+                         </button>
+                         </form>
                 </div>
             </div>
         }
-	</div>
+    </div>
 }
+
+<style>
+    h2 {
+        margin-bottom: 12px;
+        color: #333;
+    }
+
+    .empty-message {
+        background-color: #f8f8f8;
+        padding: 18px;
+        border-radius: 8px;
+        color: #666;
+    }
+
+    .worker-orders {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .order-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+    }
+
+        .order-header h3 {
+            margin: 0 0 6px 0;
+            color: #333;
+        }
+
+    .delivery-time {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .order-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 20px;
+        margin-bottom: 16px;
+    }
+
+        .order-info p {
+            margin: 0;
+        }
+
+    .order-lines {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .order-lines li {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding: 9px 0;
+        }
+
+
+            .order-lines li div {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .order-lines li small {
+                color: #666;
+                font-size: 13px;
+            }
+
+    .order-footer {
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+        .order-footer p {
+            margin: 0;
+        }
+
+    .deliver-btn {
+        padding: 10px 16px;
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .deliver-btn:hover {
+            background-color: #4338ca;
+        }
+
+    @@media (max-width: 700px) {
+        .order-header,
+        .order-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .delivery-time {
+            text-align: left;
+        }
+
+        .order-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

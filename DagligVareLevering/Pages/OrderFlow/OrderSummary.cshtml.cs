@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using DagligVareLevering.Models;
 using DagligVareLevering.Service;
 using Microsoft.EntityFrameworkCore;
+using DagligVareLevering.Models.Enums;
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
@@ -27,7 +28,6 @@ namespace DagligVareLevering.Pages.OrderFlow
         public string DeliveryAddress { get; set; } = string.Empty;
 
 
-
         // Henter den nyeste ordre for brugeren og viser den som et resume
         public async Task<IActionResult> OnGet()
         {
@@ -40,7 +40,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
             .Include(o => o.OrderLines)
             .ThenInclude(ol => ol.Product)
-            .Where(o => o.UserId == userId)
+            .Where(o => o.UserId == userId.Value)
             .OrderByDescending(o => o.TimeOfOrder)
             .FirstOrDefaultAsync();
 
@@ -67,7 +67,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             CurrentOrder = await _orderService.GetAllObjectInfoAsync()
             .Include(o => o.OrderLines)
             .ThenInclude(ol => ol.Product)
-            .Where(o => o.UserId == userId)
+            .Where(o => o.UserId == userId.Value)
             .OrderByDescending(o => o.TimeOfOrder)
             .FirstOrDefaultAsync();
 
@@ -91,7 +91,8 @@ namespace DagligVareLevering.Pages.OrderFlow
             await _orderService.UpdateObjectAsync(CurrentOrder);
 
             // Fjerner BasketItem fra kurven
-            foreach (BasketItem item in (await _basketItemService.GetObjectsAsync()).Where(b => b.UserId == userId))
+            foreach (BasketItem item in (await _basketItemService.GetObjectsAsync()).Where(b => b.UserId == userId.Value))
+
             {
                 await _basketItemService.DeleteObjectAsync(item);
             }
