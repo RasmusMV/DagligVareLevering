@@ -39,6 +39,8 @@
                         <li>
                             <a class="dropdown-item" asp-page="/OrderFlow/OrderHistory">Ordrehistorik</a>
                         </li>
+                    
+                        
 
                         @if (userId != null)
                         {
@@ -46,6 +48,12 @@
 
                             <li>
                                 <a class="dropdown-item" asp-page="/Account">Min bruger</a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" asp-page="/Notifications">
+                                    Notifikationer
+                                </a>
                             </li>
 
                             @if (role == "Admin")
