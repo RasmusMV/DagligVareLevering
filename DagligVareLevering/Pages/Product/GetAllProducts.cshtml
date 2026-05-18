@@ -30,18 +30,25 @@
 <!-- cards som indeholder produkter med samme navn-->
 <div class="container">
     <div class="product-grid">
-        
-            @foreach (var group in Model.GroupedProducts)
-        {
-            <div class="card">
-                <h3>@group.Key</h3> <!-- Produkt navn -->
-                @foreach (var item in group.Value)
-                {
-                    <div>
+            @foreach (var item in Model.Products)
+            {
+                <div class="card">
+                    <h3>@item.Name</h3> <!-- Produkt navn -->
+                    <p>@item.Information <br />
+                       @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId)?.Name <br />
+                       @item.Price kr</p>
+
+                       <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->
+                    <a asp-page="/Product/ProductDetails" asp-route-id="@item.ProductId">
+                        Se produkt
+                    </a>
+                    <!--tilføjer produkt til cart-->
+                    <form method="post" asp-page-handler="AddToCart">
+                        <input type="hidden" name="productId" value="@item.ProductId" />
                         <p>@item.Information <br />
                            @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId)?.Name <br />
                            @item.Price kr</p>
-
+                           </form>
                            <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->
                         <a asp-page="/Product/ProductDetails" asp-route-id="@item.ProductId">
                             Se produkt
@@ -67,7 +74,7 @@
                     </div>
                 }
             </div>
-        }
+        
     </div>
 </div>
 

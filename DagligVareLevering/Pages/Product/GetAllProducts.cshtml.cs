@@ -36,26 +36,27 @@ namespace DagligVareLevering.Pages.Product
         public List<Models.Store> Stores { get; private set; }
         public Dictionary<string, List<Models.Product>> GroupedProducts { get; set; }
 
-      
-        public async Task OnGetAsync(int? id, string? storeName, decimal? maxPrice, int? storeId)
+       
+       
+       
+        //indeholder de produkter, der skal vises på siden
+        public List<DagligVareLevering.Models.Product> Products { get; set; }
+            = new List<DagligVareLevering.Models.Product>();
+
+        public async Task OnGet()
         {
-            GroupedProducts = await _productService.GetGroupedProductsAsync(maxPrice, storeId);
             Stores = (await _storeService.GetObjectsAsync()).ToList();
-            // Søger kun efter produkter, hvis kunden har skrevet noget i søgefeltet
+
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                SearchResults = await _productService.SearchProductsAsync(SearchText);
+                // Viser kun produkter, der matcher søgningen
+                Products = await _productService.SearchProductsAsync(SearchText);
             }
-
-            if (id != null)
+            else
             {
-                SelectedProduct = GroupedProducts
-                    .SelectMany(g => g.Value)
-                    .FirstOrDefault(p => p.ProductId == id);
+                // Viser alle produkter, hvis kunden ikke har søgt
+                Products = (await _productService.GetObjectsAsync()).ToList();
             }
-
-            
-
         }
 
         public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
