@@ -46,6 +46,7 @@ public class AccountModel : PageModel
             userInDb.Adress = User.Adress;
             userInDb.Phonenumber = User.Phonenumber;
             userInDb.Password = User.Password;
+            userInDb.WantsOfferEmails = User.WantsOfferEmails;
 
             await _userService.UpdateObjectAsync(userInDb);
         }
