@@ -50,12 +50,18 @@ namespace DagligVareLevering.Pages
             if (userId == null)
             {
                 return RedirectToPage("/Login");
+
             }
+            // Lytter på eventet og viser en besked, når en vare lægges i kurven
+            _cartEventService.CartItemAdded += item =>
+            {
+                TempData["StatusMessage"] = "Varen er lagt i kurven.";
+            };
+
 
             await _basketItemService.AddOrIncrementAsync(userId.Value, productId);
 
-            // Viser en besked til brugeren efter varen er lagt i kurven
-            TempData["StatusMessage"] = "Varen er lagt i kurven.";
+            }
 
             // Sender brugeren tilbage til forsiden og bevarer søgningen
             return RedirectToPage(new { SearchText = SearchText });
