@@ -63,11 +63,15 @@
                             if(role == "Admin")
                             {
                                 <a asp-page="/Product/EditProduct" asp-route-id="@item.ProductId">Opdater</a>
+                                <a asp-page="/Product/CreateProduct" asp-route-id="@item.ProductId">Opret Nyt Produkt</a>
+
                                 <form method="post" asp-page-handler="Delete" asp-route-id="@item.ProductId"
                                       onsubmit="return confirm('Are you sure you want to delete this product?');"
                                       class="d-inline m-0">
                                     <button type="submit" class="btn btn-primary btn-sm">Delete</button>
                                 </form>
+
+
                             }
                         }
                         
