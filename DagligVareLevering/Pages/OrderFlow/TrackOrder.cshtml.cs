@@ -1,17 +1,16 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore; 
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
     public class TrackOrderModel : PageModel
     {// Service bruges til at hente ordredata fra databasen
-        private IService<Order> _orderService;
+        private readonly IOrderService _orderService;
 
-        public TrackOrderModel(IService<Order> orderService)
+        public TrackOrderModel(IOrderService orderService)
         {
             _orderService = orderService;
         }
@@ -28,10 +27,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId.Value)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
             return Page();
         }
 
@@ -79,10 +75,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-                .Where(o => o.UserId == userId.Value)
-                .OrderByDescending(o => o.TimeOfOrder)
-                .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
             if (CurrentOrder == null)
             {
@@ -95,9 +88,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage();
             }
 
-            CurrentOrder.Status = OrderStatus.Cancelled;
-
-            await _orderService.UpdateObjectAsync(CurrentOrder);
+            await _orderService.CancelOrderAsync(CurrentOrder.OrderId);
 
             TempData["StatusMessage"] = "Din ordre er blevet annulleret.";
 

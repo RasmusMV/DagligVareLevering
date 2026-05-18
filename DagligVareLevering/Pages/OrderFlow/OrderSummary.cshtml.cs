@@ -1,18 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
-using Microsoft.EntityFrameworkCore;
-using DagligVareLevering.Models.Enums;
+using DagligVareLevering.Service.Interfaces;
 
 namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderSummaryModel : PageModel
     {
         // Service til at håndtere databaseoperationer for ordrer
-        private IService<Order> _orderService;
-        private IService<BasketItem> _basketItemService;
-        public OrderSummaryModel(IService<Order> orderService, IService<BasketItem> basketItemService)
+        private readonly IOrderService _orderService;
+        private readonly IBasketItemService _basketItemService;
+        public OrderSummaryModel(IOrderService orderService, IBasketItemService basketItemService)
         {
             _orderService = orderService;
             _basketItemService = basketItemService;
@@ -37,12 +35,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
             // Hent den aktuelle ordre for brugeren, inklusive relaterede data
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-            .Include(o => o.OrderLines)
-            .ThenInclude(ol => ol.Product)
-            .Where(o => o.UserId == userId.Value)
-            .OrderByDescending(o => o.TimeOfOrder)
-            .FirstOrDefaultAsync();
+            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
 
             if (CurrentOrder != null)
@@ -64,38 +57,16 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            CurrentOrder = await _orderService.GetAllObjectInfoAsync()
-            .Include(o => o.OrderLines)
-            .ThenInclude(ol => ol.Product)
-            .Where(o => o.UserId == userId.Value)
-            .OrderByDescending(o => o.TimeOfOrder)
-            .FirstOrDefaultAsync();
+            var order = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
-
-
-            if (CurrentOrder == null)
+            if (order == null)
             {
                 return RedirectToPage("/OrderFlow/DeliveryTime");
             }
 
-            // Opdaterer kun leveringsadressen, hvis brugeren har skrevet en ny adresse
-            if (!string.IsNullOrWhiteSpace(DeliveryAddress))
-            {
-                CurrentOrder.Adress = DeliveryAddress;
-            }
-
-            CurrentOrder.PaymentMethod = PaymentMethod;
-            CurrentOrder.Status = OrderStatus.Received;
-
-            // Gemmer ændringerne i databasen
-            await _orderService.UpdateObjectAsync(CurrentOrder);
-
+            await _orderService.ConfirmOrderAsync(userId.Value, DeliveryAddress, PaymentMethod);
             // Fjerner BasketItem fra kurven
-            foreach (BasketItem item in (await _basketItemService.GetObjectsAsync()).Where(b => b.UserId == userId.Value))
-
-            {
-                await _basketItemService.DeleteObjectAsync(item);
-            }
+            await _basketItemService.ClearBasketAsync(userId.Value);
 
             return RedirectToPage("/OrderFlow/OrderConfirmation");
 

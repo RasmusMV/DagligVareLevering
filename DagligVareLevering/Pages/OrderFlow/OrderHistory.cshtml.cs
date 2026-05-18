@@ -1,21 +1,22 @@
-using DagligVareLevering.EFDbContext;
+using DagligVareLevering.Handlers;
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Numerics;
 namespace DagligVareLevering.Pages.OrderFlow
 {
     public class OrderHistoryModel : PageModel
     {
-        private IService<Models.Order> _orderService;
-        private IService<OrderLine> _orderLineService;
-        public OrderHistoryModel(IService<Models.Order> orderService, IService<OrderLine> orderLineService)
+        private readonly IOrderService _orderService;
+        private readonly IRepository<OrderLine> _orderLineService;
+        private readonly OrderEventsHandler _orderEventsHandler;
+        public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
         {
             _orderService = orderService;
             _orderLineService = orderLineService;
+            _orderEventsHandler = orderEventsHandler;
         }
         public List<Models.Order> AllOrders { get; set; }
         public decimal GrandTotal { get; set; }
@@ -26,16 +27,13 @@ namespace DagligVareLevering.Pages.OrderFlow
             var role = HttpContext.Session.GetString("UserRole");
             if(role == "Customer")
             {
-                AllOrders = await _orderService.GetAllObjectInfoAsync()
-                    .Include(o => o.OrderLines)
-                    .ThenInclude(ol => ol.Product)
-                    .Where(o => o.UserId == HttpContext.Session.GetInt32("UserId"))
-                    .ToListAsync();
+                AllOrders = (await _orderService.GetUserOrdersWithOrderLinesAndProducts(HttpContext.Session.GetInt32("UserId").Value)).ToList();
 
                 GrandTotal = 0;
                 TotalItems = 0;
 
-                foreach (var order in AllOrders)
+                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received 
+                || o.Status == OrderStatus.Processing || o.Status == OrderStatus.OutForDelivery || o.Status == OrderStatus.Delayed))
                 {
                     GrandTotal += order.GetTotalPrice();
                     TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
@@ -43,20 +41,12 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
             else if(role == "Admin")
             {
-                AllOrders = await _orderService.GetAllObjectInfoAsync()
-                .Include(o => o.OrderLines)
-                .ThenInclude(ol => ol.Product)
-                .ToListAsync();
+                AllOrders = (await _orderService.GetAllOrdersWithOrderLinesAndProducts()).ToList();
 
             }
             else if(role == "Worker")
             {
-                AllOrders = await _orderService.GetAllObjectInfoAsync()
-                    .Include(o => o.OrderLines)
-                    .ThenInclude(ol => ol.Product)
-                    .Include(o => o.User)
-                    .Where(o => o.WorkerId == null && (o.Status == OrderStatus.Processing || o.Status == OrderStatus.Received))
-                    .ToListAsync();
+                AllOrders = (await _orderService.GetAllOrdersWithNoWorker()).ToList();
             }
             else
             {
@@ -73,15 +63,7 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage("/Login");
             }
 
-            var order = await _orderService.GetAllObjectInfoAsync()
-                .FirstOrDefaultAsync(o => o.OrderId == orderId);
-
-            if(order != null && order.WorkerId == null)
-            {
-                order.WorkerId = workerId;
-                order.Status = OrderStatus.OutForDelivery;
-                await _orderService.UpdateObjectAsync(order);
-            }
+            await _orderService.TakeOrderAsync(orderId, workerId.Value);
 
             return RedirectToPage("/OrderFlow/DeliveryRoute");
 

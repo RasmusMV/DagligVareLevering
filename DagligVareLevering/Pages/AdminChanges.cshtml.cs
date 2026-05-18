@@ -1,17 +1,18 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.Enums;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class UsersModel : PageModel
 {
-    private readonly AppDbContext _context;
+    private readonly IUserService _userService;
 
-    public UsersModel(AppDbContext context)
+    public UsersModel(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     public List<User> Users { get; set; }
@@ -23,7 +24,7 @@ public class UsersModel : PageModel
         if (role != "Admin")
             return RedirectToPage("/Login");
 
-        Users = await _context.Users.ToListAsync();
+        Users = (await _userService.GetObjectsAsync()).ToList();
         return Page();
     }
 
@@ -34,12 +35,12 @@ public class UsersModel : PageModel
         if (role != "Admin")
             return RedirectToPage("/Login");
 
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userService.GetObjectByIdAsync(userId);
 
         if (user != null)
         {
             user.Role = newRole;
-            await _context.SaveChangesAsync();
+            await _userService.UpdateObjectAsync(user);
         }
 
         return RedirectToPage();

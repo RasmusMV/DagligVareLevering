@@ -14,15 +14,12 @@ namespace DagligVareLevering.Models
         [Required]
         public string Message { get; set; }
 
-        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        [Required]
         public bool IsRead { get; set; } = false;
 
         [Required]
         public int UserId { get; set; }
-
         [ForeignKey("UserId")]
         public User User { get; set; }
     }
