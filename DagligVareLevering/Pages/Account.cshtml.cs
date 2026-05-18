@@ -1,16 +1,17 @@
 using DagligVareLevering.EFDbContext;
 using DagligVareLevering.Models;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 public class AccountModel : PageModel
 {
-    private readonly AppDbContext _context;
+    private readonly IUserService _userService;
 
-    public AccountModel(AppDbContext context)
+    public AccountModel(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     [BindProperty]
@@ -23,7 +24,7 @@ public class AccountModel : PageModel
         if (userId == null)
             return RedirectToPage("/Login");
 
-        User = await _context.Users.FindAsync(userId);
+        User = await _userService.GetObjectByIdAsync(userId.Value);
 
         return Page();
     }
@@ -36,7 +37,7 @@ public class AccountModel : PageModel
         if (userId == null)
             return RedirectToPage("/Login");
 
-        var userInDb = await _context.Users.FindAsync(userId);
+        var userInDb = await _userService.GetObjectByIdAsync(userId.Value);
 
         if (userInDb != null)
         {
@@ -46,7 +47,7 @@ public class AccountModel : PageModel
             userInDb.Phonenumber = User.Phonenumber;
             userInDb.Password = User.Password;
 
-            await _context.SaveChangesAsync();
+            await _userService.UpdateObjectAsync(userInDb);
         }
 
         return RedirectToPage();
@@ -60,12 +61,11 @@ public class AccountModel : PageModel
         if (userId == null)
             return RedirectToPage("/Login");
 
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userService.GetObjectByIdAsync(userId.Value);
 
         if (user != null)
         {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            await _userService.DeleteObjectAsync(user);
         }
 
         //logger useren ud når den er slettet

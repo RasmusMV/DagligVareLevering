@@ -6,10 +6,6 @@ namespace DagligVareLevering.Models
     public class OrderLine
     {
         public OrderLine() { }
-        public decimal GetLineTotal()
-        {
-            return Product.Price * Quantity;
-        }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,5 +24,10 @@ namespace DagligVareLevering.Models
         [Required]
         [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100")]
         public int Quantity { get; set; }
+
+        public decimal GetLineTotal()
+        {
+            return Product.Price * Quantity;
+        }
     }
 }

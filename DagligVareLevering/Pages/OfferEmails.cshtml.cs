@@ -1,5 +1,6 @@
 using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,48 +8,50 @@ namespace DagligVareLevering.Pages
 {
     public class OfferEmailsModel : PageModel
     {
-        private IService<User> _userService;
+        private readonly IUserService _userService;
+
+        public OfferEmailsModel(IUserService userService)
+        {
+            _userService = userService;
+        }
 
         [BindProperty]
         public bool WantsOfferEmails { get; set; }
 
         public string Message { get; set; }
 
-        public OfferEmailsModel(IService<User> userService)
+        public async Task<IActionResult> OnGetAsync()
         {
-            _userService = userService;
-        }
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if(userId == null)
+            {
+                RedirectToPage("/Login");
+            }
 
-        public async Task OnGetAsync()
-        {
-            var users = await _userService.GetObjectsAsync();
-            var user = users.FirstOrDefault();
-
-            if (user != null)
+            var user = await _userService.GetObjectByIdAsync(userId.Value);
+            if(user != null)
             {
                 WantsOfferEmails = user.WantsOfferEmails;
             }
+
+            return Page();
         }
 
-        public async Task OnPostAsync()
+        public async Task<IActionResult> OnPostAsync()
         {
-            var users = await _userService.GetObjectsAsync();
-            var user = users.FirstOrDefault();
-
-            if (user != null)
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
             {
-                user.WantsOfferEmails = WantsOfferEmails;
+                RedirectToPage("/Login");
+            }
 
-                await _userService.UpdateObjectAsync(user);
+            await _userService.UpdateOfferEmailsAsync(userId.Value, WantsOfferEmails);
 
-                Message = WantsOfferEmails
+            Message = WantsOfferEmails
                     ? "Du er nu tilmeldt tilbudsmails."
                     : "Du er ikke tilmeldt tilbudsmails.";
-            }
-            else
-            {
-                Message = "Der blev ikke fundet en bruger.";
-            }
+
+            return Page();
         }
     }
 }

@@ -2,6 +2,12 @@ using DagligVareLevering.EFDbContext;
 using Microsoft.EntityFrameworkCore;
 using DagligVareLevering.Service;
 using DagligVareLevering.Models;
+using DagligVareLevering.Repositories;
+using DagligVareLevering.Service.Interfaces;
+using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Observers.Interfaces;
+using DagligVareLevering.Observers;
+using DagligVareLevering.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,16 +18,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration
         .GetConnectionString("DefaultConnection")));
 builder.Services.AddSession();
-builder.Services.AddScoped<IService<BasketItem>, DbGenericService<BasketItem>>();
-builder.Services.AddScoped<IService<Order>, DbGenericService<Order>>();
-builder.Services.AddScoped<IService<OrderLine>, DbGenericService<OrderLine>>();
-builder.Services.AddScoped<IService<Product>, DbGenericService<Product>>();
-builder.Services.AddScoped<IService<Store>, DbGenericService<Store>>();
-builder.Services.AddScoped<IService<User>, DbGenericService<User>>();
+//Repos
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IService<>), typeof(GenericService<>));
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBasketItemRepository, BasketItemRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//Services
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<CartEventService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IBasketItemService, BasketItemService>();
+//Observers
+builder.Services.AddScoped<IOrderObserver, OrderObserver>();
+//Handlers 
+builder.Services.AddScoped<OrderEventsHandler>();
 
 var app = builder.Build();
 
