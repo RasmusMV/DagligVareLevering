@@ -29,13 +29,13 @@ namespace DagligVareLevering.Pages.Product
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Product/GetAllProducts");
             }
 
             Product = await _productService.GetObjectByIdAsync(id);
             if (Product == null)
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Product/GetAllProducts");
             }
             await LoadStoresAsync();
 
@@ -66,7 +66,7 @@ namespace DagligVareLevering.Pages.Product
                 return Page();
             }
             await _productService.UpdateObjectAsync(Product);
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Product/GetAllProducts");
         }
 
         private async Task LoadStoresAsync()

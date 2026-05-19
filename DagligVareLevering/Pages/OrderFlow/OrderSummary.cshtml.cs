@@ -32,7 +32,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
             // Hent den aktuelle ordre for brugeren, inklusive relaterede data
             CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
@@ -54,7 +54,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             var order = await _orderService.GetLatestUserOrderAsync(userId.Value);

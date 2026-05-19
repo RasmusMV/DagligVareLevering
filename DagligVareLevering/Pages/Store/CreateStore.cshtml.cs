@@ -27,7 +27,7 @@ namespace DagligVareLevering.Pages.Store
             // Kun admin må tilgå siden til oprettelse af butikker
             if (role != "Admin")
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Store/GetAllStores");
             }
 
             return Page();
@@ -43,7 +43,7 @@ namespace DagligVareLevering.Pages.Store
 
             // Opretter butikken i databasen
             await _storeService.AddObjectAsync(Store);
-            return RedirectToPage("GetAllStores");
+            return RedirectToPage("/Store/GetAllStores");
         }
     }
 }

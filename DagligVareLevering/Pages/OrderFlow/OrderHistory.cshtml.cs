@@ -60,7 +60,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             }
             else
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
             return Page();
         }
@@ -71,7 +71,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? workerId = HttpContext.Session.GetInt32("UserId");
             if(workerId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Knytter ordren til den worker, der tager ordren
@@ -89,7 +89,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             // Sikrer at kun admin kan slette ordrer
             if (role != "Admin")
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Finder alle ordrelinjer, der hører til ordren

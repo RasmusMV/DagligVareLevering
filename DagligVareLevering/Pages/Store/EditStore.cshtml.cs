@@ -26,7 +26,7 @@ namespace DagligVareLevering.Pages.Store
             // Kun admin må redigere butikker
             if (role != "Admin")
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Store/GetAllStores");
             }
 
             // Henter den butik, der skal redigeres
@@ -35,7 +35,7 @@ namespace DagligVareLevering.Pages.Store
             // Hvis butikken ikke findes, sendes admin tilbage til butiksoversigten
             if (Store == null)
             {
-                return RedirectToPage("GetAllStores");
+                return RedirectToPage("/Store/GetAllStores");
             }
             return Page();
         }
@@ -50,7 +50,7 @@ namespace DagligVareLevering.Pages.Store
             // Gemmer ændringerne på butikken i databasen
 
             await _storeService.UpdateObjectAsync(Store);
-            return RedirectToPage("GetAllStores");
+            return RedirectToPage("/Store/GetAllStores");
         }
     }
 }

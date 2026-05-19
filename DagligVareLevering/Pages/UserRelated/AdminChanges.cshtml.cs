@@ -26,7 +26,7 @@ public class UsersModel : PageModel
 
         // Kun admin må se user management-siden
         if (role != "Admin")
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
 
         // Henter alle brugere fra databasen
         Users = (await _userService.GetObjectsAsync()).ToList();
@@ -40,7 +40,7 @@ public class UsersModel : PageModel
 
         // Kun admin må ændre roller
         if (role != "Admin")
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
 
         // Finder den bruger, hvis rolle skal ændres
         var user = await _userService.GetObjectByIdAsync(userId);

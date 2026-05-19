@@ -28,7 +28,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter kurvens indhold og beregner priser via basket service
@@ -44,7 +44,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Fjerner produktet fra brugerens kurv
@@ -60,7 +60,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Øger antallet af det valgte produkt i kurven
@@ -76,7 +76,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Sænker antallet af det valgte produkt i kurven
@@ -92,7 +92,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter brugerens kurv med tilhørende produkter

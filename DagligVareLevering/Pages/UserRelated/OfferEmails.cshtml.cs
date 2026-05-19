@@ -4,7 +4,7 @@ using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.UserRelated
 {
     public class OfferEmailsModel : PageModel
     {
@@ -29,7 +29,7 @@ namespace DagligVareLevering.Pages
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId == null)
             {
-                RedirectToPage("/Login");
+                RedirectToPage("/UserRelated/Login");
             }
 
             // Henter brugeren, så siden kan vise den nuværende email-indstilling
@@ -48,7 +48,7 @@ namespace DagligVareLevering.Pages
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-              return RedirectToPage("/Login");
+              return RedirectToPage("/UserRelated/Login");
             }
 
             // Opdaterer om brugeren ønsker at modtage tilbudsmails

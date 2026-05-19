@@ -32,7 +32,7 @@ namespace DagligVareLevering.Pages.Statistics
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
                 
             TotalOrders = await _orderService.GetTotalOrders();
