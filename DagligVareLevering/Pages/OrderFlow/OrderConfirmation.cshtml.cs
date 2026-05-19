@@ -24,14 +24,14 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
             // Hent den seneste ordre for den givne bruger
             CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
 
             if (CurrentOrder == null)
-                return RedirectToPage("/OrderHistory");
+                return RedirectToPage("/OrderFlow/OrderHistory");
 
             TotalPrice = CurrentOrder.GetTotalPrice();
 

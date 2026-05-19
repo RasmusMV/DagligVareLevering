@@ -29,7 +29,7 @@ namespace DagligVareLevering.Pages.Product
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Product/GetAllProducts");
             }
 
             await LoadStoresAsync();
@@ -45,7 +45,7 @@ namespace DagligVareLevering.Pages.Product
             }
 
             await _productService.CreateProductAsync(ProductDto);
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Product/GetAllProducts");
         }
 
         private async Task LoadStoresAsync()

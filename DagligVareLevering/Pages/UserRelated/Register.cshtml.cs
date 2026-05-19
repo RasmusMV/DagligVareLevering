@@ -31,6 +31,6 @@ public class RegisterModel : PageModel
         await _userService.RegisterUserAsync(User);
 
         // Sender brugeren videre til login efter oprettelse
-        return RedirectToPage("Login");
+        return RedirectToPage("/UserRelated/Login");
     }
 }

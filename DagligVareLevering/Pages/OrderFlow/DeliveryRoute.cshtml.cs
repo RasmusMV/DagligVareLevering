@@ -35,7 +35,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             // Kun workers må se leveringsruten
             if (workerId == null || role != "Worker")
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter den aktive ordre, som er tildelt den indloggede worker
@@ -71,7 +71,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? workerId = HttpContext.Session.GetInt32("UserId");
             if(workerId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Marker ordren som leveret

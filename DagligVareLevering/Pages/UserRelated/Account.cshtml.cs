@@ -26,7 +26,7 @@ public class AccountModel : PageModel
 
         // Hvis brugeren ikke er logget ind, sendes brugeren til login
         if (userId == null)
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
 
         // Henter brugerens nuværende oplysninger, så de kan vises på kontosiden
         User = await _userService.GetObjectByIdAsync(userId.Value);
@@ -41,7 +41,7 @@ public class AccountModel : PageModel
         var userId = HttpContext.Session.GetInt32("UserId");
 
         if (userId == null)
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
 
         // Henter brugeren fra databasen, så de eksisterende oplysninger kan opdateres
         var userInDb = await _userService.GetObjectByIdAsync(userId.Value);
@@ -69,7 +69,7 @@ public class AccountModel : PageModel
         var userId = HttpContext.Session.GetInt32("UserId");
 
         if (userId == null)
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
 
         // Henter brugeren, der skal slettes
         var user = await _userService.GetObjectByIdAsync(userId.Value);

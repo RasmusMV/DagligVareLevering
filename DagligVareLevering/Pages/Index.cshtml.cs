@@ -49,7 +49,7 @@ namespace DagligVareLevering.Pages
             // Hvis brugeren ikke er logget ind, sendes brugeren til login
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
 
             }
 

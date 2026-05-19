@@ -64,7 +64,7 @@ namespace DagligVareLevering.Pages.Product
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
             
             await _basketService.AddOrIncrementAsync(userId.Value, productId);
@@ -76,7 +76,7 @@ namespace DagligVareLevering.Pages.Product
         {
             Models.Product product = await _productService.GetObjectByIdAsync(id);
             await _productService.DeleteObjectAsync(product);
-            return RedirectToPage("/Groceries");
+            return RedirectToPage("/Product/GetAllProducts");   
         }
 
     }

@@ -28,7 +28,7 @@ public class WorkerModel : PageModel
         // Sikrer at kun brugere med rollen Worker kan se siden
         if (role != "Worker")
         {
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
         }
 
         // Henter kun de ordrer, der er tildelt den indloggede worker
@@ -46,7 +46,7 @@ public class WorkerModel : PageModel
         // Sikrer at kun workers kan markere en ordre som leveret
         if (role != "Worker")
         {
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
         }
 
         // Marker ordren som leveret for den indloggede worker
@@ -64,7 +64,7 @@ public class WorkerModel : PageModel
         // Sikrer at kun workers kan sende forsinkelsesbeskeder
         if (role != "Worker")
         {
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
         }
 
         // Henter den ordre, der skal sendes forsinkelsesbesked om

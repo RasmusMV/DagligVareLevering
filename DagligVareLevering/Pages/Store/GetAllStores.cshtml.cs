@@ -41,7 +41,7 @@ namespace DagligVareLevering.Pages.Store
 
             // Sletter butikken fra databasen
             await _storeService.DeleteObjectAsync(store);
-            return RedirectToPage("GetAllStores");
+            return RedirectToPage("/Store/GetAllStores");
         }
     }
 }

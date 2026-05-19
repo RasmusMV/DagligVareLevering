@@ -49,7 +49,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
@@ -59,7 +59,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             {
                 // Sender brugeren tilbage til kurven, hvis der ikke findes en aktiv ordre
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Cart");
+                return RedirectToPage("/OrderFlow/Cart");
             }
 
             return Page();
@@ -76,7 +76,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henteer den nyeste ordre for brugeren
@@ -86,7 +86,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             {
                 // Sender brugeren tilbage til kurven, hvis orderen ikke fines
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Cart");
+                return RedirectToPage("/OrderFlow/Cart");
             }
 
             if (!TimeSlots.Contains(SelectedTimeSlot))

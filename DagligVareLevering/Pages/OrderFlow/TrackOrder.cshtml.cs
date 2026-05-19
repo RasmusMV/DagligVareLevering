@@ -24,7 +24,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             CurrentOrder = await _orderService.GetObjectByIdAsync(id);
@@ -76,7 +76,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             // Hvis brugeren ikke er logget ind, sendes brugeren til login
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter brugerens nyeste ordre, som forsøges annulleret
