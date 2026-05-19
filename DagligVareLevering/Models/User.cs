@@ -9,14 +9,6 @@ namespace DagligVareLevering.Models
 
         public User() { }
 
-        public User(string name, string adress, string phonenumber, string email)
-        {
-            Name = name;
-            Adress = adress;
-            Phonenumber = phonenumber;  
-            Email = email;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }

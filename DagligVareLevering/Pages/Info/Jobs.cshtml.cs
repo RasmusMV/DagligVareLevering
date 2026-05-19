@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.Info
 {
     public class JobsModel : PageModel
     {

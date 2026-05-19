@@ -33,10 +33,6 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" asp-page="/OrderFlow/TrackOrder">Følg ordre</a>
-                        </li>
-
-                        <li>
                             <a class="dropdown-item" asp-page="/OrderFlow/OrderHistory">Ordrehistorik</a>
                         </li>
                     
@@ -47,11 +43,11 @@
                             <li><hr class="dropdown-divider" /></li>
 
                             <li>
-                                <a class="dropdown-item" asp-page="/Account">Min bruger</a>
+                                <a class="dropdown-item" asp-page="/UserRelated/Account">Min bruger</a>
                             </li>
 
                             <li>
-                                <a class="dropdown-item" asp-page="/Notifications">
+                                <a class="dropdown-item" asp-page="/UserRelated/Notifications">
                                     Notifikationer
                                 </a>
                             </li>
@@ -62,6 +58,9 @@
                                     <a class="dropdown-item" asp-page="/AdminChanges">Administrer brugere</a>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item" asp-page="/Statistics/Statistics">Statistik</a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" asp-page="/Store/GetAllStores">Administrer butikker</a>
                                 </li>
                             }
@@ -69,12 +68,12 @@
                             @if (role == "Worker")
                             {
                                 <li>
-                                    <a class="dropdown-item" asp-page="/Worker">Worker dashboard</a>
+                                    <a class="dropdown-item" asp-page="/OrderFlow/Worker">Worker dashboard</a>
                                 </li>
                             }
 
                             <li>
-                                <a class="dropdown-item" asp-page="/Logout">Log ud</a>
+                                <a class="dropdown-item" asp-page="/UserRelated/Logout">Log ud</a>
                             </li>
                         }
                     </ul>
@@ -88,8 +87,8 @@
             <div class="nav-right">
                 @if (userId == null)
                 {
-                    <a asp-page="/Login" class="nav-action">Log ind</a>
-                    <a asp-page="/Register" class="nav-action">Opret</a>
+                    <a asp-page="/UserRelated/Login" class="nav-action">Log ind</a>
+                    <a asp-page="/UserRelated/Register" class="nav-action">Opret</a>
                 }
                 else
                 {
@@ -112,9 +111,9 @@
             <p>&copy; 2026 - LeveringAPS</p>
 
             <div class="footer-links">
-                <a asp-page="/Privacy">Privatlivspolitik</a>
-                <a asp-page="/AboutUs">Om os</a>
-                <a asp-page="/Jobs">Søg job</a>
+                <a asp-page="/Info/Privacy">Privatlivspolitik</a>
+                <a asp-page="/Info/AboutUs">Om os</a>
+                <a asp-page="/Info/Jobs">Søg job</a>
             </div>
         </div>
     </footer>
