@@ -1,7 +1,6 @@
-﻿using DagligVareLevering.EFDbContext;
+﻿using DagligVareLevering.Handlers;
 using DagligVareLevering.Models;
 using DagligVareLevering.Models.DTOs;
-using DagligVareLevering.Repositories;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 
@@ -10,12 +9,12 @@ namespace DagligVareLevering.Service
     public class BasketItemService : GenericService<BasketItem>, IBasketItemService
     {
         private readonly IBasketItemRepository _basketItemRepository;
-        private readonly CartEventService _cartEventService;
+        private readonly CartEventHandler _cartEventHandler;
 
-        public BasketItemService(IBasketItemRepository basketItemRepository, CartEventService cartEventService) : base(basketItemRepository)
+        public BasketItemService(IBasketItemRepository basketItemRepository, CartEventHandler cartEventHandler) : base(basketItemRepository)
         {
             _basketItemRepository = basketItemRepository;
-            _cartEventService=cartEventService;
+            _cartEventHandler = cartEventHandler;
         }
 
         public async Task ClearBasketAsync(int userId)
@@ -37,7 +36,7 @@ namespace DagligVareLevering.Service
                 existingBasketItem.Quantity += 1;
                 await UpdateObjectAsync(existingBasketItem);
 
-                _cartEventService.OnCartItemAdded(existingBasketItem);
+                _cartEventHandler.OnCartItemAdded(existingBasketItem);
 
             }
             //Ellers bliver en ny entity lavet med productId og userId
@@ -49,7 +48,7 @@ namespace DagligVareLevering.Service
                 newBasketItem.Quantity = 1;
                 await AddObjectAsync(newBasketItem);
 
-                _cartEventService.OnCartItemAdded(existingBasketItem);
+                _cartEventHandler.OnCartItemAdded(existingBasketItem);
 
             }
         }
