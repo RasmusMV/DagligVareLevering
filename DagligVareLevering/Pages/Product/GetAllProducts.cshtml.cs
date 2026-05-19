@@ -1,12 +1,6 @@
-using DagligVareLevering.EFDbContext;
-using DagligVareLevering.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.IdentityModel.Tokens;
 using DagligVareLevering.Repositories.Interfaces;
 using DagligVareLevering.Service.Interfaces;
 
@@ -32,21 +26,15 @@ namespace DagligVareLevering.Pages.Product
         public List<DagligVareLevering.Models.Product> SearchResults { get; set; }
             = new List<DagligVareLevering.Models.Product>();
 
-        public Models.Product? SelectedProduct { get; set; }
         public List<Models.Store> Stores { get; private set; }
-        public Dictionary<string, List<Models.Product>> GroupedProducts { get; set; }
 
-       
-       
-       
         //indeholder de produkter, der skal vises på siden
         public List<DagligVareLevering.Models.Product> Products { get; set; }
             = new List<DagligVareLevering.Models.Product>();
 
-        public async Task OnGet()
+        public async Task OnGetAsync()
         {
             Stores = (await _storeService.GetObjectsAsync()).ToList();
-
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 // Viser kun produkter, der matcher søgningen
@@ -59,14 +47,14 @@ namespace DagligVareLevering.Pages.Product
             }
         }
 
-        public async Task<IActionResult> OnPostAddToCartAsync(int productId) 
+        public async Task<IActionResult> OnPostAddToCartAsync(int productId)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
                 return RedirectToPage("/UserRelated/Login");
             }
-            
+
             await _basketService.AddOrIncrementAsync(userId.Value, productId);
 
             return RedirectToPage();
@@ -76,7 +64,7 @@ namespace DagligVareLevering.Pages.Product
         {
             Models.Product product = await _productService.GetObjectByIdAsync(id);
             await _productService.DeleteObjectAsync(product);
-            return RedirectToPage("/Product/GetAllProducts");   
+            return RedirectToPage("/Product/GetAllProducts");
         }
 
     }

@@ -28,13 +28,13 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 //Services
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<CartEventHandler>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IBasketItemService, BasketItemService>();
 //Observers
 builder.Services.AddScoped<IOrderObserver, OrderObserver>();
 //Handlers 
 builder.Services.AddScoped<OrderEventsHandler>();
+builder.Services.AddScoped<CartEventHandler>();
 
 var app = builder.Build();
 
