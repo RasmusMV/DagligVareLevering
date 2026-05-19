@@ -52,28 +52,29 @@ input[type=submit] {
 .add-btn,
 .checkout-btn,
 .small-btn {
-    background: #258cfb;
-    color: white;
+    background: auto;
+    color: White;
 }
 
     .btn-primary:hover,
     .btn.btn-primary:hover,
     .add-btn:hover,
     .checkout-btn:hover,
-    .small-btn:hover {
-        background: #0072ff;
+    .small-btn:hover,
+    .btn btn-primary btn-sm {
+        background: Blue;
         transform: translateY(-2px);
     }
 
-/* YELLOW BUTTON */
+/* FILTER BUTTON */
 
 .filter-btn {
-    background: var(--accent);
-    color: #111827;
+    background: auto;
+    color: White;
 }
 
     .filter-btn:hover {
-        background: var(--accent-hover);
+        background: Blue;
         transform: translateY(-2px);
     }
 

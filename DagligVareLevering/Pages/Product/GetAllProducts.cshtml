@@ -2,8 +2,13 @@
 @model DagligVareLevering.Pages.Product.GroceriesModel
 @{
 }
+<!-- Søgefeltet sender søgeteksten som en GET-request, så resultatet kan vises på samme side -->
+<form method="get" class="search-form">
+    <input asp-for="SearchText" class="search-input" placeholder="Søg efter mælk, rugbrød, frugt..." />
+    <button type="submit" class="search-btn">Søg</button>
+</form>
 
-
+<!--Filtrerer produkter efter pris eller butik-->
 <form method="get">
     <label>Max Pris:</label>
     <input type="number" name="maxPrice" value="@Request.Query["maxPrice"]" /> <!-- request query sørger for at input bliver bevaret -->
@@ -25,18 +30,25 @@
 <!-- cards som indeholder produkter med samme navn-->
 <div class="container">
     <div class="product-grid">
-        
-            @foreach (var group in Model.GroupedProducts)
-        {
-            <div class="card">
-                <h3>@group.Key</h3> <!-- Produkt navn -->
-                @foreach (var item in group.Value)
-                {
-                    <div>
+            @foreach (var item in Model.Products)
+            {
+                <div class="card">
+                    <h3>@item.Name</h3> <!-- Produkt navn -->
+                    <p>@item.Information <br />
+                       @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId)?.Name <br />
+                       @item.Price kr</p>
+
+                       <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->
+                    <a asp-page="/Product/ProductDetails" asp-route-id="@item.ProductId">
+                        Se produkt
+                    </a>
+                    <!--tilføjer produkt til cart-->
+                    <form method="post" asp-page-handler="AddToCart">
+                        <input type="hidden" name="productId" value="@item.ProductId" />
                         <p>@item.Information <br />
                            @Model.Stores.FirstOrDefault(x => x.StoreId == item.StoreId)?.Name <br />
                            @item.Price kr</p>
-
+                           </form>
                            <!-- se produkt vidrerfører dig til en "side"" med produktinformation" -->
                         <a asp-page="/Product/ProductDetails" asp-route-id="@item.ProductId">
                             Se produkt
@@ -51,18 +63,22 @@
                             if(role == "Admin")
                             {
                                 <a asp-page="/Product/EditProduct" asp-route-id="@item.ProductId">Opdater</a>
+                                <a asp-page="/Product/CreateProduct" asp-route-id="@item.ProductId">Opret Nyt Produkt</a>
+
                                 <form method="post" asp-page-handler="Delete" asp-route-id="@item.ProductId"
                                       onsubmit="return confirm('Are you sure you want to delete this product?');"
                                       class="d-inline m-0">
                                     <button type="submit" class="btn btn-primary btn-sm">Delete</button>
                                 </form>
+
+
                             }
                         }
                         
                     </div>
                 }
             </div>
-        }
+        
     </div>
 </div>
 
@@ -103,4 +119,6 @@
         grid-template-columns: repeat(3, 1fr); /* 3 columns */
         gap: 20px;
     }
+
+
 </style>
