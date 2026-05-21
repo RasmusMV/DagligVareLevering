@@ -6,6 +6,7 @@ using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace DagligVareLevering.Pages.OrderFlow
+
 {
     public class OrderHistoryModel : PageModel
     {
@@ -31,7 +32,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         {
             // Rollen bestemmer hvilke ordrer brugeren må se
             var role = HttpContext.Session.GetString("UserRole");
-            if(role == "Customer")
+            if (role == "Customer")
             {
                 // Kunden må kun se sine egne ordrer
                 AllOrders = (await _orderService.GetUserOrdersWithOrderLinesAndProducts(HttpContext.Session.GetInt32("UserId").Value)).ToList();
@@ -40,20 +41,20 @@ namespace DagligVareLevering.Pages.OrderFlow
                 TotalItems = 0;
 
                 // Beregner totaler for de ordrer, der stadig er relevante i kundens historik
-                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received 
+                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received
                 || o.Status == OrderStatus.Processing || o.Status == OrderStatus.OutForDelivery || o.Status == OrderStatus.Delayed))
                 {
                     GrandTotal += order.GetTotalPrice();
                     TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
                 }
             }
-            else if(role == "Admin")
+            else if (role == "Admin")
             {
                 // Admin må se alle ordrer, fordi admin skal kunne administrere og rette fejl
                 AllOrders = (await _orderService.GetAllOrdersWithOrderLinesAndProducts()).ToList();
 
             }
-            else if(role == "Worker")
+            else if (role == "Worker")
             {
                 // Worker ser kun ordrer, der endnu ikke er taget af en leveringsmedarbejder
                 AllOrders = (await _orderService.GetAllOrdersWithNoWorker()).ToList();
@@ -69,7 +70,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         {
             // Henter den indloggede workers bruger-id fra sessionen
             int? workerId = HttpContext.Session.GetInt32("UserId");
-            if(workerId == null)
+            if (workerId == null)
             {
                 return RedirectToPage("/UserRelated/Login");
             }
@@ -111,6 +112,47 @@ namespace DagligVareLevering.Pages.OrderFlow
 
             return RedirectToPage();
         }
+        public async Task<IActionResult> OnPostCancelOrderAsync(int orderId)
+        {
+            // Henter brugerens rolle og id fra sessionen
+            var role = HttpContext.Session.GetString("UserRole");
+            int? userId = HttpContext.Session.GetInt32("UserId");
 
+            // Sikrer at kun indloggede kunder kan annullere ordrer
+            if (role != "Customer" || userId == null)
+            {
+                return RedirectToPage("/UserRelated/Login");
+            }
+
+            // Henter den valgte ordre fra databasen
+            var order = await _orderService.GetObjectByIdAsync(orderId);
+
+            // Sikrer at ordren findes, og at den tilhører den indloggede bruger
+            if (order == null || order.UserId != userId.Value)
+            {
+                return RedirectToPage();
+            }
+
+            // Ordren kan kun annulleres, hvis den ikke allerede er leveret, annulleret eller ude til levering
+            if (order.Status != OrderStatus.Delivered &&
+                order.Status != OrderStatus.Cancelled &&
+                order.Status != OrderStatus.OutForDelivery)
+            {
+                // Ændrer ordrestatus til annulleret
+                order.Status = OrderStatus.Cancelled;
+
+                // Gemmer ændringen i databasen
+                await _orderService.UpdateObjectAsync(order);
+
+                TempData["StatusMessage"] = $"Ordre #{orderId} er blevet annulleret.";
+            }
+            else
+            {
+                TempData["StatusMessage"] = $"Ordre #{orderId} kan ikke annulleres.";
+            }
+
+            // Genindlæser ordrehistorikken
+            return RedirectToPage();
+        }
     }
 }
