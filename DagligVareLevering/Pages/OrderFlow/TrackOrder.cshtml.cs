@@ -19,7 +19,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public Order? CurrentOrder { get; set; }
 
         // Henter den nyeste ordre for brugeren, når siden vises
-        public async Task<IActionResult> OnGet(int id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)

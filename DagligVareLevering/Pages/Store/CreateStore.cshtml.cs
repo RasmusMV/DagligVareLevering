@@ -1,5 +1,6 @@
 using DagligVareLevering.Models;
 using DagligVareLevering.Repositories.Interfaces;
+using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,9 +9,9 @@ namespace DagligVareLevering.Pages.Store
     public class CreateStoreModel : PageModel
     {
         // Repository bruges til at oprette nye butikker
-        private readonly IRepository<Models.Store> _storeService;
+        private readonly IService<Models.Store> _storeService;
 
-        public CreateStoreModel(IRepository<Models.Store> storeService)
+        public CreateStoreModel(IService<Models.Store> storeService)
         {
             _storeService = storeService;
         }

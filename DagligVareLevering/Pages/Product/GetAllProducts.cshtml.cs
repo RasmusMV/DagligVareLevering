@@ -6,13 +6,13 @@ using DagligVareLevering.Service.Interfaces;
 
 namespace DagligVareLevering.Pages.Product
 {
-    public class GroceriesModel : PageModel
+    public class GetAllProductsModel : PageModel
     {
 
         private readonly IProductService _productService;
         private readonly IBasketItemService _basketService;
-        private readonly IRepository<Models.Store> _storeService;
-        public GroceriesModel(IProductService productService, IBasketItemService basketService, IRepository<Models.Store> storeService)
+        private readonly IService<Models.Store> _storeService;
+        public GetAllProductsModel(IProductService productService, IBasketItemService basketService, IService<Models.Store> storeService)
         {
             _productService = productService;
             _basketService = basketService;

@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 public class NotificationsModel : PageModel
 {
     // Repository til at hente notifikationer fra databasen
-    private readonly IRepository<Notification> _notificationRepository;
+    private readonly IService<Notification> _notificationRepository;
 
-    public NotificationsModel(IRepository<Notification> notificationRepository)
+    public NotificationsModel(IService<Notification> notificationRepository)
     {
         _notificationRepository = notificationRepository;
     }

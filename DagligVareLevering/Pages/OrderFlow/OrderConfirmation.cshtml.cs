@@ -19,7 +19,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public decimal TotalPrice { get; set; }
 
         // OnGet -metoden henter data for den aktuelle ordre, herunder ordrelinjer og tilhørende produkter, og beregner den samlede pris
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId == null)

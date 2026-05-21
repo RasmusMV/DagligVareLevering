@@ -26,7 +26,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public string DeliveryAdress { get; set; }
         public string WorkerAdress { get; set; }
 
-        public async Task<IActionResult> OnGet(int id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             // Henter den indloggede workers id og rolle fra sessionen
             int? workerId = HttpContext.Session.GetInt32("UserId");

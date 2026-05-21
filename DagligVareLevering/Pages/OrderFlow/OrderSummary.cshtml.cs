@@ -27,7 +27,7 @@ namespace DagligVareLevering.Pages.OrderFlow
 
 
         // Henter den nyeste ordre for brugeren og viser den som et resume
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)

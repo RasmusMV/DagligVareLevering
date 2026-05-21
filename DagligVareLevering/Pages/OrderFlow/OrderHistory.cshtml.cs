@@ -11,9 +11,9 @@ namespace DagligVareLevering.Pages.OrderFlow
     {
         // Services bruges til at hente ordrer og ordrelinjer fra databasen, samt håndtere ordre events
         private readonly IOrderService _orderService;
-        private readonly IRepository<OrderLine> _orderLineService;
+        private readonly IService<OrderLine> _orderLineService;
         private readonly OrderEventsHandler _orderEventsHandler;
-        public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
+        public OrderHistoryModel(IOrderService orderService, IService<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
         {
             _orderService = orderService;
             _orderLineService = orderLineService;
@@ -27,7 +27,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         // Samlet antal varer på tværs af kundens relevante ordrer
         public int TotalItems { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             // Rollen bestemmer hvilke ordrer brugeren må se
             var role = HttpContext.Session.GetString("UserRole");

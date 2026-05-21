@@ -21,7 +21,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         // CartSummary DTO bruges til at samle kurvens varer, leveringspris og totalpris ét sted
         public CartSummary CartSummary { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");

@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-public class UsersModel : PageModel
+public class AdminChangesModel : PageModel
 {
     // Service bruges til at hente og opdatere brugere
     private readonly IUserService _userService;
 
-    public UsersModel(IUserService userService)
+    public AdminChangesModel(IUserService userService)
     {
         _userService = userService;
     }

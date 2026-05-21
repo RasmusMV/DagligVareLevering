@@ -39,7 +39,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public string SelectedTimeSlot { get; set; }
 
         // Henter kalenderdata og den aktuelle ordre, når siden indlæses
-        public async Task<IActionResult> OnGet(int weekOffset = 0)
+        public async Task<IActionResult> OnGetAsync(int weekOffset = 0)
         {
             WeekOffset = weekOffset;
             // Gør dage og tidsintervaller klar til at blive vist i kalenderen
@@ -66,7 +66,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         }
 
         // Kører når kunden vælger et leveringstidspunkt i tabellen
-        public async Task<IActionResult> OnPostSelectTime(int weekOffset)
+        public async Task<IActionResult> OnPostSelectTimeAsync(int weekOffset)
         {
             WeekOffset = weekOffset;
             // Genopbygger kalenderdata, så siden stadig kan vises korrekt ved fejl
