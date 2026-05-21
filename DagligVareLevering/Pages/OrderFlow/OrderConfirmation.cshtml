@@ -75,7 +75,10 @@ else
     </div>
 
     <div class="confirmation-actions">
-        <a asp-page="/OrderFlow/TrackOrder" class="track-btn">Følg ordre</a>
+        <form method="get" asp-page="/OrderFlow/TrackOrder">
+            <input type="hidden" name="id" value="@Model.CurrentOrder.OrderId" />
+            <button type="submit" class="deliver-btn">Følg ordre</button>
+        </form>
     </div>
 
 }
