@@ -11,9 +11,9 @@ namespace DagligVareLevering.Pages.Product
     public class CreateProductModel : PageModel
     {
         private readonly IProductService _productService;
-        private readonly IRepository<Models.Store> _storeService;
+        private readonly IService<Models.Store> _storeService;
 
-        public CreateProductModel(IProductService productService, IRepository<Models.Store> storeService)
+        public CreateProductModel(IProductService productService, IService<Models.Store> storeService)
         {
             _productService = productService;
             _storeService = storeService;
@@ -29,7 +29,7 @@ namespace DagligVareLevering.Pages.Product
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Product/GetAllProducts");
             }
 
             await LoadStoresAsync();
@@ -45,7 +45,7 @@ namespace DagligVareLevering.Pages.Product
             }
 
             await _productService.CreateProductAsync(ProductDto);
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Product/GetAllProducts");
         }
 
         private async Task LoadStoresAsync()

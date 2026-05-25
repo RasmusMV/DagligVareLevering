@@ -1,5 +1,12 @@
 ﻿@page
 @model DagligVareLevering.Pages.OrderFlow.OrderHistoryModel
+@using DagligVareLevering.Models.Enums
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info">
+        @TempData["StatusMessage"]
+    </div>
+}
 @{
 
     @if(HttpContext.Session.GetString("UserRole") == "Customer" || HttpContext.Session.GetString("UserRole") == "Admin")
@@ -28,13 +35,47 @@
                                 }
                             </ul>
 
-                            <p class="mt-3">
-                                <strong>Status:</strong><br />
+                            <div class="mt-3">
+                                <strong>Status:</strong> <br />
                                 @order.Status <br />
+
+                                <div class="d-flex gap-2 mt-2 mb-2">
+                                    <form method="get" asp-page="/OrderFlow/TrackOrder">
+                                        <input type="hidden" name="id" value="@order.OrderId" />
+                                        <button type="submit" class="deliver-btn">Følg ordre</button>
+                                    </form>
+
+                                   @if (HttpContext.Session.GetString("UserRole") == "Customer"
+                                   && order.Status != OrderStatus.Delivered
+                                   && order.Status != OrderStatus.Cancelled
+                                   && order.Status != OrderStatus.OutForDelivery)
+                                   {
+                                     <form method="post" asp-page-handler="CancelOrder"
+                                              onsubmit="return confirm('Er du sikker på, at du vil annullere denne ordre?');">
+                                             <input type="hidden" name="orderId" value="@order.OrderId" />
+                                          <button type="submit" class="btn btn-danger">
+                                            Annuller ordre
+                                         </button>
+                                    </form>
+                                    }
+                       
+
+
+                                </div>
+                               
                                 <strong>Pris for denne ordre:</strong><br />
                                 @order.GetTotalPrice() kr.
-                            </p>
-                            
+                            </div>
+                            @if (HttpContext.Session.GetString("UserRole") == "Admin")
+                            {
+                                <form method="post" asp-page-handler="DeleteOrder"
+                                      onsubmit="return confirm('Er du sikker på, at du vil slette denne ordre helt?');">
+                                    <input type="hidden" name="orderId" value="@order.OrderId" />
+                                    <button type="submit" class="btn btn-danger w-100 mt-2">
+                                        Slet ordre
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
                 </div>
@@ -73,9 +114,10 @@
                                         <strong>@line.Product.Name</strong><br />
                                         Antal: @line.Quantity
                                     </li>
-                                    <hr />
+                                    
                                 }
                             </ul>
+                           
                             <p><strong>Total:</strong> @order.GetTotalPrice() kr.</p>
 
                             <form method="post">

@@ -4,10 +4,11 @@ using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DagligVareLevering.Pages
+namespace DagligVareLevering.Pages.UserRelated
 {
     public class OfferEmailsModel : PageModel
     {
+        // Service bruges til at hente og opdatere brugerens oplysninger
         private readonly IUserService _userService;
 
         public OfferEmailsModel(IUserService userService)
@@ -15,19 +16,23 @@ namespace DagligVareLevering.Pages
             _userService = userService;
         }
 
+        // Binder checkboxens værdi til denne property
         [BindProperty]
         public bool WantsOfferEmails { get; set; }
 
+        // Besked der vises til brugeren efter opdatering
         public string Message { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
             if(userId == null)
             {
-                RedirectToPage("/Login");
+                RedirectToPage("/UserRelated/Login");
             }
 
+            // Henter brugeren, så siden kan vise den nuværende email-indstilling
             var user = await _userService.GetObjectByIdAsync(userId.Value);
             if(user != null)
             {
@@ -39,14 +44,17 @@ namespace DagligVareLevering.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                RedirectToPage("/Login");
+              return RedirectToPage("/UserRelated/Login");
             }
 
+            // Opdaterer om brugeren ønsker at modtage tilbudsmails
             await _userService.UpdateOfferEmailsAsync(userId.Value, WantsOfferEmails);
 
+            // Viser en besked afhængigt af brugerens valg
             Message = WantsOfferEmails
                     ? "Du er nu tilmeldt tilbudsmails."
                     : "Du er ikke tilmeldt tilbudsmails.";

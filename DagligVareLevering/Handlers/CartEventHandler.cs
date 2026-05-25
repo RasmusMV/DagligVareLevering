@@ -1,8 +1,8 @@
 ﻿using DagligVareLevering.Models;
 
-namespace DagligVareLevering.Service
+namespace DagligVareLevering.Handlers
 {
-    public class CartEventService
+    public class CartEventHandler
     {
         // Eventet bliver udløst, når en vare lægges i kurven
         public event Action<BasketItem>? CartItemAdded;

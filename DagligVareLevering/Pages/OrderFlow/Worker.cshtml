@@ -61,7 +61,10 @@ else
 
                 <div class="order-footer">
                     <p><strong>Total:</strong> @order.GetTotalPrice().ToString("C")</p>
-
+                    <form method="get" asp-page="/OrderFlow/DeliveryRoute">
+                        <input type="hidden" name="id" value="@order.OrderId" />
+                        <button type="submit" class="deliver-btn">Se leveringsrute</button>
+                    </form>
                     <!-- Knappen vises kun hvis ordren endnu ikke er markeret som leveret -->
                     @if (order.Status != OrderStatus.Delivered)
                     {
