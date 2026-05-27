@@ -9,7 +9,11 @@ namespace DagligVareLeveringTest
         [TestMethod]
         public void GetLineTotal_ReturnsCorrectPrice()
         {
-            Product product = new Product("Mælk", 12m, "Letmælk", null);
+            Product product = new Product
+            {
+                Name = "Mælk",
+                Price = 12m
+            };
 
             OrderLine orderLine = new OrderLine
             {
