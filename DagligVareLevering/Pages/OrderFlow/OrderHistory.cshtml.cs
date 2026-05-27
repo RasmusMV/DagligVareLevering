@@ -6,68 +6,153 @@ using DagligVareLevering.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace DagligVareLevering.Pages.OrderFlow
+
 {
     public class OrderHistoryModel : PageModel
     {
+        // Services bruges til at hente ordrer og ordrelinjer fra databasen, samt håndtere ordre events
         private readonly IOrderService _orderService;
-        private readonly IRepository<OrderLine> _orderLineService;
+        private readonly IService<OrderLine> _orderLineService;
         private readonly OrderEventsHandler _orderEventsHandler;
-        public OrderHistoryModel(IOrderService orderService, IRepository<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
+        public OrderHistoryModel(IOrderService orderService, IService<OrderLine> orderLineService, OrderEventsHandler orderEventsHandler)
         {
             _orderService = orderService;
             _orderLineService = orderLineService;
             _orderEventsHandler = orderEventsHandler;
         }
+
+        // Indenolder de ordrer, der skal vises på siden
         public List<Models.Order> AllOrders { get; set; }
+        // Samlet pris for kundens relevante ordrer
         public decimal GrandTotal { get; set; }
+        // Samlet antal varer på tværs af kundens relevante ordrer
         public int TotalItems { get; set; }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
+            // Rollen bestemmer hvilke ordrer brugeren må se
             var role = HttpContext.Session.GetString("UserRole");
-            if(role == "Customer")
+            if (role == "Customer")
             {
+                // Kunden må kun se sine egne ordrer
                 AllOrders = (await _orderService.GetUserOrdersWithOrderLinesAndProducts(HttpContext.Session.GetInt32("UserId").Value)).ToList();
 
                 GrandTotal = 0;
                 TotalItems = 0;
 
-                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received 
+                // Beregner totaler for de ordrer, der stadig er relevante i kundens historik
+                foreach (var order in AllOrders.Where(o => o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Received
                 || o.Status == OrderStatus.Processing || o.Status == OrderStatus.OutForDelivery || o.Status == OrderStatus.Delayed))
                 {
                     GrandTotal += order.GetTotalPrice();
                     TotalItems += order.OrderLines.Sum(ol => ol.Quantity);
                 }
             }
-            else if(role == "Admin")
+            else if (role == "Admin")
             {
+                // Admin må se alle ordrer, fordi admin skal kunne administrere og rette fejl
                 AllOrders = (await _orderService.GetAllOrdersWithOrderLinesAndProducts()).ToList();
 
             }
-            else if(role == "Worker")
+            else if (role == "Worker")
             {
+                // Worker ser kun ordrer, der endnu ikke er taget af en leveringsmedarbejder
                 AllOrders = (await _orderService.GetAllOrdersWithNoWorker()).ToList();
             }
             else
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostTakeOrderAsync(int orderId)
         {
+            // Henter den indloggede workers bruger-id fra sessionen
             int? workerId = HttpContext.Session.GetInt32("UserId");
-            if(workerId == null)
+            if (workerId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
+            // Knytter ordren til den worker, der tager ordren
             await _orderService.TakeOrderAsync(orderId, workerId.Value);
 
+            // Sender workeren videre til leveringsruten for den valgte ordre
             return RedirectToPage("/OrderFlow/DeliveryRoute");
 
         }
 
+        public async Task<IActionResult> OnPostDeleteOrderAsync(int orderId)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+
+            // Sikrer at kun admin kan slette ordrer
+            if (role != "Admin")
+            {
+                return RedirectToPage("/UserRelated/Login");
+            }
+
+            // Finder alle ordrelinjer, der hører til ordren
+            List<OrderLine> orderLines = (await _orderLineService.GetObjectsAsync())
+                .Where(ol => ol.OrderId == orderId)
+                .ToList();
+
+            // Sletter ordrelinjerne først, så selve ordren kan slettes bagefter
+            foreach (OrderLine line in orderLines)
+            {
+                await _orderLineService.DeleteObjectAsync(line);
+            }
+
+            // Sletter selve ordren helt fra databasen
+            Order deletedOrder = await _orderService.GetObjectByIdAsync(orderId);
+            await _orderService.DeleteObjectAsync(deletedOrder);
+
+            TempData["StatusMessage"] = $"Ordre #{orderId} er blevet slettet.";
+
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostCancelOrderAsync(int orderId)
+        {
+            // Henter brugerens rolle og id fra sessionen
+            var role = HttpContext.Session.GetString("UserRole");
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            // Sikrer at kun indloggede kunder kan annullere ordrer
+            if (role != "Customer" || userId == null)
+            {
+                return RedirectToPage("/UserRelated/Login");
+            }
+
+            // Henter den valgte ordre fra databasen
+            var order = await _orderService.GetObjectByIdAsync(orderId);
+
+            // Sikrer at ordren findes, og at den tilhører den indloggede bruger
+            if (order == null || order.UserId != userId.Value)
+            {
+                return RedirectToPage();
+            }
+
+            // Ordren kan kun annulleres, hvis den ikke allerede er leveret, annulleret eller ude til levering
+            if (order.Status != OrderStatus.Delivered &&
+                order.Status != OrderStatus.Cancelled &&
+                order.Status != OrderStatus.OutForDelivery)
+            {
+                // Ændrer ordrestatus til annulleret
+                order.Status = OrderStatus.Cancelled;
+
+                // Gemmer ændringen i databasen
+                await _orderService.UpdateObjectAsync(order);
+
+                TempData["StatusMessage"] = $"Ordre #{orderId} er blevet annulleret.";
+            }
+            else
+            {
+                TempData["StatusMessage"] = $"Ordre #{orderId} kan ikke annulleres.";
+            }
+
+            // Genindlæser ordrehistorikken
+            return RedirectToPage();
+        }
     }
 }

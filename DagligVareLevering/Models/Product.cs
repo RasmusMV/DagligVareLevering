@@ -8,14 +8,6 @@ namespace DagligVareLevering.Models
     {
         public Product() { }
 
-        public Product(string name, decimal price, string information, Store store)
-        {
-            Name = name;
-            Price = price;
-            Information = information;
-            Store = store;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProductId { get; set; }

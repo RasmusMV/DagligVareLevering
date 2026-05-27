@@ -1,28 +1,28 @@
 ﻿@page
 @model AccountModel
 
-<h2>My Account</h2>
+<h2>Min bruger</h2>
 
-<h4>Edit Details</h4>
+<h4>Rediger oplysninger</h4>
 
 <form method="post" asp-page-handler="Update">
     <div class="mb-2">
-        <label>Name</label>
+        <label>Navn</label>
         <input asp-for="User.Name" class="form-control" />
     </div>
 
     <div class="mb-2">
-        <label>Email</label>
+        <label>E-mail</label>
         <input asp-for="User.Email" class="form-control" />
     </div>
 
     <div class="mb-2">
-        <label>Address</label>
+        <label>Addresse</label>
         <input asp-for="User.Adress" class="form-control" />
     </div>
 
     <div class="mb-2">
-        <label>Phone</label>
+        <label>Telefonnummer</label>
         <input asp-for="User.Phonenumber" class="form-control" />
     </div>
 
@@ -39,13 +39,13 @@
     </div>
 
     <button type="submit" class="btn btn-primary mt-2">
-        Save Changes
+        Gem ændringer
     </button>
 </form>
 
 <hr />
 
-<h4>Delete Account</h4>
+<h4>Slet bruger :(</h4>
 
 <form method="post" asp-page-handler="Delete">
     <button type="submit" class="btn btn-danger"

@@ -49,9 +49,10 @@ namespace DagligVareLevering.Pages
             // Hvis brugeren ikke er logget ind, sendes brugeren til login
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
 
             }
+
 
             await _basketItemService.AddOrIncrementAsync(userId.Value, productId);
 
@@ -59,7 +60,11 @@ namespace DagligVareLevering.Pages
 
             // Sender brugeren tilbage til forsiden og bevarer søgningen
             return RedirectToPage(new { SearchText = SearchText });
-        }
-    }
 
-}
+        }
+
+
+    }
+  }
+
+

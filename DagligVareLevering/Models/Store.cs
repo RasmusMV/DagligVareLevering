@@ -8,12 +8,6 @@ namespace DagligVareLevering.Models
 
         public Store() { }
 
-        public Store(string name, string adress)
-        {
-            Name = name;
-            Adress = adress;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StoreId { get; set; }

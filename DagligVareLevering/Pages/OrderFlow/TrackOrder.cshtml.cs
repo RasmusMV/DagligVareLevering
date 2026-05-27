@@ -19,15 +19,15 @@ namespace DagligVareLevering.Pages.OrderFlow
         public Order? CurrentOrder { get; set; }
 
         // Henter den nyeste ordre for brugeren, når siden vises
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
-            CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
+            CurrentOrder = await _orderService.GetObjectByIdAsync(id);
             return Page();
         }
 
@@ -54,27 +54,32 @@ namespace DagligVareLevering.Pages.OrderFlow
             // Et trin er gennemført, hvis det ligger før eller på den aktuelle status
             return stepIndex <= currentIndex && stepIndex != -1;
         }
-
         // Tjekker om ordren stadig kan annulleres
         public bool CanCancelOrder()
         {
+            // Hvis der ikke er en ordre, kan der ikke annulleres noget
             if (CurrentOrder == null)
             {
                 return false;
             }
 
+            // Kunden må kun annullere ordren, hvis den ikke er for langt i leveringsprocessen
             return CurrentOrder.Status == OrderStatus.Received
                 || CurrentOrder.Status == OrderStatus.Processing;
         }
 
         public async Task<IActionResult> OnPostCancelAsync()
         {
+            // Henter den indloggede brugers id fra sessionen
             int? userId = HttpContext.Session.GetInt32("UserId");
+
+            // Hvis brugeren ikke er logget ind, sendes brugeren til login
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
+            // Henter brugerens nyeste ordre, som forsøges annulleret
             CurrentOrder = await _orderService.GetLatestUserOrderAsync(userId.Value);
 
             if (CurrentOrder == null)
@@ -82,19 +87,23 @@ namespace DagligVareLevering.Pages.OrderFlow
                 return RedirectToPage();
             }
 
+            // Stopper annullering, hvis ordren allerede er på vej eller leveret
             if (!CanCancelOrder())
             {
                 TempData["StatusMessage"] = "Ordren kan ikke annulleres, fordi den allerede er på vej eller leveret.";
                 return RedirectToPage();
             }
 
+            // Annullerer ordren gennem order service
             await _orderService.CancelOrderAsync(CurrentOrder.OrderId);
 
+            // Viser besked til kunden efter annullering
             TempData["StatusMessage"] = "Din ordre er blevet annulleret.";
 
             return RedirectToPage();
         }
 
     }
+
 }
 

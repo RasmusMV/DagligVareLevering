@@ -1,5 +1,5 @@
-﻿using DagligVareLevering.Models;
-using DagligVareLevering.Service;
+﻿using DagligVareLevering.Handlers;
+using DagligVareLevering.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -8,14 +8,14 @@ using System.Text;
 namespace DagligVareLeveringTest
 {
     [TestClass]
-    public class CartEventServiceTest
+    public class CartEventHandlerTest
     {
         [TestMethod]
         public void OnCartItemAdded_ShouldTriggerCartItemAddedEvent()
         {
             // Arrange
             // Opretter event-servicen og en testvare til kurven
-            CartEventService service = new CartEventService();
+            CartEventHandler eventHandler = new CartEventHandler();
 
             BasketItem basketItem = new BasketItem
             {
@@ -28,14 +28,14 @@ namespace DagligVareLeveringTest
             bool eventWasTriggered = false;
 
             // Lytter på eventet og ændrer bool-værdien, hvis eventet bliver udløst
-            service.CartItemAdded += item =>
+            eventHandler.CartItemAdded += item =>
             {
                 eventWasTriggered = true;
             };
 
             // Act
             // Kalder metoden, som skal udløse eventet
-            service.OnCartItemAdded(basketItem);
+            eventHandler.OnCartItemAdded(basketItem);
 
             // Assert
             // Testen består, hvis eventet blev udløst

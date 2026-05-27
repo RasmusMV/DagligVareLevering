@@ -7,24 +7,30 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class NotificationsModel : PageModel
 {
-    private readonly IRepository<Notification> _notificationRepository;
+    // Repository til at hente notifikationer fra databasen
+    private readonly IService<Notification> _notificationRepository;
 
-    public NotificationsModel(IRepository<Notification> notificationRepository)
+    public NotificationsModel(IService<Notification> notificationRepository)
     {
         _notificationRepository = notificationRepository;
     }
 
+    // Indeholder de notifikationer, der skal vises for den indloggede bruger
     public List<Notification> Notifications { get; set; }
         = new List<Notification>();
 
     public async Task<IActionResult> OnGetAsync()
     {
+        // Henter den indloggede brugers id fra sessionen
         int? userId = HttpContext.Session.GetInt32("UserId");
-        if(userId == null)
+
+        // Hvis brugeren ikke er logget ind, sendes brugeren til login
+        if (userId == null)
         {
-            return RedirectToPage("/Login");
+            return RedirectToPage("/UserRelated/Login");
         }
 
+        // Henter kun notifikationer, der tilhører den indloggede bruger
         Notifications =
             (await _notificationRepository.GetObjectsAsync())
             .Where(n => n.UserId == userId.Value)

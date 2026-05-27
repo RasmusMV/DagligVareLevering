@@ -48,32 +48,33 @@ input[type=submit] {
 /* PRIMARY BUTTON */
 
 .btn.btn-primary,
-btn-primary,
+.btn-primary,
 .add-btn,
 .checkout-btn,
 .small-btn {
     background: auto;
-    color: white;
+    color: White;
 }
 
     .btn-primary:hover,
     .btn.btn-primary:hover,
     .add-btn:hover,
     .checkout-btn:hover,
-    .small-btn:hover {
-        background: var(--primary-light);
+    .small-btn:hover,
+    .btn btn-primary btn-sm {
+        background: Blue;
         transform: translateY(-2px);
     }
 
-/* YELLOW BUTTON */
+/* FILTER BUTTON */
 
 .filter-btn {
-    background: var(--accent);
-    color: #111827;
+    background: auto;
+    color: White;
 }
 
     .filter-btn:hover {
-        background: var(--accent-hover);
+        background: Blue;
         transform: translateY(-2px);
     }
 

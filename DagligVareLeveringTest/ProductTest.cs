@@ -19,7 +19,7 @@ public class ProductTest
         public async Task OnPostAddToCartAsync_UserNotLoggedIn_RedirectsToLogin()
         {
             // Arrange
-            var model = new GroceriesModel(null, null, null);
+            var model = new GetAllProductsModel(null, null, null);
 
             // Fake HttpContext
             var httpContext = new DefaultHttpContext();

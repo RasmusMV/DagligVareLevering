@@ -39,7 +39,7 @@ namespace DagligVareLevering.Pages.OrderFlow
         public string SelectedTimeSlot { get; set; }
 
         // Henter kalenderdata og den aktuelle ordre, når siden indlæses
-        public async Task<IActionResult> OnGet(int weekOffset = 0)
+        public async Task<IActionResult> OnGetAsync(int weekOffset = 0)
         {
             WeekOffset = weekOffset;
             // Gør dage og tidsintervaller klar til at blive vist i kalenderen
@@ -49,7 +49,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henter den nyeste ordre for brugeren, som vi skal gemme leveringstidspunktet på senere
@@ -59,14 +59,14 @@ namespace DagligVareLevering.Pages.OrderFlow
             {
                 // Sender brugeren tilbage til kurven, hvis der ikke findes en aktiv ordre
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Cart");
+                return RedirectToPage("/OrderFlow/Cart");
             }
 
             return Page();
         }
 
         // Kører når kunden vælger et leveringstidspunkt i tabellen
-        public async Task<IActionResult> OnPostSelectTime(int weekOffset)
+        public async Task<IActionResult> OnPostSelectTimeAsync(int weekOffset)
         {
             WeekOffset = weekOffset;
             // Genopbygger kalenderdata, så siden stadig kan vises korrekt ved fejl
@@ -76,7 +76,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToPage("/Login");
+                return RedirectToPage("/UserRelated/Login");
             }
 
             // Henteer den nyeste ordre for brugeren
@@ -86,7 +86,7 @@ namespace DagligVareLevering.Pages.OrderFlow
             {
                 // Sender brugeren tilbage til kurven, hvis orderen ikke fines
                 TempData["StatusMessage"] = "Du skal have varer i kurven, før du kan vælge leveringstid.";
-                return RedirectToPage("/Cart");
+                return RedirectToPage("/OrderFlow/Cart");
             }
 
             if (!TimeSlots.Contains(SelectedTimeSlot))
